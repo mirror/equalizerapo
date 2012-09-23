@@ -1,0 +1,62 @@
+Welcome to the Wiki of Equalizer APO. This is currently the only documentation resource for this project. To begin using Equalizer APO, you should read the <a href="#install_tutorial">tutorials</a>.
+
+**Table of contents:**
+
+[TOC]
+
+<a name="install_tutorial"></a>
+# Installation tutorial
+
+1. Download the Equalizer APO Setup for your version of Windows (32 or 64 bit). If you are unsure if you need the 32 or the 64 bit version, you can open Start Menu -> Control Panel -> System and look up the system type.
+2. Execute the setup program and follow the instructions. Remember your installation path if you don't use the default of C:\\Program Files\\EqualizerAPO . From here on, for better readability it is assumed that you use the default path.
+3. During the installation process the program Configurator.exe will be run. Make sure that you select the correct audio device to install the APO to. If you are unsure you can open Start Menu -> Control Panel -> Sound and look for the default output device. If you need to install the APO to other audio devices later, you can run the program again from C:\\Program Files\\EqualizerAPO\\Configurator.exe .
+4. After the installation finished, you should allow the reboot of your system. This is needed because the newly installed APO will not be used immediately but only after the audio service is restarted.
+5. When the system has rebooted, the APO should be active. This will only be noticable by a small reduction in volume and a mild low frequency boost, because this is what the example configuration file specifies. To change the APO's behaviour to something more useful, you can now read the <a href="#config_tutorial">Configuration</a> chapter.
+
+<a name="config_tutorial"></a>
+# Configuration tutorial
+
+1. Open Windows Explorer and navigate to C:\\Program Files\\EqualizerAPO\\config . You should find the files config.txt and example.txt. The file config.txt is the main configuration file that will automatically be loaded by Equalizer APO.
+2. Open the file config.txt in a text editor and you will see that it first defines a preamplification value and then includes example.txt. To check if the APO is really working you can start some audio or video application and adjust the preamp value while music is running. You should notice that the volume changes immediately each time after you save the file.
+3. To begin creating your individual filter configuration you should now install and run [Room EQ Wizard](http://hometheatershack.com/roomeq).
+
+Screenshot of Room EQ Wizard (click to enlarge):
+
+<a href="/p/equalizerapo/wiki/Documentation/attachment/RoomEQWizard.png"><img src="/p/equalizerapo/wiki/Documentation/attachment/RoomEQWizard-thumb.png"/></a>
+
+A detailed explanation of the usage of Room EQ Wizard is out of the scope of this document, but here is the basic process:
+
+1. Click the "Measure" button in the toolbar (Mark A in the above screenshot) to bring up the measurement dialog. Here you should first do "Check Levels" and adjust your output volume appropriately, then "Start Measuring". After the measurement, the dialog will close automatically and a frequency response graph is shown.
+2. Click the "EQ" button (Mark B) in the toolbar. Here you can select an equalizer type (Mark C). Use either "Generic" or, if you prefer bandwidth instead of Q, the "FBQ2496" equalizer type. Beware that no other equalizer types are currently supported.
+3. Click the "EQ Filters" button (Mark D) in the EQ window. Now you can add filters by setting "Control" to Manual, "Type" to PK/PEQ and then adjusting "Frequency", "Gain" and "Q"/"Bw Oct" to your needs. The graph in the EQ window will directly show the filter's frequency response.
+4. To save the filter settings, you should first use the "Save this filter set" button (Mark E) in the EQ Filters window. This will save the settings in a format that Room EQ Wizard can read back later when you need to make further adjustments.
+5. Now save the filter settings in a format that Equalizer APO can read. To do this, go to the main window of Room EQ Wizard. Open the "File" menu (Mark F) and select "Export" -> "Filter Settings as text". Save under a new filename into C:\\Program Files\\EqualizerAPO\\config .
+6. Open C:\\Program Files\\EqualizerAPO\\config\\config.txt in a text editor and change the "Include" line to refer to your newly created configuration file. The change should be effective immediately.
+
+Congratulations, you have now created your first configuration for Equalizer APO.
+
+# Configuration file format
+
+The configuration files of Equalizer APO are organized as lines of the following format:
+
+	Command: Parameters
+
+Example:
+
+	Preamp: -6 db
+	Include: example.txt
+	Filter  1: ON  PK       Fc     50 Hz   Gain  -3.0 dB  Q 10.00
+	Filter  2: ON  PEQ      Fc     100 Hz  Gain   1.0 dB  BW Oct 0.167
+
+All lines not conforming to this format are silently ignored.
+
+The commands currently defined are:
+
+Command | Parameters | Description
+-|-|-
+Preamp | ***Negative number*** db | Sets a preamplification value in decibels. This is useful when you are using filters with positive gain, to make sure that no clipping occurs.
+Include | ***File name*** | Loads the given file as a configuration file. Instead of directly replacing config.txt, it can be better to load the actual filter definition from a separate file so that you can e.g. set a preamp before.
+Filter ***n*** | ON PK Fc ***Frequency*** Hz Gain ***Gain value*** dB Q ***Q value*** | Adds a parametric equalization filter with the given frequency, gain and Q. This is the filter text format used by Room EQ Wizard for equalizer type "Generic".
+Filter ***n*** | ON PEQ Fc ***Frequency*** Hz Gain ***Gain value*** dB BW Oct ***Bandwidth value*** | Adds a parametric equalization filter with the given frequency, gain and bandwidth. This is the filter text format used by Room EQ Wizard for equalizer type "FBQ2496".
+
+Lines that contain any command name not in this list are silently ignored.
