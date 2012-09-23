@@ -1,2 +1,2 @@
-Preamp: -6 db
+Preamp: -6 dB
 Include: example.txt
