@@ -20,6 +20,7 @@
 #include <cstdio>
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <string>
 #include <sndfile.h>
 
 #include "../ParametricEQ.h"
@@ -41,6 +42,11 @@ int main(int argc, char** argv)
 		SF_INFO info;
 		printf("Reading sound data from %s\n", argv[1]);
 		SNDFILE* inFile = sf_open(argv[1], SFM_READ, &info);
+		if(inFile == NULL)
+		{
+			fprintf(stderr, "%s", sf_strerror(inFile));
+			return 1;
+		}
 
 		sampleRate = info.samplerate;
 		channelCount = info.channels;
@@ -70,14 +76,15 @@ int main(int argc, char** argv)
 		buf = new float[frameCount * channelCount];
 
 		for(unsigned i=0;i<frameCount;i++)
-		{
-			float t=(i*1.0f / sampleRate);
+			for(unsigned j=0;j<channelCount;j++)
+			{
+				float t=(i*1.0f / sampleRate);
 
-			buf[i] = sin(((sweepFrom + sweepDiff*(t/length)/2)*t)*2*(float)M_PI);
-		}
+				buf[i*channelCount + j] = sin(((sweepFrom + sweepDiff*(t/length)/2)*t)*2*(float)M_PI);
+			}
 	}
 
-	printf("Processing %d frames from %d channels\n", frameCount, channelCount);
+	printf("Processing %d frames from %d channel(s)\n", frameCount, channelCount);
 
 	ParametricEQ peq;
 	peq.initialize((float)sampleRate, channelCount);
@@ -94,13 +101,27 @@ int main(int argc, char** argv)
 
 	printf("%d samples processed in %f seconds\n", frameCount * channelCount, time);
 
-	const char* outPath = "testout.wav";
+	string outPath;
 	if(argc >= 3 && strlen(argv[2]) > 0)
 		outPath = argv[2];
-	printf("Writing output to %s\n", outPath);
+	else
+	{
+		char temp[255];
+		GetTempPathA(sizeof(temp)/sizeof(wchar_t), temp);
+
+		outPath = temp;
+		outPath += "testout.wav";
+	}
+
+	printf("Writing output to %s\n", outPath.c_str());
 
 	SF_INFO info = {frameCount, sampleRate, channelCount, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 0};
-	SNDFILE* outFile = sf_open(outPath, SFM_WRITE, &info);
+	SNDFILE* outFile = sf_open(outPath.c_str(), SFM_WRITE, &info);
+	if(outFile == NULL)
+	{
+		fprintf(stderr, "%s", sf_strerror(outFile));
+		return 1;
+	}
 
 	sf_count_t numWritten = 0;
 	while(numWritten < frameCount)
@@ -110,6 +131,9 @@ int main(int argc, char** argv)
 	outFile = NULL;
 
 	delete[] buf;
+
+	if(argc < 3)
+		system("pause");
 
 	return 0;
 }
