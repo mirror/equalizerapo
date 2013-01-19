@@ -18,6 +18,7 @@
 */
 
 #include <fstream>
+#include <sstream>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <ObjBase.h>
@@ -209,6 +210,34 @@ wstring RegistryHelper::getGuidString(GUID guid)
 	CoTaskMemFree(temp);
 
 	return result;
+}
+
+wstring RegistryHelper::replaceIllegalCharacters(wstring filename)
+{
+	wstringstream stream;
+
+	for(unsigned i=0; i<filename.length(); i++)
+	{
+		wchar_t c = filename[i];
+		switch(c)
+		{
+		case L'<':
+		case L'>':
+		case L':':
+		case L'"':
+		case L'/':
+		case L'\\':
+		case L'|':
+		case L'?':
+		case L'*':
+			stream.put(L'_');
+			break;
+		default:
+			stream.put(c);
+		}
+	}
+
+	return stream.str();
 }
 
 wstring RegistryHelper::getSystemErrorString(long status)

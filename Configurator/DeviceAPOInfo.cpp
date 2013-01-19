@@ -68,7 +68,8 @@ void DeviceAPOInfo::install()
 
 	RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs", deviceGuid, originalApoGuid);
 
-	RegistryHelper::saveToFile(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName, L"backup_" + deviceName + L"_" + connectionName + L".reg");
+	RegistryHelper::saveToFile(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName,
+		L"backup_" + RegistryHelper::replaceIllegalCharacters(deviceName) + L"_" + RegistryHelper::replaceIllegalCharacters(connectionName) + L".reg");
 
 	RegistryHelper::writeValue(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName, RegistryHelper::getGuidString(__uuidof(EqualizerAPO)));
 }

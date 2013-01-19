@@ -38,6 +38,7 @@ public:
 	static unsigned long valueCount(std::wstring key);
 	static void saveToFile(std::wstring key, std::wstring valuename, std::wstring filepath);
 	static std::wstring getGuidString(GUID guid);
+	static std::wstring replaceIllegalCharacters(std::wstring filename);
 
 private:
 	static std::wstring getSystemErrorString(long status);
