@@ -19,15 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\DeviceAPOInfo.h" />
     <ClInclude Include="..\RegistryHelper.h" />
+    <ClInclude Include="..\StringHelper.h" />
     <ClInclude Include="Configurator.h" />
-    <ClInclude Include="DeviceAPOInfo.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\DeviceAPOInfo.cpp" />
     <ClCompile Include="..\RegistryHelper.cpp" />
+    <ClCompile Include="..\StringHelper.cpp" />
     <ClCompile Include="Configurator.cpp" />
-    <ClCompile Include="DeviceAPOInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Configurator.rc" />

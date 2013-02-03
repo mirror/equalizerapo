@@ -26,6 +26,7 @@ class DeviceAPOInfo
 {
 public:
 	static std::vector<DeviceAPOInfo> loadAllInfos();
+	bool load(const std::wstring& deviceGuid);
 	void install();
 	void uninstall();
 

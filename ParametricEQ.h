@@ -36,15 +36,19 @@ public:
 	ParametricEQ();
 	~ParametricEQ();
 
+	void setDeviceInfo(const std::wstring& deviceName, const std::wstring& connectionName, const std::wstring& deviceGuid);
 	void initialize(float sampleRate, unsigned channelCount);
 	void loadConfig();
 	void process(float *output, float *input, unsigned frameCount);
 
 private:
 	void loadConfig(std::wstring path, unsigned& loadFilterCount, float& loadPreamp);
-	float getFreq(char* freqString);
+	float getFreq(const std::wstring& freqString);
 	static unsigned long __stdcall notificationThread(void* parameter);
 
+	std::wstring deviceName;
+	std::wstring connectionName;
+	std::wstring deviceGuid;
 	std::wstring configPath;
 	float sampleRate;
 	unsigned channelCount;

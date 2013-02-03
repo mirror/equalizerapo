@@ -1,6 +1,6 @@
 /*
 	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2012  Jonas Thedering
+	Copyright (C) 2013  Jonas Thedering
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -19,28 +19,14 @@
 
 #pragma once
 
-#include "resource.h"
 #include <string>
 #include <vector>
-#include "../DeviceAPOInfo.h"
 
-class Configurator
+class StringHelper
 {
 public:
-	Configurator(HINSTANCE hInstance, const wchar_t* cmdLine);
-	void onInitDialog(HWND hDlg);
-	void onLvnItemChanged(unsigned sourceId, LPNMLISTVIEW info);
-	void onButtonClicked(unsigned sourceId);
-
-private:
-	HINSTANCE hInstance;
-	HWND hDlg;
-	HWND deviceList;
-	HWND okButton;
-	HWND cancelButton;
-	HWND copyDeviceCommandButton;
-	HWND requestLabel;
-	std::wstring cmdLine;
-
-	std::vector<DeviceAPOInfo> apoInfos;
+	static std::wstring replaceCharacters(std::wstring s, std::wstring chars, wchar_t replacement);
+	static std::wstring replaceIllegalCharacters(std::wstring filename);
+	static std::wstring toWString(std::string s, unsigned codepage);
+	static std::wstring toLowerCase(std::wstring s);
 };

@@ -158,20 +158,24 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ClassFactory.h" />
+    <ClInclude Include="DeviceAPOInfo.h" />
     <ClInclude Include="EqualizerAPO.h" />
     <ClInclude Include="LogHelper.h" />
     <ClInclude Include="ParametricEQ.h" />
     <ClInclude Include="RegistryHelper.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="StringHelper.h" />
     <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ClassFactory.cpp" />
+    <ClCompile Include="DeviceAPOInfo.cpp" />
     <ClCompile Include="DllMain.cpp" />
     <ClCompile Include="EqualizerAPO.cpp" />
     <ClCompile Include="LogHelper.cpp" />
     <ClCompile Include="ParametricEQ.cpp" />
     <ClCompile Include="RegistryHelper.cpp" />
+    <ClCompile Include="StringHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EqualizerAPO.def" />

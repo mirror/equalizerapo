@@ -152,12 +152,14 @@
     <ClCompile Include="..\LogHelper.cpp" />
     <ClCompile Include="..\ParametricEQ.cpp" />
     <ClCompile Include="..\RegistryHelper.cpp" />
+    <ClCompile Include="..\StringHelper.cpp" />
     <ClCompile Include="Benchmark.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\LogHelper.h" />
     <ClInclude Include="..\ParametricEQ.h" />
     <ClInclude Include="..\RegistryHelper.h" />
+    <ClInclude Include="..\StringHelper.h" />
     <ClInclude Include="PerformanceCounter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

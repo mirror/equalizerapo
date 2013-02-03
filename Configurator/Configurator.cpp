@@ -20,6 +20,7 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commctrl.h>
+#include "../StringHelper.h"
 #include "../RegistryHelper.h"
 #include "Configurator.h"
 
@@ -41,10 +42,14 @@ void Configurator::onInitDialog(HWND hDlg)
 	okButton = GetDlgItem(hDlg, IDOK);
 	cancelButton = GetDlgItem(hDlg, IDCANCEL);
 	requestLabel = GetDlgItem(hDlg, IDC_REQUEST);
+	copyDeviceCommandButton = GetDlgItem(hDlg, IDC_COPY_DEVICE_COMMAND);
 
 	wchar_t stringBuf[255];
 	LoadStringW(hInstance, IDS_REQUEST, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 	SetWindowTextW(requestLabel, stringBuf);
+
+	LoadStringW(hInstance, IDS_COPY_DEVICE_COMMAND, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+	SetWindowTextW(copyDeviceCommandButton, stringBuf);
 
 	ListView_SetExtendedListViewStyle(deviceList, ListView_GetExtendedListViewStyle(deviceList) | LVS_EX_CHECKBOXES);
 	LVCOLUMN column;
@@ -139,6 +144,8 @@ void Configurator::onLvnItemChanged(unsigned sourceId, LPNMLISTVIEW info)
 		}
 
 		EnableWindow(okButton, changed);
+
+		EnableWindow(copyDeviceCommandButton, ListView_GetSelectedCount(deviceList) > 0);
 	}
 }
 
@@ -168,8 +175,45 @@ void Configurator::onButtonClicked(unsigned sourceId)
 			MessageBoxW(hDlg, e.getMessage().c_str(), L"Error while accessing the registry", MB_ICONERROR | MB_OK);
 		}
 	}
+	else if(sourceId = IDC_COPY_DEVICE_COMMAND)
+	{
+		wstring command = L"Device: ";
 
-	if(cmdLine == L"/i")
+		bool first = true;
+		for(int i = 0; i < ListView_GetItemCount(deviceList); i++)
+		{
+			LVITEM item;
+			item.iItem = i;
+			item.iSubItem = 0;
+			item.mask = LVIF_PARAM | LVIF_STATE;
+			item.stateMask = LVIS_SELECTED;
+			ListView_GetItem(deviceList, &item);
+
+			if(item.state & LVIS_SELECTED)
+			{
+				if(first)
+					first = false;
+				else
+					command += L"; ";
+
+				DeviceAPOInfo info = apoInfos[item.lParam];
+				command += StringHelper::replaceCharacters(info.deviceName + L" " + info.connectionName + L" " + info.deviceGuid, L";", L' ');
+			}
+		}
+
+		OpenClipboard(hDlg);
+
+		HGLOBAL hData = GlobalAlloc(GMEM_MOVEABLE, (command.length() + 1) * sizeof(wchar_t)); 
+		wchar_t* data = (wchar_t*)GlobalLock(hData);
+		memcpy(data, command.c_str(), (command.length() + 1) * sizeof(wchar_t)); 
+	    GlobalUnlock(data); 
+ 
+		SetClipboardData(CF_UNICODETEXT, hData); 
+
+		CloseClipboard();
+	}
+
+	if((sourceId == IDOK || sourceId == IDCANCEL) && cmdLine == L"/i")
 	{
 		wchar_t stringBuf[255];
 		LoadStringW(hInstance, IDS_AFTERINSTALL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
@@ -229,10 +273,10 @@ INT_PTR CALLBACK dlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
+		configurator->onButtonClicked(LOWORD(wParam));
+
 		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
 		{
-			configurator->onButtonClicked(LOWORD(wParam));
-
 			EndDialog(hDlg, LOWORD(wParam));
 			return (INT_PTR)TRUE;
 		}

@@ -87,6 +87,7 @@ int main(int argc, char** argv)
 	printf("Processing %d frames from %d channel(s)\n", frameCount, channelCount);
 
 	ParametricEQ peq;
+	peq.setDeviceInfo(L"Benchmark", L"File output", L"");
 	peq.initialize((float)sampleRate, channelCount);
 
 	PrecisionTimer timer;

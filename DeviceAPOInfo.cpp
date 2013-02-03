@@ -19,9 +19,10 @@
 
 #include "DeviceAPOInfo.h"
 
-#include "../EqualizerAPO.h"
-#include "../ParametricEQ.h"
-#include "../RegistryHelper.h"
+#include "EqualizerAPO.h"
+#include "ParametricEQ.h"
+#include "StringHelper.h"
+#include "RegistryHelper.h"
 
 using namespace std;
 
@@ -38,28 +39,33 @@ vector<DeviceAPOInfo> DeviceAPOInfo::loadAllInfos()
 	{
 		wstring deviceGuidString = *it;
 
-		if(!RegistryHelper::keyExists(renderKeyPath L"\\" + deviceGuidString + L"\\FxProperties"))
-			continue;
-
-		wstring connectionName = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuidString + L"\\Properties", connectionValueName);
-		wstring deviceName = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuidString + L"\\Properties", deviceValueName);
-		wstring apoGuidString = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuidString + L"\\FxProperties", apoGuidValueName);
-
-		GUID apoGuid;
-		if(!SUCCEEDED(CLSIDFromString(apoGuidString.c_str(), &apoGuid)))
-			continue;
-
-		bool installed = false;
-		if(apoGuid == __uuidof(EqualizerAPO))
-		{
-			installed = true;
-		}
-
-		DeviceAPOInfo info = {deviceName, connectionName, deviceGuidString, apoGuidString, installed};
-		result.push_back(info);
+		DeviceAPOInfo info;
+		if(info.load(deviceGuidString))
+			result.push_back(info);
 	}
 
 	return result;
+}
+
+bool DeviceAPOInfo::load(const wstring& deviceGuid)
+{
+	if(!RegistryHelper::keyExists(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties"))
+		return false;
+
+	this->deviceGuid = deviceGuid;
+	connectionName = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuid + L"\\Properties", connectionValueName);
+	deviceName = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuid + L"\\Properties", deviceValueName);
+	originalApoGuid = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName);
+
+	GUID apoGuid;
+	if(!SUCCEEDED(CLSIDFromString(originalApoGuid.c_str(), &apoGuid)))
+		return false;
+
+	isInstalled = false;
+	if(apoGuid == __uuidof(EqualizerAPO))
+		isInstalled = true;
+
+	return true;
 }
 
 void DeviceAPOInfo::install()
@@ -69,7 +75,7 @@ void DeviceAPOInfo::install()
 	RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs", deviceGuid, originalApoGuid);
 
 	RegistryHelper::saveToFile(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName,
-		L"backup_" + RegistryHelper::replaceIllegalCharacters(deviceName) + L"_" + RegistryHelper::replaceIllegalCharacters(connectionName) + L".reg");
+		L"backup_" + StringHelper::replaceIllegalCharacters(deviceName) + L"_" + StringHelper::replaceIllegalCharacters(connectionName) + L".reg");
 
 	RegistryHelper::writeValue(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName, RegistryHelper::getGuidString(__uuidof(EqualizerAPO)));
 }

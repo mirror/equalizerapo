@@ -22,10 +22,12 @@
 #include <cmath>
 #include <string>
 #include <fstream>
+#include <sstream>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <Shlwapi.h>
 
+#include "StringHelper.h"
 #include "RegistryHelper.h"
 #include "LogHelper.h"
 #include "ParametricEQ.h"
@@ -75,6 +77,13 @@ ParametricEQ::~ParametricEQ()
 		CloseHandle(threadHandle);
 		threadHandle = NULL;
 	}
+}
+
+void ParametricEQ::setDeviceInfo(const wstring& deviceName, const wstring& connectionName, const wstring& deviceGuid)
+{
+	this->deviceName = deviceName;
+	this->connectionName = connectionName;
+	this->deviceGuid = deviceGuid;
 }
 
 void ParametricEQ::initialize(float sampleRate, unsigned channelCount)
@@ -135,32 +144,95 @@ void ParametricEQ::loadConfig(wstring path, unsigned& loadFilterCount, float& lo
 		return;
 	}
 
+	boolean deviceMatches = true;
+	wstring deviceString = StringHelper::toLowerCase(deviceName + L" " + connectionName + L" " + deviceGuid);
+
 	while(!inputStream.eof())
 	{
-		string line;
-		getline(inputStream, line);
+		string encodedLine;
+		getline(inputStream, encodedLine);
 
-		size_t pos = line.find(':');
+		wstring line = StringHelper::toWString(encodedLine, CP_UTF8);
+		if(line.find(L'\uFFFD') != -1)
+			line = StringHelper::toWString(encodedLine, CP_ACP);
+
+		size_t pos = line.find(L':');
 		if(pos != -1)
 		{
-			string key = line.substr(0, pos);
-			string value = line.substr(pos + 1);
+			wstring key = line.substr(0, pos);
+			wstring value = line.substr(pos + 1);
 
-			//Conversion to period as decimal mark, if needed
-			for(unsigned i=0;i<value.length();i++)
+			if(key == L"Device")
 			{
-				if(value[i] == ',')
-					value[i] = '.';
+				value = value + L";";
+
+				vector<vector<wstring>> fullList;
+				vector<wstring> currentList;
+				wstring currentWord;
+
+				for(unsigned i=0; i<value.length(); i++)
+				{
+					wchar_t c = value[i];
+					if(c == L' ' || c == L';')
+					{
+						if(currentWord.length() > 0)
+						{
+							currentList.push_back(currentWord);
+							currentWord.clear();
+						}
+						if(c == L';' && currentList.size() > 0)
+						{
+							fullList.push_back(currentList);
+							currentList.clear();
+						}
+					}
+					else
+					{
+						currentWord += value[i];
+					}
+				}
+
+				boolean matches = false;
+
+				for(unsigned i=0; i<fullList.size(); i++)
+				{
+					matches = true;
+
+					if(fullList[i].size() == 1 && StringHelper::toLowerCase(fullList[i][0]) == L"all")
+						break;
+
+					for(unsigned j=0; j<fullList[i].size(); j++)
+					{
+						wstring word = StringHelper::toLowerCase(fullList[i][j]);
+						if(deviceString.find(word) == -1)
+						{
+							matches = false;
+							break;
+						}
+					}
+
+					if(matches)
+						break;
+				}
+
+				TraceF(L"%satching device \"%s\" \"%s\" \"%s\" with pattern \"%s\"", matches ? L"M" : L"Not m", deviceName.c_str(), connectionName.c_str(), deviceGuid.c_str(), value.c_str());
+				deviceMatches = matches;
 			}
 
-			if(key.find("Filter") == 0)
+			if(!deviceMatches)
+				continue;
+
+			if(key.find(L"Filter") == 0)
 			{
+				//Conversion to period as decimal mark, if needed
+				value = StringHelper::replaceCharacters(value, L",", L'.');
+
 				if(loadFilterCount < (sizeof(filters)/sizeof(BiQuad)))
 				{
-					char freqString[10];
+					wchar_t freqString[10];
 					float freq, gain, bandwidth;
 				
-					int matched = sscanf_s(value.c_str(), " ON PEQ Fc %9s Hz Gain %f dB BW Oct %f", &freqString, 10, &gain, &bandwidth);
+					int matched = swscanf_s(value.c_str(), L" ON PEQ Fc %9s Hz Gain %f dB BW Oct %f", &freqString, 10, &gain, &bandwidth);
 					if(matched == 3 && (freq = getFreq(freqString)) != -1.0f)
 					{
 						filters[loadFilterCount++] = BiQuad(gain, freq, sampleRate, bandwidth, false);
@@ -169,7 +241,7 @@ void ParametricEQ::loadConfig(wstring path, unsigned& loadFilterCount, float& lo
 					else
 					{
 						float q;
-						matched = sscanf_s(value.c_str(), " ON PK Fc %9s Hz Gain %f dB Q %f", &freqString, 10, &gain, &q);
+						matched = swscanf_s(value.c_str(), L" ON PK Fc %9s Hz Gain %f dB Q %f", &freqString, 10, &gain, &q);
 						if(matched == 3 && (freq = getFreq(freqString)) != -1.0f)
 						{
 							filters[loadFilterCount++] = BiQuad(gain, freq, sampleRate, q, true);
@@ -178,42 +250,39 @@ void ParametricEQ::loadConfig(wstring path, unsigned& loadFilterCount, float& lo
 					}
 				}
 			}
-			else if(key == "Preamp")
+			else if(key == L"Preamp")
 			{
+				//Conversion to period as decimal mark, if needed
+				value = StringHelper::replaceCharacters(value, L",", L'.');
+
 				float preamp_dB;
-				int matched = sscanf_s(value.c_str(), " %f dB", &preamp_dB);
+				int matched = swscanf_s(value.c_str(), L" %f dB", &preamp_dB);
 				if(matched == 1)
 				{
 					loadPreamp = pow(10.0f, preamp_dB / 20.0f);
 					TraceF(L"Setting preamp to %g dB", preamp_dB);
 				}
 			}
-			else if(key == "Include")
+			else if(key == L"Include")
 			{
 				while(value.length() > 0 && iswspace(value[0]))
 					value = value.substr(1);
 
-				int length = MultiByteToWideChar(CP_UTF8, 0, value.c_str(), -1, NULL, 0);
-				wchar_t* charBuf = new wchar_t[length];
-				MultiByteToWideChar(CP_UTF8, 0, value.c_str(), -1, charBuf, length);
-
 				wstring includePath;
-				if(PathIsRelativeA(value.c_str()))
+				if(PathIsRelativeW(value.c_str()))
 				{
 					wchar_t filePath[MAX_PATH];
 					path._Copy_s(filePath, sizeof(filePath), MAX_PATH);
 					if(path.size() < MAX_PATH)
-						filePath[path.size()]=L'\0';
+						filePath[path.size()] = L'\0';
 					else
-						filePath[MAX_PATH - 1]=L'\0';
+						filePath[MAX_PATH - 1] = L'\0';
 					PathRemoveFileSpecW(filePath);
-					PathAppendW(filePath, charBuf);
+					PathAppendW(filePath, value.c_str());
 					includePath = filePath;
 				}
 				else
-					includePath = charBuf;
-
-				delete charBuf;
+					includePath = value;
 
 				loadConfig(includePath, loadFilterCount, loadPreamp);
 			}
@@ -282,16 +351,15 @@ void ParametricEQ::process(float *output, float *input, unsigned frameCount)
         }
 }
 
-float ParametricEQ::getFreq(char* freqString)
+float ParametricEQ::getFreq(const wstring& freqString)
 {
-	size_t len = strlen(freqString);
 	float result;
-	int matched = sscanf_s(freqString, "%f", &result);
+	int matched = swscanf_s(freqString.c_str(), L"%f", &result);
 	if(matched == 1)
 	{
-		if(len >= 5)
+		if(freqString.length() >= 5)
 		{
-			if(freqString[len - 4] == '.')
+			if(freqString[freqString.length() - 4] == L'.')
 			{
 				//Interpret as thousands separator because of Room EQ Wizard
 				result *= 1000.0f;

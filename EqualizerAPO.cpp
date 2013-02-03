@@ -24,6 +24,7 @@
 
 #include "LogHelper.h"
 #include "RegistryHelper.h"
+#include "DeviceAPOInfo.h"
 #include "EqualizerAPO.h"
 
 using namespace std;
@@ -109,7 +110,12 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 		LogF(L"Can't read endpoint guid");
 		return hr;
 	}
-	TraceF(L"Endpoint GUID: %s", var.pwszVal);
+	wstring deviceGuid = var.pwszVal;
+	TraceF(L"Endpoint GUID: %s", deviceGuid.c_str());
+
+	DeviceAPOInfo apoInfo;
+	if(apoInfo.load(deviceGuid))
+		peq.setDeviceInfo(apoInfo.deviceName, apoInfo.connectionName, apoInfo.deviceGuid);
 
 	wstring apoGuid;
 	try
