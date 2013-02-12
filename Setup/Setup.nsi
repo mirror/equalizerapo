@@ -1,4 +1,7 @@
 !include "MUI2.nsh"
+!include "NSISpcre.nsh"
+
+!insertmacro REReplace
 
 !searchparse /file ..\version.h `#define MAJOR ` MAJOR
 !searchparse /file ..\version.h `#define MINOR ` MINOR
@@ -74,6 +77,12 @@ Function .onInit
   ;Use default installation folder otherwise
   StrCmp $INSTDIR "" 0 +2
     StrCpy $INSTDIR "$PROGRAMFILES64\EqualizerAPO"
+    
+  !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
+  ;Try to replace version number in start menu folder
+  ${REReplace} $0 "Equalizer APO [0-9]+\.[0-9]+" "$StartMenuFolder" "Equalizer APO ${MAJOR}.${MINOR}" 1
+  StrCmp $0 "" +2 0
+    StrCpy $StartMenuFolder "$0"
   
   Call initCheck
 FunctionEnd
@@ -130,6 +139,7 @@ Section "Install" SecInstall
   !insertmacro MUI_STARTMENU_WRITE_END
   
   WriteRegStr HKLM ${UNINST_REGPATH} "DisplayName" "Equalizer APO"
+  WriteRegStr HKLM ${UNINST_REGPATH} "DisplayVersion" "${MAJOR}.${MINOR}"
   WriteRegStr HKLM ${UNINST_REGPATH} "UninstallString" '"$INSTDIR\Uninstall.exe"'
   WriteRegDWORD HKLM ${UNINST_REGPATH} "NoModify" 1
   WriteRegDWORD HKLM ${UNINST_REGPATH} "NoRepair" 1

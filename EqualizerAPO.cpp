@@ -130,47 +130,51 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 
 	TraceF(L"Child APO GUID: %s", apoGuid.c_str());
 
-	GUID childGuid;
-	hr = CLSIDFromString(apoGuid.c_str(), &childGuid);
-	if(FAILED(hr))
+	if(apoGuid != APOGUID_NOKEY)
 	{
-		LogF(L"Can't convert guid string to guid");
-		return hr;
+		GUID childGuid;
+		hr = CLSIDFromString(apoGuid.c_str(), &childGuid);
+		if(FAILED(hr))
+		{
+			LogF(L"Can't convert guid string to guid");
+			return hr;
+		}
+
+		hr = CoCreateInstance(childGuid, NULL, CLSCTX_INPROC_SERVER, __uuidof(IAudioProcessingObject), (void**)&childAPO);
+		if(FAILED(hr))
+		{
+			LogF(L"Error in CoCreateInstance for child apo");
+			resetChild();
+			return hr;
+		}
+
+		hr = childAPO->QueryInterface(__uuidof(IAudioProcessingObjectRT), (void**)&childRT);
+		if(FAILED(hr))
+		{
+			LogF(L"Error in QueryInterface for child apo RT");
+			resetChild();
+			return hr;
+		}
+
+		hr = childAPO->QueryInterface(__uuidof(IAudioProcessingObjectConfiguration), (void**)&childCfg);
+		if(FAILED(hr))
+		{
+			LogF(L"Error in QueryInterface for child apo configuration");
+			resetChild();
+			return hr;
+		}
+
+		hr = childAPO->Initialize(cbDataSize, pbyData);
+		if(FAILED(hr))
+		{
+			LogF(L"Error in Initialize of child apo");
+			resetChild();
+			return hr;
+		}
+
+		TraceF(L"Successfully created and initialized child APO");
 	}
 
-    hr = CoCreateInstance(childGuid, NULL, CLSCTX_INPROC_SERVER, __uuidof(IAudioProcessingObject), (void**)&childAPO);
-	if(FAILED(hr))
-	{
-		LogF(L"Error in CoCreateInstance for child apo");
-	    resetChild();
-		return hr;
-	}
-
-    hr = childAPO->QueryInterface(__uuidof(IAudioProcessingObjectRT), (void**)&childRT);
-	if(FAILED(hr))
-	{
-		LogF(L"Error in QueryInterface for child apo RT");
-	    resetChild();
-		return hr;
-	}
-
-    hr = childAPO->QueryInterface(__uuidof(IAudioProcessingObjectConfiguration), (void**)&childCfg);
-	if(FAILED(hr))
-	{
-		LogF(L"Error in QueryInterface for child apo configuration");
-	    resetChild();
-		return hr;
-	}
-
-    hr = childAPO->Initialize(cbDataSize, pbyData);
-	if(FAILED(hr))
-	{
-		LogF(L"Error in Initialize of child apo");
-	    resetChild();
-		return hr;
-	}
-
-	TraceF(L"Successfully created and initialized child APO");
     return hr;
 }
 

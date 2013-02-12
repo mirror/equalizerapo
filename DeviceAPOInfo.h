@@ -22,6 +22,8 @@
 #include <string>
 #include <vector>
 
+#define APOGUID_NOKEY L"!KEY"
+
 class DeviceAPOInfo
 {
 public:

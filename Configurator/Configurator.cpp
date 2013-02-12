@@ -89,6 +89,11 @@ void Configurator::onInitDialog(HWND hDlg)
 				LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 				ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
 			}
+			else if(it->originalApoGuid == APOGUID_NOKEY)
+			{
+				LoadStringW(hInstance, IDS_CAN_BE_INSTALLED_EXPERIMENTAL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+				ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
+			}
 			else
 			{
 				LoadStringW(hInstance, IDS_CAN_BE_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));

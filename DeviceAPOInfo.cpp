@@ -30,6 +30,7 @@ using namespace std;
 static const wchar_t* connectionValueName = L"{a45c254e-df1c-4efd-8020-67d146a850e0},2";
 static const wchar_t* deviceValueName = L"{b3f8fa53-0004-438e-9003-51a46e139bfc},6";
 static const wchar_t* apoGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},1";
+static const wchar_t* fxTitleValueName = L"{b725f130-47ef-101a-a5f1-02608c9eebac},10";
 
 vector<DeviceAPOInfo> DeviceAPOInfo::loadAllInfos()
 {
@@ -49,21 +50,32 @@ vector<DeviceAPOInfo> DeviceAPOInfo::loadAllInfos()
 
 bool DeviceAPOInfo::load(const wstring& deviceGuid)
 {
-	if(!RegistryHelper::keyExists(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties"))
-		return false;
-
 	this->deviceGuid = deviceGuid;
 	connectionName = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuid + L"\\Properties", connectionValueName);
 	deviceName = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuid + L"\\Properties", deviceValueName);
-	originalApoGuid = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName);
-
-	GUID apoGuid;
-	if(!SUCCEEDED(CLSIDFromString(originalApoGuid.c_str(), &apoGuid)))
-		return false;
 
 	isInstalled = false;
-	if(apoGuid == __uuidof(EqualizerAPO))
-		isInstalled = true;
+
+	if(!RegistryHelper::keyExists(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties"))
+	{
+		unsigned long deviceState = RegistryHelper::readDWORDValue(renderKeyPath L"\\" + deviceGuid, L"DeviceState");
+		if(deviceState == 0x10000004)
+			// Ignore special internal devices
+			return false;
+
+		originalApoGuid = APOGUID_NOKEY;
+	}
+	else
+	{
+		originalApoGuid = RegistryHelper::readValue(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName);
+
+		GUID apoGuid;
+		if(!SUCCEEDED(CLSIDFromString(originalApoGuid.c_str(), &apoGuid)))
+			return false;
+
+		if(apoGuid == __uuidof(EqualizerAPO))
+			isInstalled = true;
+	}
 
 	return true;
 }
@@ -74,8 +86,28 @@ void DeviceAPOInfo::install()
 
 	RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs", deviceGuid, originalApoGuid);
 
-	RegistryHelper::saveToFile(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName,
-		L"backup_" + StringHelper::replaceIllegalCharacters(deviceName) + L"_" + StringHelper::replaceIllegalCharacters(connectionName) + L".reg");
+	if(originalApoGuid == APOGUID_NOKEY)
+	{
+		try
+		{
+			RegistryHelper::createKey(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties");
+		}
+		catch(RegistryException e)
+		{
+			// Permissions were not sufficient, so change them
+			RegistryHelper::takeOwnership(renderKeyPath L"\\" + deviceGuid);
+			RegistryHelper::makeWritable(renderKeyPath L"\\" + deviceGuid);
+
+			RegistryHelper::createKey(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties");
+		}
+
+		RegistryHelper::writeValue(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", fxTitleValueName, L"Equalizer APO");
+	}
+	else
+	{
+		RegistryHelper::saveToFile(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName,
+			L"backup_" + StringHelper::replaceIllegalCharacters(deviceName) + L"_" + StringHelper::replaceIllegalCharacters(connectionName) + L".reg");
+	}
 
 	RegistryHelper::writeValue(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName, RegistryHelper::getGuidString(__uuidof(EqualizerAPO)));
 }
@@ -84,7 +116,10 @@ void DeviceAPOInfo::uninstall()
 {
 	wstring originalChildApoGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs", deviceGuid);
 
-	RegistryHelper::writeValue(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName, originalChildApoGuid);
+	if(originalChildApoGuid == APOGUID_NOKEY)
+		RegistryHelper::deleteKey(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties");
+	else
+		RegistryHelper::writeValue(renderKeyPath L"\\" + deviceGuid + L"\\FxProperties", apoGuidValueName, originalChildApoGuid);
 
 	RegistryHelper::deleteValue(APP_REGPATH L"\\Child APOs", deviceGuid);
 
