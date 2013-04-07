@@ -51,6 +51,12 @@ void Configurator::onInitDialog(HWND hDlg)
 	LoadStringW(hInstance, IDS_COPY_DEVICE_COMMAND, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 	SetWindowTextW(copyDeviceCommandButton, stringBuf);
 
+	LoadStringW(hInstance, IDS_OK, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+	SetWindowTextW(okButton, stringBuf);
+
+	LoadStringW(hInstance, IDS_CANCEL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+	SetWindowTextW(cancelButton, stringBuf);
+
 	ListView_SetExtendedListViewStyle(deviceList, ListView_GetExtendedListViewStyle(deviceList) | LVS_EX_CHECKBOXES);
 	LVCOLUMN column;
 	column.pszText = stringBuf;
