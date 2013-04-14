@@ -26,6 +26,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <Shlwapi.h>
+#include <Ks.h>
+#include <KsMedia.h>
 
 #include "StringHelper.h"
 #include "RegistryHelper.h"
@@ -52,20 +54,30 @@ BiQuad::BiQuad(float dbGain, float freq, float srate, float bandwidthOrQ, bool i
     a[1] = (1 - (alpha * A)) / temp;
     a[2] = - (-2 * cs) / temp;
     a[3] = - (1 - (alpha /A)) / temp;
+
+	x1 = 0;
+	x2 = 0;
+	y1 = 0;
+	y2 = 0;
+}
+
+ChannelData::ChannelData()
+{
+	preamp = 1.0f;
+	filterCount = 0;
 }
 
 ParametricEQ::ParametricEQ()
 {
-    filterCount = 0;
 	channelCount = 0;
-	preamp = 1.0f;
-    memset(sampleData, 0, 1000 * sizeof(float));
+	channelData = NULL;
 	lastInputWasSilent = false;
 	threadHandle = NULL;
 }
 
 ParametricEQ::~ParametricEQ()
 {
+	// Make sure notification thread is terminated before cleaning up, otherwise deleted memory might be accessed in loadConfig
 	if(threadHandle != NULL)
 	{
 		SetEvent(shutdownEvent);
@@ -77,6 +89,12 @@ ParametricEQ::~ParametricEQ()
 		CloseHandle(threadHandle);
 		threadHandle = NULL;
 	}
+
+	if(channelData != NULL)
+	{
+		delete[] channelData;
+		channelData = NULL;
+	}
 }
 
 void ParametricEQ::setDeviceInfo(const wstring& deviceName, const wstring& connectionName, const wstring& deviceGuid)
@@ -86,13 +104,34 @@ void ParametricEQ::setDeviceInfo(const wstring& deviceName, const wstring& conne
 	this->deviceGuid = deviceGuid;
 }
 
-void ParametricEQ::initialize(float sampleRate, unsigned channelCount)
+void ParametricEQ::initialize(float sampleRate, unsigned channelCount, unsigned channelMask)
 {
 	this->sampleRate = sampleRate;
     this->channelCount = channelCount;
-	memset(sampleData, 0, 1000 * sizeof(float));
-    filterCount = 0;
-	preamp = 1.0f;
+	channelData = new ChannelData[channelCount];
+
+	if(channelMask == 0)
+	{
+		switch(channelCount)
+		{
+		case 1:
+			channelMask = KSAUDIO_SPEAKER_MONO;
+			break;
+		case 2:
+			channelMask = KSAUDIO_SPEAKER_STEREO;
+			break;
+		case 4:
+			channelMask = KSAUDIO_SPEAKER_QUAD;
+			break;
+		case 6:
+			channelMask = KSAUDIO_SPEAKER_5POINT1_SURROUND;
+			break;
+		case 8:
+			channelMask = KSAUDIO_SPEAKER_7POINT1_SURROUND;
+			break;
+		}
+	}
+	this->channelMask = channelMask;
 
 	try
 	{
@@ -123,17 +162,27 @@ void ParametricEQ::initialize(float sampleRate, unsigned channelCount)
 
 void ParametricEQ::loadConfig()
 {
-	unsigned loadFilterCount = 0;
-	float loadPreamp = 1.0f;
+	for(unsigned c=0; c<channelCount; c++)
+	{
+		channelData[c].loadPreamp = 1.0f;
+		channelData[c].loadFilterCount = 0;
+	}
 
-	loadConfig(configPath + L"\\config.txt", loadFilterCount, loadPreamp);
+	vector<bool> selectedChannels(channelCount, true);
+	loadConfig(configPath + L"\\config.txt", selectedChannels);
+
+	unsigned loadFilterCount = 0;
+	for(unsigned c=0; c<channelCount; c++)
+	{
+		channelData[c].preamp = channelData[c].loadPreamp;
+		channelData[c].filterCount = channelData[c].loadFilterCount;
+		loadFilterCount += channelData[c].loadFilterCount;
+	}
 
 	TraceF(L"%d filters loaded", loadFilterCount);
-	preamp = loadPreamp;
-	filterCount = loadFilterCount;
 }
 
-void ParametricEQ::loadConfig(wstring path, unsigned& loadFilterCount, float& loadPreamp)
+void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels)
 {
 	TraceF(L"Loading configuration from %s", path.c_str());
 
@@ -188,7 +237,7 @@ void ParametricEQ::loadConfig(wstring path, unsigned& loadFilterCount, float& lo
 					}
 					else
 					{
-						currentWord += value[i];
+						currentWord += c;
 					}
 				}
 
@@ -222,31 +271,120 @@ void ParametricEQ::loadConfig(wstring path, unsigned& loadFilterCount, float& lo
 			if(!deviceMatches)
 				continue;
 
-			if(key.find(L"Filter") == 0)
+			if(key == L"Channel")
+			{
+				selectedChannels = vector<bool>(channelCount, false);
+
+				value = value + L" ";
+
+				wstring currentWord;
+				for(unsigned i=0; i<value.length(); i++)
+				{
+					wchar_t c = towlower(value[i]);
+
+					if(c == L' ')
+					{
+						if(currentWord.length() > 0)
+						{
+							int channelNr = -1;
+
+							if(currentWord == L"all")
+							{
+								selectedChannels = vector<bool>(channelCount, true);
+							}
+							else if(iswdigit(currentWord[0]))
+							{
+								channelNr = wcstol(currentWord.c_str(), NULL, 10) - 1;
+							}
+							else
+							{
+								int channelPos = -1;
+								if(currentWord == L"l")
+									channelPos = SPEAKER_FRONT_LEFT;
+								else if(currentWord == L"r")
+									channelPos = SPEAKER_FRONT_RIGHT;
+								else if(currentWord == L"c")
+									channelPos = SPEAKER_FRONT_CENTER;
+								else if(currentWord == L"sub")
+									channelPos = SPEAKER_LOW_FREQUENCY;
+								else if(currentWord == L"rl")
+									channelPos = SPEAKER_BACK_LEFT;
+								else if(currentWord == L"rr")
+									channelPos = SPEAKER_BACK_RIGHT;
+								else if(currentWord == L"rc")
+									channelPos = SPEAKER_BACK_CENTER;
+								else if(currentWord == L"sl")
+									channelPos = SPEAKER_SIDE_LEFT;
+								else if(currentWord == L"sr")
+									channelPos = SPEAKER_SIDE_RIGHT;
+								else
+									LogF(L"Invalid channel position %s", currentWord.c_str());
+
+								if(channelPos != -1)
+									channelNr = getChannelNumber(channelPos);
+							}
+
+							if(channelNr != -1 && channelNr < (int)channelCount)
+							{
+								selectedChannels[channelNr] = true;
+							}
+
+							currentWord.clear();
+						}
+					}
+					else
+					{
+						currentWord += c;
+					}
+				}
+
+				wstringstream channelStream;
+				for(unsigned c=0; c<channelCount; c++)
+				{
+					if(selectedChannels[c])
+					{
+						if(channelStream.tellp() > 0)
+							channelStream << L", ";
+						channelStream << c+1;
+					}
+				}
+
+				TraceF(L"Selecting channel(s) %s", channelStream.str().c_str());
+			}
+			else if(key.find(L"Filter") == 0)
 			{
 				//Conversion to period as decimal mark, if needed
 				value = StringHelper::replaceCharacters(value, L",", L'.');
 
-				if(loadFilterCount < (sizeof(filters)/sizeof(BiQuad)))
+				wchar_t freqString[10];
+				float freq, gain, bandwidth;
+
+				int matched = swscanf_s(value.c_str(), L" ON PEQ Fc %9s Hz Gain %f dB BW Oct %f", &freqString, 10, &gain, &bandwidth);
+				if(matched == 3 && (freq = getFreq(freqString)) != -1.0f)
 				{
-					wchar_t freqString[10];
-					float freq, gain, bandwidth;
-				
-					int matched = swscanf_s(value.c_str(), L" ON PEQ Fc %9s Hz Gain %f dB BW Oct %f", &freqString, 10, &gain, &bandwidth);
+					for(unsigned c=0; c<channelCount; c++)
+					{
+						if(selectedChannels[c] && channelData[c].loadFilterCount < (sizeof(channelData[c].filters)/sizeof(BiQuad)))
+						{
+							channelData[c].filters[channelData[c].loadFilterCount++] = BiQuad(gain, freq, sampleRate, bandwidth, false);
+						}
+					}
+					TraceF(L"Adding filter with center frequency %g Hz, gain %g dB and bandwidth %g octaves", freq, gain, bandwidth);
+				}
+				else
+				{
+					float q;
+					matched = swscanf_s(value.c_str(), L" ON PK Fc %9s Hz Gain %f dB Q %f", &freqString, 10, &gain, &q);
 					if(matched == 3 && (freq = getFreq(freqString)) != -1.0f)
 					{
-						filters[loadFilterCount++] = BiQuad(gain, freq, sampleRate, bandwidth, false);
-						TraceF(L"Adding filter with center frequency %g Hz, gain %g dB and bandwidth %g octaves", freq, gain, bandwidth);
-					}
-					else
-					{
-						float q;
-						matched = swscanf_s(value.c_str(), L" ON PK Fc %9s Hz Gain %f dB Q %f", &freqString, 10, &gain, &q);
-						if(matched == 3 && (freq = getFreq(freqString)) != -1.0f)
+						for(unsigned c=0; c<channelCount; c++)
 						{
-							filters[loadFilterCount++] = BiQuad(gain, freq, sampleRate, q, true);
-							TraceF(L"Adding filter with center frequency %g Hz, gain %g dB and Q %g", freq, gain, q);
+							if(selectedChannels[c] && channelData[c].loadFilterCount < (sizeof(channelData[c].filters)/sizeof(BiQuad)))
+							{
+								channelData[c].filters[channelData[c].loadFilterCount++] = BiQuad(gain, freq, sampleRate, q, true);
+							}
 						}
+						TraceF(L"Adding filter with center frequency %g Hz, gain %g dB and Q %g", freq, gain, q);
 					}
 				}
 			}
@@ -259,8 +397,15 @@ void ParametricEQ::loadConfig(wstring path, unsigned& loadFilterCount, float& lo
 				int matched = swscanf_s(value.c_str(), L" %f dB", &preamp_dB);
 				if(matched == 1)
 				{
-					loadPreamp = pow(10.0f, preamp_dB / 20.0f);
-					TraceF(L"Setting preamp to %g dB", preamp_dB);
+					for(unsigned c=0; c<channelCount; c++)
+					{
+						if(selectedChannels[c])
+						{
+							channelData[c].loadPreamp *= pow(10.0f, preamp_dB / 20.0f);
+						}
+					}
+
+					TraceF(L"Adjusting preamp by %g dB", preamp_dB);
 				}
 			}
 			else if(key == L"Include")
@@ -284,13 +429,11 @@ void ParametricEQ::loadConfig(wstring path, unsigned& loadFilterCount, float& lo
 				else
 					includePath = value;
 
-				loadConfig(includePath, loadFilterCount, loadPreamp);
+				loadConfig(includePath, selectedChannels);
 			}
 		}
 	}
 }
-
-#define IS_DENORMAL(f) (((*(unsigned int *)&(f))&0x7f800000) == 0)
 
 void ParametricEQ::process(float *output, float *input, unsigned frameCount)
 {
@@ -322,32 +465,25 @@ void ParametricEQ::process(float *output, float *input, unsigned frameCount)
 		lastInputWasSilent = false;
 
 	//Avoid denormals
-	for(unsigned i = 0; i < (filterCount+1)*channelCount*2; i++)
-		if(IS_DENORMAL(sampleData[i]))
-			sampleData[i] = 0;
+    for (unsigned c=0; c<channelCount; c++)
+    {
+        for(unsigned f=0; f<channelData[c].filterCount; f++)
+		{
+			channelData[c].filters[f].removeDenormals();
+		}
+	}
 
     for (unsigned i = 0; i < frameCount * channelCount; i+=channelCount)
         for (unsigned c=0; c<channelCount; c++)
         {
             float sample = input[i+c];
             
-            for(unsigned f=0; f<filterCount; f++)
+            for(unsigned f=0; f<channelData[c].filterCount; f++)
             {
-                unsigned dataIndex = (c*(filterCount+1) + f)*2;
-                float result = filters[f].a0 * sample + filters[f].a[0] * sampleData[dataIndex] + filters[f].a[1] * sampleData[dataIndex+1] +
-                        filters[f].a[2] * sampleData[dataIndex+2] + filters[f].a[3] * sampleData[dataIndex+3];
-                
-                sampleData[dataIndex+1] = sampleData[dataIndex];
-                sampleData[dataIndex] = sample;
-                
-                //Input for next stage
-                sample = result;
+				sample = channelData[c].filters[f].process(sample);
             }
-            unsigned lastIndex = (c*(filterCount+1) + filterCount)*2;
-            sampleData[lastIndex + 1] = sampleData[lastIndex];
-            sampleData[lastIndex] = sample;
             
-            output[i+c] = sample * preamp;
+            output[i+c] = sample * channelData[c].preamp;
         }
 }
 
@@ -370,6 +506,21 @@ float ParametricEQ::getFreq(const wstring& freqString)
 	}
 	else
 		return -1.0f;
+}
+
+unsigned ParametricEQ::getChannelNumber(unsigned position)
+{
+	if((channelMask & position) == 0)
+		return -1;
+
+	int channelNr = 0;
+	for(unsigned i=1; i<position; i<<=1)
+	{
+		if(channelMask & i)
+			channelNr++;
+	}
+
+	return channelNr;
 }
 
 unsigned long __stdcall ParametricEQ::notificationThread(void* parameter)

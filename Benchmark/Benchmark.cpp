@@ -34,6 +34,7 @@ int main(int argc, char** argv)
 {
 	unsigned sampleRate;
 	unsigned channelCount;
+	unsigned channelMask;
 	unsigned frameCount;
 	float* buf;
 
@@ -50,6 +51,7 @@ int main(int argc, char** argv)
 
 		sampleRate = info.samplerate;
 		channelCount = info.channels;
+		channelMask = 0;
 		frameCount = (unsigned)info.frames;
 
 		buf = new float[frameCount * channelCount];
@@ -65,11 +67,12 @@ int main(int argc, char** argv)
 	{
 		sampleRate = 44100;
 		channelCount = 1;
-		frameCount = 8820000;
+		channelMask = 0;
 		float sweepFrom = 0.1f;
 		float sweepTo = 20000;
 		float sweepDiff = sweepTo - sweepFrom;
 		float length = 200;
+		frameCount = (unsigned)(length * sampleRate);
 
 		printf("No input file given, so generating linear sine sweep from %g to %g Hz over %g seconds\n", sweepFrom, sweepTo, length);
 
@@ -88,7 +91,7 @@ int main(int argc, char** argv)
 
 	ParametricEQ peq;
 	peq.setDeviceInfo(L"Benchmark", L"File output", L"");
-	peq.initialize((float)sampleRate, channelCount);
+	peq.initialize((float)sampleRate, channelCount, channelMask);
 
 	PrecisionTimer timer;
 	timer.start();

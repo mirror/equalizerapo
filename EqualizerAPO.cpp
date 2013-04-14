@@ -195,6 +195,18 @@ HRESULT EqualizerAPO::IsInputFormatSupported(IAudioMediaType* pOutputFormat,
     TraceF(L"RequestedInputFormat = { %08X, %u, %u, %u, %f, %08X }",
 		inFormat.guidFormatType.Data1, inFormat.dwSamplesPerFrame, inFormat.dwBytesPerSampleContainer,
 		inFormat.dwValidBitsPerSample, inFormat.fFramesPerSecond, inFormat.dwChannelMask);
+
+    UNCOMPRESSEDAUDIOFORMAT outFormat;
+    hr = pOutputFormat->GetUncompressedAudioFormat(&outFormat);
+	if(FAILED(hr))
+	{
+		LogF(L"Error in second GetUncompressedAudioFormat");
+		return hr;
+	}
+        
+    TraceF(L"Output format = { %08X, %u, %u, %u, %f, %08X }",
+		outFormat.guidFormatType.Data1, outFormat.dwSamplesPerFrame, outFormat.dwBytesPerSampleContainer,
+		outFormat.dwValidBitsPerSample, outFormat.fFramesPerSecond, outFormat.dwChannelMask);
     
     if(childAPO)
     {
@@ -270,15 +282,30 @@ HRESULT EqualizerAPO::LockForProcess(UINT32 u32NumInputConnections,
 		return hr;
 	}
 
-    UNCOMPRESSEDAUDIOFORMAT uncompAudioFormat;
-    hr = ppOutputConnections[0]->pFormat->GetUncompressedAudioFormat(&uncompAudioFormat);
+    UNCOMPRESSEDAUDIOFORMAT inFormat;
+    hr = ppInputConnections[0]->pFormat->GetUncompressedAudioFormat(&inFormat);
 	if(FAILED(hr))
 	{
 		LogF(L"Error in GetUncompressedAudioFormat in LockForProcess");
 		return hr;
 	}
         
-    peq.initialize(uncompAudioFormat.fFramesPerSecond, uncompAudioFormat.dwSamplesPerFrame);
+    TraceF(L"Input format in LockForProcess = { %08X, %u, %u, %u, %f, %08X }",
+		inFormat.guidFormatType.Data1, inFormat.dwSamplesPerFrame, inFormat.dwBytesPerSampleContainer,
+		inFormat.dwValidBitsPerSample, inFormat.fFramesPerSecond, inFormat.dwChannelMask);
+
+    UNCOMPRESSEDAUDIOFORMAT outFormat;
+    hr = ppOutputConnections[0]->pFormat->GetUncompressedAudioFormat(&outFormat);
+	if(FAILED(hr))
+	{
+		LogF(L"Error in second GetUncompressedAudioFormat in LockForProcess");
+		return hr;
+	}
+        
+    TraceF(L"Output format in LockForProcess = { %08X, %u, %u, %u, %f, %08X }",
+		outFormat.guidFormatType.Data1, outFormat.dwSamplesPerFrame, outFormat.dwBytesPerSampleContainer,
+		outFormat.dwValidBitsPerSample, outFormat.fFramesPerSecond, outFormat.dwChannelMask);
+	peq.initialize(outFormat.fFramesPerSecond, outFormat.dwSamplesPerFrame, outFormat.dwChannelMask);
 
     return hr;
 }
