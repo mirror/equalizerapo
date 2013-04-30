@@ -64,22 +64,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\libsndfile\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\libsndfile\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\libsndfile\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Program Files\libsndfile\lib64;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

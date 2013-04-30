@@ -20,6 +20,7 @@
 #pragma once
 
 #include <string>
+#include <cstdio>
 
 #define TraceF(format, ...) LogHelper::log(__FILE__, __LINE__, this, true, format, __VA_ARGS__);
 #define TraceFStatic(format, ...) LogHelper::log(__FILE__, __LINE__, NULL, true, format, __VA_ARGS__);
@@ -31,9 +32,12 @@ class LogHelper
 public:
 	static void log(const char* file, int line, void* caller, bool trace, const wchar_t* format, ...);
 	static void reset();
+	static void set(FILE* fp, bool enableTrace, bool compact);
 
 private:
 	static bool initialized;
 	static std::wstring logPath;
 	static bool enableTrace;
+	static FILE* presetFP;
+	static bool compact;
 };

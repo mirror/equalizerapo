@@ -18,7 +18,6 @@
 */
 
 #include <cstdarg>
-#include <cstdio>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -30,6 +29,8 @@ using namespace std;
 bool LogHelper::initialized = false;
 wstring LogHelper::logPath;
 bool LogHelper::enableTrace = false;
+FILE* LogHelper::presetFP = NULL;
+bool LogHelper::compact = false;
 
 void LogHelper::log(const char* file, int line, void* caller, bool trace, const wchar_t* format, ...)
 {
@@ -59,14 +60,24 @@ void LogHelper::log(const char* file, int line, void* caller, bool trace, const 
 		return;
 
 	FILE* fp;
-	errno_t err = _wfopen_s(&fp, logPath.c_str(), L"at");
-	if(err != 0)
-		return;
+	if(presetFP == NULL)
+	{
+		errno_t err = _wfopen_s(&fp, logPath.c_str(), L"at");
+		if(err != 0)
+			return;
+	}
+	else
+	{
+		fp = presetFP;
+	}
 
-	SYSTEMTIME ___st;
-	GetLocalTime(&___st);
-	fwprintf(fp, L"%04d-%02d-%02d %02d:%02d:%02d.%03d %08X (%S:%d): ",
-		___st.wYear, ___st.wMonth, ___st.wDay, ___st.wHour, ___st.wMinute, ___st.wSecond, ___st.wMilliseconds, caller, file, line);
+	if(!compact)
+	{
+		SYSTEMTIME ___st;
+		GetLocalTime(&___st);
+		fwprintf(fp, L"%04d-%02d-%02d %02d:%02d:%02d.%03d %08X (%S:%d): ",
+			___st.wYear, ___st.wMonth, ___st.wDay, ___st.wHour, ___st.wMinute, ___st.wSecond, ___st.wMilliseconds, caller, file, line);
+	}
 
 	if(trace)
 		fwprintf(fp, L"(TRACE) ");
@@ -77,7 +88,9 @@ void LogHelper::log(const char* file, int line, void* caller, bool trace, const 
 	va_end(varArgs);
 
 	fwprintf(fp, L"\n");
-	fclose(fp);
+
+	if(presetFP == NULL)
+		fclose(fp);
 }
 
 void LogHelper::reset()
@@ -85,4 +98,13 @@ void LogHelper::reset()
 	initialized = false;
 	logPath = L"";
 	enableTrace = false;
+}
+
+void LogHelper::set(FILE* fp, bool enableTrace, bool compact)
+{
+	LogHelper::initialized = true;
+
+	LogHelper::presetFP = fp;
+	LogHelper::enableTrace = enableTrace;
+	LogHelper::compact = compact;
 }

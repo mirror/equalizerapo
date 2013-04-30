@@ -21,6 +21,7 @@
 
 #include <string>
 #include <vector>
+#include <hash_map>
 
 #define IS_DENORMAL(f) (((*(unsigned int *)&(f))&0x7f800000) == 0)
 
@@ -106,4 +107,6 @@ private:
 	bool lastInputWasSilent;
 	void* threadHandle;
 	void* shutdownEvent;
+	stdext::hash_map<std::wstring, int> channelNameToPosMap;
+	stdext::hash_map<int, std::wstring> channelPosToNameMap;
 };

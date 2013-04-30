@@ -35,6 +35,7 @@
 #include "ParametricEQ.h"
 
 using namespace std;
+using namespace stdext;
 
 BiQuad::BiQuad(float dbGain, float freq, float srate, float bandwidthOrQ, bool isQ)
 {
@@ -73,6 +74,19 @@ ParametricEQ::ParametricEQ()
 	channelData = NULL;
 	lastInputWasSilent = false;
 	threadHandle = NULL;
+
+	channelNameToPosMap[L"L"] = SPEAKER_FRONT_LEFT;
+	channelNameToPosMap[L"R"] = SPEAKER_FRONT_RIGHT;
+	channelNameToPosMap[L"C"] = SPEAKER_FRONT_CENTER;
+	channelNameToPosMap[L"SUB"] = SPEAKER_LOW_FREQUENCY;
+	channelNameToPosMap[L"RL"] = SPEAKER_BACK_LEFT;
+	channelNameToPosMap[L"RR"] = SPEAKER_BACK_RIGHT;
+	channelNameToPosMap[L"RC"] = SPEAKER_BACK_CENTER;
+	channelNameToPosMap[L"SL"] = SPEAKER_SIDE_LEFT;
+	channelNameToPosMap[L"SR"] = SPEAKER_SIDE_RIGHT;
+
+	for(hash_map<wstring, int>::iterator it=channelNameToPosMap.begin(); it!=channelNameToPosMap.end(); it++)
+		channelPosToNameMap[it->second] = it->first;
 }
 
 ParametricEQ::~ParametricEQ()
@@ -132,6 +146,24 @@ void ParametricEQ::initialize(float sampleRate, unsigned channelCount, unsigned 
 		}
 	}
 	this->channelMask = channelMask;
+
+	wstringstream channelNames;
+	unsigned c=0;
+	for(int i=0; i<31; i++)
+	{
+		int channelPos = 1<<i;
+		if(channelMask & channelPos)
+		{
+			c++;
+			if(channelNames.tellp() > 0)
+				channelNames << L" ";
+			if(channelPosToNameMap.find(channelPos) != channelPosToNameMap.end())
+				channelNames << channelPosToNameMap[channelPos];
+			else
+				channelNames << c;
+		}
+	}
+	TraceF(L"%d channels for this device: %s", channelCount, channelNames.str().c_str());
 
 	try
 	{
@@ -280,7 +312,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 				wstring currentWord;
 				for(unsigned i=0; i<value.length(); i++)
 				{
-					wchar_t c = towlower(value[i]);
+					wchar_t c = towupper(value[i]);
 
 					if(c == L' ')
 					{
@@ -288,7 +320,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						{
 							int channelNr = -1;
 
-							if(currentWord == L"all")
+							if(currentWord == L"ALL")
 							{
 								selectedChannels = vector<bool>(channelCount, true);
 							}
@@ -299,24 +331,8 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 							else
 							{
 								int channelPos = -1;
-								if(currentWord == L"l")
-									channelPos = SPEAKER_FRONT_LEFT;
-								else if(currentWord == L"r")
-									channelPos = SPEAKER_FRONT_RIGHT;
-								else if(currentWord == L"c")
-									channelPos = SPEAKER_FRONT_CENTER;
-								else if(currentWord == L"sub")
-									channelPos = SPEAKER_LOW_FREQUENCY;
-								else if(currentWord == L"rl")
-									channelPos = SPEAKER_BACK_LEFT;
-								else if(currentWord == L"rr")
-									channelPos = SPEAKER_BACK_RIGHT;
-								else if(currentWord == L"rc")
-									channelPos = SPEAKER_BACK_CENTER;
-								else if(currentWord == L"sl")
-									channelPos = SPEAKER_SIDE_LEFT;
-								else if(currentWord == L"sr")
-									channelPos = SPEAKER_SIDE_RIGHT;
+								if(channelNameToPosMap.find(currentWord) != channelNameToPosMap.end())
+									channelPos = channelNameToPosMap[currentWord];
 								else
 									LogF(L"Invalid channel position %s", currentWord.c_str());
 
@@ -338,18 +354,19 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 					}
 				}
 
-				wstringstream channelStream;
+				wstringstream channelNumbers;
 				for(unsigned c=0; c<channelCount; c++)
 				{
 					if(selectedChannels[c])
 					{
-						if(channelStream.tellp() > 0)
-							channelStream << L", ";
-						channelStream << c+1;
+						if(channelNumbers.tellp() > 0)
+							channelNumbers << L", ";
+
+						channelNumbers << c+1;
 					}
 				}
 
-				TraceF(L"Selecting channel(s) %s", channelStream.str().c_str());
+				TraceF(L"Selecting channel(s) number %s", channelNumbers.str().c_str());
 			}
 			else if(key.find(L"Filter") == 0)
 			{
@@ -510,6 +527,22 @@ float ParametricEQ::getFreq(const wstring& freqString)
 
 unsigned ParametricEQ::getChannelNumber(unsigned position)
 {
+	//Special handling to accept "wrong", but unambiguous positions
+	if(channelMask == KSAUDIO_SPEAKER_5POINT1_SURROUND)
+	{
+		if(position == SPEAKER_BACK_LEFT)
+			return 4;
+		else if(position == SPEAKER_BACK_RIGHT)
+			return 5;
+	}
+	else if(channelMask == KSAUDIO_SPEAKER_5POINT1)
+	{
+		if(position == SPEAKER_SIDE_LEFT)
+			return 4;
+		else if(position == SPEAKER_SIDE_RIGHT)
+			return 5;
+	}
+
 	if((channelMask & position) == 0)
 		return -1;
 
