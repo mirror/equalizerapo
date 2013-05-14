@@ -157,6 +157,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BiQuad.h" />
     <ClInclude Include="ClassFactory.h" />
     <ClInclude Include="DeviceAPOInfo.h" />
     <ClInclude Include="EqualizerAPO.h" />
@@ -168,6 +169,7 @@
     <ClInclude Include="version.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BiQuad.cpp" />
     <ClCompile Include="ClassFactory.cpp" />
     <ClCompile Include="DeviceAPOInfo.cpp" />
     <ClCompile Include="DllMain.cpp" />

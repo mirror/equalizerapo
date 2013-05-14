@@ -23,6 +23,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <regex>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <Shlwapi.h>
@@ -37,30 +38,12 @@
 using namespace std;
 using namespace stdext;
 
-BiQuad::BiQuad(float dbGain, float freq, float srate, float bandwidthOrQ, bool isQ)
-{
-    float A = pow(10, dbGain / 40);
-    float omega = 2 * (float)M_PI * freq / srate;
-    float sn = sin(omega);
-    float cs = cos(omega);
-	float alpha;
-	if(isQ)
-		alpha = sn / (2 * bandwidthOrQ);
-	else
-		alpha = sn * sinh((float)M_LN2/2 * bandwidthOrQ * omega / sn);
-    
-    float temp = 1 + (alpha /A);
-    a0 = (1 + (alpha * A)) / temp;
-    a[0] = (-2 * cs) / temp;
-    a[1] = (1 - (alpha * A)) / temp;
-    a[2] = - (-2 * cs) / temp;
-    a[3] = - (1 - (alpha /A)) / temp;
-
-	x1 = 0;
-	x2 = 0;
-	y1 = 0;
-	y2 = 0;
-}
+static wregex regexType(L"^\\s*ON\\s+([A-Za-z]+)");
+static wregex regexFreq(L"\\s+Fc\\s*([0-9.]+)\\s*H\\s*z");
+static wregex regexGain(L"\\s+Gain\\s*([-+0-9.]+)\\s*dB");
+static wregex regexQ(L"\\s+Q\\s*([0-9.]+)");
+static wregex regexBW(L"\\s+BW\\s+Oct\\s*([0-9.]+)");
+static wregex regexSlope(L"^\\s*([0-9.]+)\\s*dB");
 
 ChannelData::ChannelData()
 {
@@ -87,6 +70,28 @@ ParametricEQ::ParametricEQ()
 
 	for(hash_map<wstring, int>::iterator it=channelNameToPosMap.begin(); it!=channelNameToPosMap.end(); it++)
 		channelPosToNameMap[it->second] = it->first;
+
+	filterNameToTypeMap[L"PK"] = BiQuad::PEAKING;
+	filterNameToTypeMap[L"PEQ"] = BiQuad::PEAKING;
+	filterNameToTypeMap[L"Modal"] = BiQuad::PEAKING;
+	filterNameToTypeMap[L"LP"] = BiQuad::LOW_PASS;
+	filterNameToTypeMap[L"HP"] = BiQuad::HIGH_PASS;
+	filterNameToTypeMap[L"LPQ"] = BiQuad::LOW_PASS;
+	filterNameToTypeMap[L"HPQ"] = BiQuad::HIGH_PASS;
+	filterNameToTypeMap[L"BP"] = BiQuad::BAND_PASS;
+	filterNameToTypeMap[L"LS"] = BiQuad::LOW_SHELF;
+	filterNameToTypeMap[L"HS"] = BiQuad::HIGH_SHELF;
+	filterNameToTypeMap[L"NO"] = BiQuad::NOTCH;
+	filterNameToTypeMap[L"AP"] = BiQuad::ALL_PASS;
+
+	filterTypeToDescriptionMap[BiQuad::PEAKING] = L"peaking";
+	filterTypeToDescriptionMap[BiQuad::LOW_PASS] = L"low-pass";
+	filterTypeToDescriptionMap[BiQuad::HIGH_PASS] = L"high-pass";
+	filterTypeToDescriptionMap[BiQuad::BAND_PASS] = L"band-pass";
+	filterTypeToDescriptionMap[BiQuad::LOW_SHELF] = L"low-shelf";
+	filterTypeToDescriptionMap[BiQuad::HIGH_SHELF] = L"high-shelf";
+	filterTypeToDescriptionMap[BiQuad::NOTCH] = L"notch";
+	filterTypeToDescriptionMap[BiQuad::ALL_PASS] = L"all-pass";
 }
 
 ParametricEQ::~ParametricEQ()
@@ -211,7 +216,26 @@ void ParametricEQ::loadConfig()
 		loadFilterCount += channelData[c].loadFilterCount;
 	}
 
-	TraceF(L"%d filters loaded", loadFilterCount);
+	wstringstream channelFilterCounts;
+	unsigned c=0;
+	for(int i=0; i<31; i++)
+	{
+		int channelPos = 1<<i;
+		if(channelMask & channelPos)
+		{
+			c++;
+			if(channelFilterCounts.tellp() > 0)
+				channelFilterCounts << L" ";
+			if(channelPosToNameMap.find(channelPos) != channelPosToNameMap.end())
+				channelFilterCounts << channelPosToNameMap[channelPos];
+			else
+				channelFilterCounts << c;
+
+			channelFilterCounts << ":" << channelData[c-1].loadFilterCount;
+		}
+	}
+
+	TraceF(L"%d filters loaded: %s", loadFilterCount, channelFilterCounts.str().c_str());
 }
 
 void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels)
@@ -373,35 +397,150 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 				//Conversion to period as decimal mark, if needed
 				value = StringHelper::replaceCharacters(value, L",", L'.');
 
-				wchar_t freqString[10];
-				float freq, gain, bandwidth;
+				wsmatch match;
+				wstring typeString;
 
-				int matched = swscanf_s(value.c_str(), L" ON PEQ Fc %9s Hz Gain %f dB BW Oct %f", &freqString, 10, &gain, &bandwidth);
-				if(matched == 3 && (freq = getFreq(freqString)) != -1.0f)
+				bool found = regex_search(value, match, regexType);
+				if(found)
 				{
-					for(unsigned c=0; c<channelCount; c++)
+					typeString = match.str(1);
+					if(filterNameToTypeMap.find(typeString) != filterNameToTypeMap.end())
 					{
-						if(selectedChannels[c] && channelData[c].loadFilterCount < (sizeof(channelData[c].filters)/sizeof(BiQuad)))
+						BiQuad::Type type = filterNameToTypeMap[typeString];
+						wstring typeDescription = filterTypeToDescriptionMap[type];
+						value = match.suffix().str();
+
+						wstringstream stream;
+						stream << L"Adding " << typeDescription << L" filter";
+
+						float freq = 0;
+						float gain = 0;
+						float bandwidthOrQOrS = 0;
+						bool isBandwidth = false;
+						bool error = false;
+
+						found = regex_search(value, match, regexFreq);
+						if(found)
 						{
-							channelData[c].filters[channelData[c].loadFilterCount++] = BiQuad(gain, freq, sampleRate, bandwidth, false);
+							wstring freqString = match.str(1);
+							freq = getFreq(freqString);
+							stream << " with center frequency " << freq << " Hz";
 						}
-					}
-					TraceF(L"Adding filter with center frequency %g Hz, gain %g dB and bandwidth %g octaves", freq, gain, bandwidth);
-				}
-				else
-				{
-					float q;
-					matched = swscanf_s(value.c_str(), L" ON PK Fc %9s Hz Gain %f dB Q %f", &freqString, 10, &gain, &q);
-					if(matched == 3 && (freq = getFreq(freqString)) != -1.0f)
-					{
-						for(unsigned c=0; c<channelCount; c++)
+						else
 						{
-							if(selectedChannels[c] && channelData[c].loadFilterCount < (sizeof(channelData[c].filters)/sizeof(BiQuad)))
+							LogF(L"No frequency given in filter string %s%s", typeString, value);
+							error = true;
+						}
+
+						found = regex_search(value, match, regexGain);
+						if(found)
+						{
+							if(type == BiQuad::LOW_PASS || type == BiQuad::HIGH_PASS || type == BiQuad::NOTCH || type == BiQuad::ALL_PASS)
+								TraceF(L"Ignoring gain for filter of type %s", typeDescription);
+							else
 							{
-								channelData[c].filters[channelData[c].loadFilterCount++] = BiQuad(gain, freq, sampleRate, q, true);
+								wstring gainString = match.str(1);
+								gain = (float)wcstod(gainString.c_str(), NULL);
+								if(type == BiQuad::PEAKING)
+									stream << ", gain " << gain << " dB";
+								else
+									stream << " and gain " << gain << " dB";
 							}
 						}
-						TraceF(L"Adding filter with center frequency %g Hz, gain %g dB and Q %g", freq, gain, q);
+						else if(type == BiQuad::PEAKING || type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+						{
+							LogF(L"No gain given in filter string %s%s", typeString, value);
+							error = true;
+						}
+
+						found = regex_search(value, match, regexQ);
+						if(found)
+						{
+							if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+								TraceF(L"Ignoring Q for filter of type %s", typeDescription);
+							else
+							{
+								wstring qString = match.str(1);
+								bandwidthOrQOrS = (float)wcstod(qString.c_str(), NULL);
+								stream << " and Q " << bandwidthOrQOrS;
+							}
+						}
+
+						found = regex_search(value, match, regexBW);
+						if(found)
+						{
+							if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+								TraceF(L"Ignoring bandwidth for filter of type %s", typeDescription);
+							else
+							{
+								wstring bwString = match.str(1);
+								bandwidthOrQOrS = (float)wcstod(bwString.c_str(), NULL);
+								isBandwidth = true;
+								stream << " and bandwidth " << bandwidthOrQOrS << " octaves";
+							}
+						}
+
+						found = regex_search(value, match, regexSlope);
+						if(found)
+						{
+							if(!(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF))
+								TraceF(L"Ignoring slope for filter of type %s", typeDescription);
+							else
+							{
+								wstring slopeString = match.str(1);
+								bandwidthOrQOrS = (float)wcstod(slopeString.c_str(), NULL);
+								stream << " and slope " << bandwidthOrQOrS << " dB";
+							}
+						}
+
+						if(bandwidthOrQOrS == 0)
+						{
+							if(type == BiQuad::PEAKING || type == BiQuad::ALL_PASS)
+							{
+								LogF(L"No Q or bandwidth given in filter string %s%s", typeString, value);
+								error = true;
+							}
+							else if(type == BiQuad::LOW_PASS || type == BiQuad::HIGH_PASS || type == BiQuad::BAND_PASS)
+							{
+								bandwidthOrQOrS = (float)M_SQRT1_2;
+							}
+							else if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+							{
+								bandwidthOrQOrS = 0.9f; // found out by experimentation with RoomEQWizard
+							}
+							else if(type == BiQuad::NOTCH)
+							{
+								bandwidthOrQOrS = 31.0f; // only roughly matches RoomEQWizard's notch
+							}
+						}
+						else if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+						{
+							// Maximum S is 1 for 12 dB
+							bandwidthOrQOrS /= 12.0f;
+							// frequency adjustment for DCX2496
+							float centerFreqFactor = pow(10.0f, abs(gain) / 80.0f / bandwidthOrQOrS);
+							if(type == BiQuad::LOW_SHELF)
+								freq *= centerFreqFactor;
+							else
+								freq /= centerFreqFactor;
+						}
+
+						if(!error)
+						{
+							TraceF(L"%s", stream.str().c_str());
+
+							for(unsigned c=0; c<channelCount; c++)
+							{
+								if(selectedChannels[c] && channelData[c].loadFilterCount < (sizeof(channelData[c].filters)/sizeof(BiQuad)))
+								{
+									channelData[c].filters[channelData[c].loadFilterCount++] = BiQuad(type, gain, freq, sampleRate, bandwidthOrQOrS, isBandwidth);
+								}
+							}
+						}
+					}
+					else if(typeString != L"None")
+					{
+						LogF(L"Invalid filter type %s", typeString.c_str());
 					}
 				}
 			}

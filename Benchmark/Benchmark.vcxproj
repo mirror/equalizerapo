@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\BiQuad.cpp" />
     <ClCompile Include="..\LogHelper.cpp" />
     <ClCompile Include="..\ParametricEQ.cpp" />
     <ClCompile Include="..\RegistryHelper.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="Benchmark.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\BiQuad.h" />
     <ClInclude Include="..\LogHelper.h" />
     <ClInclude Include="..\ParametricEQ.h" />
     <ClInclude Include="..\RegistryHelper.h" />

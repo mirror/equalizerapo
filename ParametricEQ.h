@@ -23,48 +23,7 @@
 #include <vector>
 #include <hash_map>
 
-#define IS_DENORMAL(f) (((*(unsigned int *)&(f))&0x7f800000) == 0)
-
-struct BiQuad
-{
-	BiQuad() {}
-	BiQuad(float dbGain, float freq, float srate, float bandwidthOrQ, bool isQ);
-
-	__forceinline
-	void removeDenormals()
-	{
-		if(IS_DENORMAL(x1))
-			x1 = 0.0f;
-		if(IS_DENORMAL(x2))
-			x2 = 0.0f;
-		if(IS_DENORMAL(y1))
-			y1 = 0.0f;
-		if(IS_DENORMAL(y2))
-			y2 = 0.0f;
-	}
-
-	__forceinline
-	float process(float sample)
-	{
-		float result = a0 * sample + a[0] * x1 + a[1] * x2 +
-			a[2] * y1 + a[3] * y2;
-
-		x2 = x1;
-		x1 = sample;
-
-		y2 = y1;
-		y1 = result;
-
-		//Input for next stage
-		return result;
-	}
-
-	__declspec(align(16)) float a[4];
-	float a0;
-
-	float x1, x2;
-	float y1, y2;
-};
+#include "BiQuad.h"
 
 struct ChannelData
 {
@@ -109,4 +68,6 @@ private:
 	void* shutdownEvent;
 	stdext::hash_map<std::wstring, int> channelNameToPosMap;
 	stdext::hash_map<int, std::wstring> channelPosToNameMap;
+	stdext::hash_map<std::wstring, BiQuad::Type> filterNameToTypeMap;
+	stdext::hash_map<BiQuad::Type, std::wstring> filterTypeToDescriptionMap;
 };
