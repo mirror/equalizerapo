@@ -22,12 +22,14 @@
 #include <string>
 #include <vector>
 
+#define APOGUID_NULL L"{00000000-0000-0000-0000-000000000000}"
 #define APOGUID_NOKEY L"!KEY"
+#define APOGUID_NOVALUE L"!VALUE"
 
 class DeviceAPOInfo
 {
 public:
-	static std::vector<DeviceAPOInfo> loadAllInfos();
+	static std::vector<DeviceAPOInfo> loadAllInfos(bool input);
 	bool load(const std::wstring& deviceGuid);
 	void install();
 	void uninstall();
@@ -36,5 +38,7 @@ public:
 	std::wstring connectionName;
 	std::wstring deviceGuid;
 	std::wstring originalApoGuid;
+	bool isInput;
 	bool isInstalled;
+	bool isLFX;
 };

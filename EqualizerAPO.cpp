@@ -113,9 +113,16 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 	wstring deviceGuid = var.pwszVal;
 	TraceF(L"Endpoint GUID: %s", deviceGuid.c_str());
 
-	DeviceAPOInfo apoInfo;
-	if(apoInfo.load(deviceGuid))
-		peq.setDeviceInfo(apoInfo.deviceName, apoInfo.connectionName, apoInfo.deviceGuid);
+	try
+	{
+		DeviceAPOInfo apoInfo;
+		if(apoInfo.load(deviceGuid))
+			peq.setDeviceInfo(apoInfo.deviceName, apoInfo.connectionName, apoInfo.deviceGuid);
+	}
+	catch(RegistryException e)
+	{
+		LogF(L"Could not read endpoint device info because of: %s", e.getMessage());
+	}
 
 	wstring apoGuid;
 	try
@@ -130,7 +137,7 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 
 	TraceF(L"Child APO GUID: %s", apoGuid.c_str());
 
-	if(apoGuid != APOGUID_NOKEY)
+	if(apoGuid != APOGUID_NULL && apoGuid != APOGUID_NOKEY && apoGuid != APOGUID_NOVALUE)
 	{
 		GUID childGuid;
 		hr = CLSIDFromString(apoGuid.c_str(), &childGuid);
@@ -305,7 +312,11 @@ HRESULT EqualizerAPO::LockForProcess(UINT32 u32NumInputConnections,
     TraceF(L"Output format in LockForProcess = { %08X, %u, %u, %u, %f, %08X }",
 		outFormat.guidFormatType.Data1, outFormat.dwSamplesPerFrame, outFormat.dwBytesPerSampleContainer,
 		outFormat.dwValidBitsPerSample, outFormat.fFramesPerSecond, outFormat.dwChannelMask);
-	peq.initialize(outFormat.fFramesPerSecond, outFormat.dwSamplesPerFrame, outFormat.dwChannelMask);
+
+	if(outFormat.dwChannelMask == 0 && inFormat.dwSamplesPerFrame == outFormat.dwSamplesPerFrame)
+		peq.initialize(outFormat.fFramesPerSecond, outFormat.dwSamplesPerFrame, inFormat.dwChannelMask);
+	else
+		peq.initialize(outFormat.fFramesPerSecond, outFormat.dwSamplesPerFrame, outFormat.dwChannelMask);
 
     return hr;
 }

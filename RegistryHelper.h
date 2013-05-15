@@ -38,6 +38,7 @@ public:
 	static void takeOwnership(std::wstring key);
 	static std::vector<std::wstring> enumSubKeys(std::wstring key);
 	static bool keyExists(std::wstring key);
+	static bool valueExists(std::wstring key, std::wstring valuename);
 	static unsigned long valueCount(std::wstring key);
 	static void saveToFile(std::wstring key, std::wstring valuename, std::wstring filepath);
 	static std::wstring getGuidString(GUID guid);

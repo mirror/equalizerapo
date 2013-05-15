@@ -30,17 +30,21 @@ public:
 	Configurator(HINSTANCE hInstance, const wchar_t* cmdLine);
 	void onInitDialog(HWND hDlg);
 	void onLvnItemChanged(unsigned sourceId, LPNMLISTVIEW info);
-	void onButtonClicked(unsigned sourceId);
+	bool onButtonClicked(unsigned sourceId);
+	void onTcnSelChange(unsigned sourceId);
+	bool isChanged();
+	bool hasUpgrades();
 
 private:
 	HINSTANCE hInstance;
 	HWND hDlg;
-	HWND deviceList;
+	HWND categoryTabCtrl;
+	HWND deviceLists[2];
 	HWND okButton;
 	HWND cancelButton;
 	HWND copyDeviceCommandButton;
 	HWND requestLabel;
 	std::wstring cmdLine;
 
-	std::vector<DeviceAPOInfo> apoInfos;
+	std::vector<DeviceAPOInfo> apoInfos[2];
 };

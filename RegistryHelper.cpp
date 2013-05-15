@@ -291,6 +291,21 @@ bool RegistryHelper::keyExists(wstring key)
 	return result;
 }
 
+bool RegistryHelper::valueExists(wstring key, wstring valuename)
+{
+	LSTATUS status;
+	HKEY keyHandle;
+	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &keyHandle);
+	if(status != ERROR_SUCCESS)
+		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+
+	DWORD type;
+	DWORD bufSize;
+	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
+	RegCloseKey(keyHandle);
+	return status == ERROR_SUCCESS;
+}
+
 vector<wstring> RegistryHelper::enumSubKeys(wstring key)
 {
 	vector<wstring> result;

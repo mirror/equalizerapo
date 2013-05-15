@@ -38,13 +38,26 @@ Configurator::Configurator(HINSTANCE hInstance, const wchar_t* cmdLine)
 void Configurator::onInitDialog(HWND hDlg)
 {
 	this->hDlg = hDlg;
-	deviceList = GetDlgItem(hDlg, IDC_DEVICE_LIST);
+	categoryTabCtrl = GetDlgItem(hDlg, IDC_CATEGORY_TAB_CTRL);
+	deviceLists[0] = GetDlgItem(hDlg, IDC_PLAYBACK_LIST);
+	deviceLists[1] = GetDlgItem(hDlg, IDC_CAPTURE_LIST);
 	okButton = GetDlgItem(hDlg, IDOK);
 	cancelButton = GetDlgItem(hDlg, IDCANCEL);
 	requestLabel = GetDlgItem(hDlg, IDC_REQUEST);
 	copyDeviceCommandButton = GetDlgItem(hDlg, IDC_COPY_DEVICE_COMMAND);
 
 	wchar_t stringBuf[255];
+
+	TCITEM tci;
+	tci.pszText = stringBuf;
+	tci.mask = TCIF_TEXT;
+
+	LoadStringW(hInstance, IDS_PLAYBACK_DEVICES, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+	TabCtrl_InsertItem(categoryTabCtrl, 0, &tci);
+
+	LoadStringW(hInstance, IDS_CAPTURE_DEVICES, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+	TabCtrl_InsertItem(categoryTabCtrl, 1, &tci);
+
 	LoadStringW(hInstance, IDS_REQUEST, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 	SetWindowTextW(requestLabel, stringBuf);
 
@@ -57,115 +70,117 @@ void Configurator::onInitDialog(HWND hDlg)
 	LoadStringW(hInstance, IDS_CANCEL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 	SetWindowTextW(cancelButton, stringBuf);
 
-	ListView_SetExtendedListViewStyle(deviceList, ListView_GetExtendedListViewStyle(deviceList) | LVS_EX_CHECKBOXES);
-	LVCOLUMN column;
-	column.pszText = stringBuf;
-	column.mask = LVCF_TEXT;
-
-	LoadStringW(hInstance, IDS_CONNECTOR, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-	ListView_InsertColumn(deviceList, 0, &column);
-
-	LoadStringW(hInstance, IDS_DEVICE, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-	ListView_InsertColumn(deviceList, 1, &column);
-
-	LoadStringW(hInstance, IDS_STATUS, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-	ListView_InsertColumn(deviceList, 2, &column);
-
-	LVITEM item;
-	item.iSubItem = 0;
-	item.pszText = stringBuf;
-	item.mask = LVIF_TEXT | LVIF_PARAM;
-
-	try {
-		apoInfos = DeviceAPOInfo::loadAllInfos();
-
-		int itemCount=0;
-		for(vector<DeviceAPOInfo>::iterator it = apoInfos.begin(); it != apoInfos.end(); it++)
-		{
-			wcsncpy_s(stringBuf, sizeof(stringBuf)/sizeof(wchar_t), it->connectionName.c_str(), _TRUNCATE);
-			item.iItem = itemCount;
-			item.lParam = itemCount;
-			ListView_InsertItem(deviceList, &item);
-			wcsncpy_s(stringBuf, sizeof(stringBuf)/sizeof(wchar_t), it->deviceName.c_str(), _TRUNCATE);
-			ListView_SetItemText(deviceList, itemCount, 1, stringBuf);
-
-			if(it->isInstalled)
-			{
-				ListView_SetCheckState(deviceList, itemCount, TRUE);
-				LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-				ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
-			}
-			else if(it->originalApoGuid == APOGUID_NOKEY)
-			{
-				LoadStringW(hInstance, IDS_CAN_BE_INSTALLED_EXPERIMENTAL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-				ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
-			}
-			else
-			{
-				LoadStringW(hInstance, IDS_CAN_BE_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-				ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
-			}
-
-			itemCount++;
-		}
-	}
-	catch(RegistryException e)
+	for(int i=0; i<=1; i++)
 	{
-		MessageBoxW(hDlg, e.getMessage().c_str(), L"Error while accessing the registry", MB_ICONERROR | MB_OK);
-	}
+		HWND deviceList = deviceLists[i];
+		ListView_SetExtendedListViewStyle(deviceList, ListView_GetExtendedListViewStyle(deviceList) | LVS_EX_CHECKBOXES);
+		LVCOLUMN column;
+		column.pszText = stringBuf;
+		column.mask = LVCF_TEXT;
 
-	ListView_SetColumnWidth(deviceList, 0, LVSCW_AUTOSIZE);
-	ListView_SetColumnWidth(deviceList, 1, LVSCW_AUTOSIZE);
-	ListView_SetColumnWidth(deviceList, 2, LVSCW_AUTOSIZE);
+		LoadStringW(hInstance, IDS_CONNECTOR, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+		ListView_InsertColumn(deviceList, 0, &column);
+
+		LoadStringW(hInstance, IDS_DEVICE, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+		ListView_InsertColumn(deviceList, 1, &column);
+
+		LoadStringW(hInstance, IDS_STATUS, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+		ListView_InsertColumn(deviceList, 2, &column);
+
+		LVITEM item;
+		item.iSubItem = 0;
+		item.pszText = stringBuf;
+		item.mask = LVIF_TEXT | LVIF_PARAM;
+
+		try
+		{
+			apoInfos[i] = DeviceAPOInfo::loadAllInfos(i==1);
+
+			int itemCount=0;
+			for(vector<DeviceAPOInfo>::iterator it = apoInfos[i].begin(); it != apoInfos[i].end(); it++)
+			{
+				wcsncpy_s(stringBuf, sizeof(stringBuf)/sizeof(wchar_t), it->connectionName.c_str(), _TRUNCATE);
+				item.iItem = itemCount;
+				item.lParam = itemCount;
+				ListView_InsertItem(deviceList, &item);
+				wcsncpy_s(stringBuf, sizeof(stringBuf)/sizeof(wchar_t), it->deviceName.c_str(), _TRUNCATE);
+				ListView_SetItemText(deviceList, itemCount, 1, stringBuf);
+
+				if(it->isInstalled)
+				{
+					ListView_SetCheckState(deviceList, itemCount, TRUE);
+					if(!it->isInput && it->isLFX)
+						LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+					else
+						LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+					ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
+				}
+				else if(it->originalApoGuid == APOGUID_NOKEY)
+				{
+					LoadStringW(hInstance, IDS_CAN_BE_INSTALLED_EXPERIMENTAL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+					ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
+				}
+				else
+				{
+					LoadStringW(hInstance, IDS_CAN_BE_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+					ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
+				}
+
+				itemCount++;
+			}
+		}
+		catch(RegistryException e)
+		{
+			MessageBoxW(hDlg, e.getMessage().c_str(), L"Error while accessing the registry", MB_ICONERROR | MB_OK);
+		}
+
+		ListView_SetColumnWidth(deviceList, 0, LVSCW_AUTOSIZE);
+		ListView_SetColumnWidth(deviceList, 1, LVSCW_AUTOSIZE);
+		ListView_SetColumnWidth(deviceList, 2, LVSCW_AUTOSIZE);
+	}
 }
 
 void Configurator::onLvnItemChanged(unsigned sourceId, LPNMLISTVIEW info)
 {
+	int index = (sourceId == IDC_PLAYBACK_LIST ? 0 : 1);
+	HWND deviceList = deviceLists[index];
+
 	int itemCount = ListView_GetItemCount(deviceList);
 
-	if(apoInfos.size() == itemCount)
+	if(apoInfos[index].size() == itemCount)
 	{
-		DeviceAPOInfo apoInfo = apoInfos[info->lParam];
+		DeviceAPOInfo apoInfo = apoInfos[index][info->lParam];
 		bool checked = ListView_GetCheckState(deviceList,info->iItem) != 0;
 		wchar_t stringBuf[255];
 		if(checked && !apoInfo.isInstalled)
 			LoadStringW(hInstance, IDS_WILL_BE_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 		else if(!checked && apoInfo.isInstalled)
 			LoadStringW(hInstance, IDS_WILL_BE_UNINSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+		else if(apoInfo.isInstalled && !apoInfo.isInput && apoInfo.isLFX)
+			LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 		else if(apoInfo.isInstalled)
 			LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+		else if(apoInfo.originalApoGuid == APOGUID_NOKEY)
+			LoadStringW(hInstance, IDS_CAN_BE_INSTALLED_EXPERIMENTAL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 		else
 			LoadStringW(hInstance, IDS_CAN_BE_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 
 		ListView_SetItemText(deviceList, info->iItem, 2, stringBuf);
 
-		bool changed = false;
-		for(int i = 0; i < itemCount; i++)
-		{
-			LVITEM item;
-			item.iItem = i;
-			item.iSubItem = 0;
-			item.mask = LVIF_PARAM;
-			ListView_GetItem(deviceList, &item);
-			if((ListView_GetCheckState(deviceList, i) != 0) != apoInfos[item.lParam].isInstalled)
-			{
-				changed = true;
-				break;
-			}
-		}
-
-		EnableWindow(okButton, changed);
+		EnableWindow(okButton, isChanged());
 
 		EnableWindow(copyDeviceCommandButton, ListView_GetSelectedCount(deviceList) > 0);
 	}
 }
 
-void Configurator::onButtonClicked(unsigned sourceId)
+bool Configurator::onButtonClicked(unsigned sourceId)
 {
 	if(sourceId == IDOK)
 	{
-		try
+		for(int index = 0; index <= 1; index++)
 		{
+			HWND deviceList = deviceLists[index];
+
 			for(int i = 0; i < ListView_GetItemCount(deviceList); i++)
 			{
 				LVITEM item;
@@ -174,21 +189,33 @@ void Configurator::onButtonClicked(unsigned sourceId)
 				item.mask = LVIF_PARAM;
 				ListView_GetItem(deviceList, &item);
 
-				DeviceAPOInfo info = apoInfos[item.lParam];
-				if(ListView_GetCheckState(deviceList, i) && !info.isInstalled)
-					info.install();
-				else if(!ListView_GetCheckState(deviceList, i) && info.isInstalled)
-					info.uninstall();
+				try
+				{
+					DeviceAPOInfo info = apoInfos[index][item.lParam];
+					if(ListView_GetCheckState(deviceList, i) && !info.isInstalled)
+						info.install();
+					else if(!ListView_GetCheckState(deviceList, i) && info.isInstalled)
+						info.uninstall();
+					else if(ListView_GetCheckState(deviceList, i) && !info.isInput && info.isLFX)
+					{
+						info.uninstall();
+						info.load(info.deviceGuid);
+						info.install();
+					}
+				}
+				catch(RegistryException e)
+				{
+					MessageBoxW(hDlg, e.getMessage().c_str(), L"Error while accessing the registry", MB_ICONERROR | MB_OK);
+				}
 			}
 		}
-		catch(RegistryException e)
-		{
-			MessageBoxW(hDlg, e.getMessage().c_str(), L"Error while accessing the registry", MB_ICONERROR | MB_OK);
-		}
 	}
-	else if(sourceId = IDC_COPY_DEVICE_COMMAND)
+	else if(sourceId == IDC_COPY_DEVICE_COMMAND)
 	{
 		wstring command = L"Device: ";
+
+		int index = TabCtrl_GetCurSel(categoryTabCtrl);
+		HWND deviceList = deviceLists[index];
 
 		bool first = true;
 		for(int i = 0; i < ListView_GetItemCount(deviceList); i++)
@@ -207,7 +234,7 @@ void Configurator::onButtonClicked(unsigned sourceId)
 				else
 					command += L"; ";
 
-				DeviceAPOInfo info = apoInfos[item.lParam];
+				DeviceAPOInfo info = apoInfos[index][item.lParam];
 				command += StringHelper::replaceCharacters(info.deviceName + L" " + info.connectionName + L" " + info.deviceGuid, L";", L' ');
 			}
 		}
@@ -224,12 +251,94 @@ void Configurator::onButtonClicked(unsigned sourceId)
 		CloseClipboard();
 	}
 
-	if((sourceId == IDOK || sourceId == IDCANCEL) && cmdLine == L"/i")
+	if(sourceId == IDCANCEL && hasUpgrades())
 	{
+		wchar_t captionBuf[255];
+		LoadStringW(hInstance, IDS_CANCEL_UPGRADES_CAPTION, captionBuf, sizeof(captionBuf)/sizeof(wchar_t));
 		wchar_t stringBuf[255];
-		LoadStringW(hInstance, IDS_AFTERINSTALL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-		MessageBoxW(hDlg, stringBuf, L"Info", MB_ICONINFORMATION | MB_OK);
+		LoadStringW(hInstance, IDS_CANCEL_UPGRADES, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+		if(MessageBoxW(hDlg, stringBuf, captionBuf, MB_ICONWARNING | MB_YESNO) == IDNO)
+			return false;
 	}
+
+	if(sourceId == IDOK || sourceId == IDCANCEL)
+	{
+		if(cmdLine == L"/i")
+		{
+			wchar_t stringBuf[255];
+			LoadStringW(hInstance, IDS_AFTERINSTALL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+			MessageBoxW(hDlg, stringBuf, L"Info", MB_ICONINFORMATION | MB_OK);
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+void Configurator::onTcnSelChange(unsigned sourceId)
+{
+	int index = TabCtrl_GetCurSel(categoryTabCtrl);
+
+	ShowWindow(deviceLists[index], SW_SHOW);
+	ShowWindow(deviceLists[1 - index], SW_HIDE);
+
+	EnableWindow(copyDeviceCommandButton, ListView_GetSelectedCount(deviceLists[index]) > 0);
+
+	SetFocus(deviceLists[index]);
+}
+
+bool Configurator::isChanged()
+{
+	bool changed = false;
+
+	for(int index = 0; index <= 1; index++)
+	{
+		HWND deviceList = deviceLists[index];
+
+		for(int i = 0; i < ListView_GetItemCount(deviceList); i++)
+		{
+			LVITEM item;
+			item.iItem = i;
+			item.iSubItem = 0;
+			item.mask = LVIF_PARAM;
+			ListView_GetItem(deviceList, &item);
+			if((ListView_GetCheckState(deviceList, i) != 0) != apoInfos[index][item.lParam].isInstalled
+				|| ListView_GetCheckState(deviceList, i) && apoInfos[index][item.lParam].isInstalled && !apoInfos[index][item.lParam].isInput && apoInfos[index][item.lParam].isLFX)
+			{
+				changed = true;
+				break;
+			}
+		}
+	}
+
+	return changed;
+}
+
+bool Configurator::hasUpgrades()
+{
+	bool hasUpgrades = false;
+
+	for(int index = 0; index <= 1; index++)
+	{
+		HWND deviceList = deviceLists[index];
+
+		for(int i = 0; i < ListView_GetItemCount(deviceList); i++)
+		{
+			LVITEM item;
+			item.iItem = i;
+			item.iSubItem = 0;
+			item.mask = LVIF_PARAM;
+			ListView_GetItem(deviceList, &item);
+			if(ListView_GetCheckState(deviceList, i) && apoInfos[index][item.lParam].isInstalled && !apoInfos[index][item.lParam].isInput && apoInfos[index][item.lParam].isLFX)
+			{
+				hasUpgrades = true;
+				break;
+			}
+		}
+	}
+
+	return hasUpgrades;
 }
 
 INT_PTR CALLBACK dlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
@@ -248,19 +357,22 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 
 	if(wcscmp(lpCmdLine, L"/u") == 0)
 	{
-		vector<DeviceAPOInfo> apoInfos = DeviceAPOInfo::loadAllInfos();
-
-		for(vector<DeviceAPOInfo>::iterator it = apoInfos.begin(); it != apoInfos.end(); it++)
+		for(int index = 0; index <= 1; index++)
 		{
-			try
+			vector<DeviceAPOInfo> apoInfos = DeviceAPOInfo::loadAllInfos(index == 1);
+
+			for(vector<DeviceAPOInfo>::iterator it = apoInfos.begin(); it != apoInfos.end(); it++)
 			{
-				if(it->isInstalled)
-					it->uninstall();
-			}
-			catch (RegistryException e)
-			{
-				MessageBoxW(NULL, e.getMessage().c_str(), NULL, MB_ICONERROR | MB_OK);
-				result = -1;
+				try
+				{
+					if(it->isInstalled)
+						it->uninstall();
+				}
+				catch (RegistryException e)
+				{
+					MessageBoxW(NULL, e.getMessage().c_str(), NULL, MB_ICONERROR | MB_OK);
+					result = -1;
+				}
 			}
 		}
 	}
@@ -284,9 +396,7 @@ INT_PTR CALLBACK dlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		return (INT_PTR)TRUE;
 
 	case WM_COMMAND:
-		configurator->onButtonClicked(LOWORD(wParam));
-
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+		if(configurator->onButtonClicked(LOWORD(wParam)))
 		{
 			EndDialog(hDlg, LOWORD(wParam));
 			return (INT_PTR)TRUE;
@@ -298,6 +408,9 @@ INT_PTR CALLBACK dlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 		case LVN_ITEMCHANGED:
 			configurator->onLvnItemChanged((unsigned)((LPNMHDR)lParam)->idFrom, (LPNMLISTVIEW) lParam);
+			break;
+		case TCN_SELCHANGE:
+			configurator->onTcnSelChange((unsigned)((LPNMHDR)lParam)->idFrom);
 			break;
 		}
 		break;
