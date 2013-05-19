@@ -118,6 +118,8 @@ Section "Install" SecInstall
   SetOverwrite off
   File /oname=config\config.txt "config\config.txt"
   File /oname=config\example.txt "config\example.txt"
+  File /oname=config\demo.txt "config\demo.txt"
+  File /oname=config\multichannel.txt "config\multichannel.txt"
   SetOverwrite on
 
   ;Grant write access to the config directory for all users

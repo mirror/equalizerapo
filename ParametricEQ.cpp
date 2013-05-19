@@ -102,7 +102,7 @@ ParametricEQ::~ParametricEQ()
 		SetEvent(shutdownEvent);
 		if(WaitForSingleObject(threadHandle, INFINITE) == WAIT_OBJECT_0)
 		{
-			TraceF(L"Successfully terminated directory change notification thread", configPath.c_str());
+			TraceF(L"Successfully terminated directory change notification thread");
 		}
 		CloseHandle(shutdownEvent);
 		CloseHandle(threadHandle);
@@ -176,7 +176,7 @@ void ParametricEQ::initialize(float sampleRate, unsigned channelCount, unsigned 
 	}
 	catch(RegistryException e)
 	{
-		LogF(L"Can't read config path because of: %s", e.getMessage());
+		LogF(L"Can't read config path because of: %s", e.getMessage().c_str());
 		return;
 	}
 	if(configPath != L"")
@@ -320,7 +320,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						break;
 				}
 
-				TraceF(L"%satching device \"%s\" \"%s\" \"%s\" with pattern \"%s\"", matches ? L"M" : L"Not m", deviceName.c_str(), connectionName.c_str(), deviceGuid.c_str(), value.c_str());
+				TraceF(L"%satching pattern \"%s\" with device \"%s\" \"%s\" \"%s\"", matches ? L"M" : L"Not m", value.substr(0, value.length()-1).c_str(), deviceName.c_str(), connectionName.c_str(), deviceGuid.c_str());
 				deviceMatches = matches;
 			}
 
@@ -424,11 +424,11 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						{
 							wstring freqString = match.str(1);
 							freq = getFreq(freqString);
-							stream << " with center frequency " << freq << " Hz";
+							stream << " with frequency " << freq << " Hz";
 						}
 						else
 						{
-							LogF(L"No frequency given in filter string %s%s", typeString, value);
+							LogF(L"No frequency given in filter string %s%s", typeString.c_str(), value.c_str());
 							error = true;
 						}
 
@@ -436,7 +436,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						if(found)
 						{
 							if(type == BiQuad::LOW_PASS || type == BiQuad::HIGH_PASS || type == BiQuad::NOTCH || type == BiQuad::ALL_PASS)
-								TraceF(L"Ignoring gain for filter of type %s", typeDescription);
+								TraceF(L"Ignoring gain for filter of type %s", typeDescription.c_str());
 							else
 							{
 								wstring gainString = match.str(1);
@@ -449,7 +449,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						}
 						else if(type == BiQuad::PEAKING || type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
 						{
-							LogF(L"No gain given in filter string %s%s", typeString, value);
+							LogF(L"No gain given in filter string %s%s", typeString.c_str(), value.c_str());
 							error = true;
 						}
 
@@ -457,7 +457,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						if(found)
 						{
 							if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
-								TraceF(L"Ignoring Q for filter of type %s", typeDescription);
+								TraceF(L"Ignoring Q for filter of type %s", typeDescription.c_str());
 							else
 							{
 								wstring qString = match.str(1);
@@ -470,7 +470,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						if(found)
 						{
 							if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
-								TraceF(L"Ignoring bandwidth for filter of type %s", typeDescription);
+								TraceF(L"Ignoring bandwidth for filter of type %s", typeDescription.c_str());
 							else
 							{
 								wstring bwString = match.str(1);
@@ -484,7 +484,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						if(found)
 						{
 							if(!(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF))
-								TraceF(L"Ignoring slope for filter of type %s", typeDescription);
+								TraceF(L"Ignoring slope for filter of type %s", typeDescription.c_str());
 							else
 							{
 								wstring slopeString = match.str(1);
@@ -497,7 +497,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						{
 							if(type == BiQuad::PEAKING || type == BiQuad::ALL_PASS)
 							{
-								LogF(L"No Q or bandwidth given in filter string %s%s", typeString, value);
+								LogF(L"No Q or bandwidth given in filter string %s%s", typeString.c_str(), value.c_str());
 								error = true;
 							}
 							else if(type == BiQuad::LOW_PASS || type == BiQuad::HIGH_PASS || type == BiQuad::BAND_PASS)
@@ -510,7 +510,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 							}
 							else if(type == BiQuad::NOTCH)
 							{
-								bandwidthOrQOrS = 31.0f; // only roughly matches RoomEQWizard's notch
+								bandwidthOrQOrS = 30.0f; // found out by experimentation with RoomEQWizard
 							}
 						}
 						else if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)

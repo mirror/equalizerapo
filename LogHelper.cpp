@@ -31,6 +31,7 @@ wstring LogHelper::logPath;
 bool LogHelper::enableTrace = false;
 FILE* LogHelper::presetFP = NULL;
 bool LogHelper::compact = false;
+bool LogHelper::useConsoleColors = false;
 
 void LogHelper::log(const char* file, int line, void* caller, bool trace, const wchar_t* format, ...)
 {
@@ -71,6 +72,15 @@ void LogHelper::log(const char* file, int line, void* caller, bool trace, const 
 		fp = presetFP;
 	}
 
+	if(useConsoleColors)
+	{
+		HANDLE con = GetStdHandle(STD_OUTPUT_HANDLE);
+		if(trace)
+			SetConsoleTextAttribute(con, 2); // Set console color to green
+		else
+			SetConsoleTextAttribute(con, 12); // Set console color to red
+	}
+
 	if(!compact)
 	{
 		SYSTEMTIME ___st;
@@ -89,6 +99,12 @@ void LogHelper::log(const char* file, int line, void* caller, bool trace, const 
 
 	fwprintf(fp, L"\n");
 
+	if(useConsoleColors)
+	{
+		HANDLE con = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(con, 7); // Set console color to light grey (default)
+	}
+
 	if(presetFP == NULL)
 		fclose(fp);
 }
@@ -100,11 +116,12 @@ void LogHelper::reset()
 	enableTrace = false;
 }
 
-void LogHelper::set(FILE* fp, bool enableTrace, bool compact)
+void LogHelper::set(FILE* fp, bool enableTrace, bool compact, bool useConsoleColors)
 {
 	LogHelper::initialized = true;
 
 	LogHelper::presetFP = fp;
 	LogHelper::enableTrace = enableTrace;
 	LogHelper::compact = compact;
+	LogHelper::useConsoleColors = useConsoleColors;
 }

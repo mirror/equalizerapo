@@ -6,3 +6,5 @@ cd Setup
 "%ProgramFiles%\NSIS\makensis.exe" Setup32.nsi
 "%ProgramFiles%\NSIS\makensis.exe" Setup64.nsi
 cd..
+
+pause

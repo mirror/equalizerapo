@@ -32,7 +32,7 @@ class LogHelper
 public:
 	static void log(const char* file, int line, void* caller, bool trace, const wchar_t* format, ...);
 	static void reset();
-	static void set(FILE* fp, bool enableTrace, bool compact);
+	static void set(FILE* fp, bool enableTrace, bool compact, bool useConsoleColors);
 
 private:
 	static bool initialized;
@@ -40,4 +40,5 @@ private:
 	static bool enableTrace;
 	static FILE* presetFP;
 	static bool compact;
+	static bool useConsoleColors;
 };

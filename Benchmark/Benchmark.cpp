@@ -58,7 +58,7 @@ int main(int argc, char** argv)
 
 		cmd.parse(argc, argv);
 
-		LogHelper::set(stderr, verboseArg.getValue(), true);
+		LogHelper::set(stderr, verboseArg.getValue(), true, true);
 
 		unsigned sampleRate;
 		unsigned channelCount;
