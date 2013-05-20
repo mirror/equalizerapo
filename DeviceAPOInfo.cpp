@@ -165,7 +165,7 @@ void DeviceAPOInfo::install()
 
 		RegistryHelper::writeValue(keyPath + L"\\FxProperties", fxTitleValueName, L"Equalizer APO");
 	}
-	else
+	else if(originalApoGuid != APOGUID_NOVALUE)
 	{
 		RegistryHelper::saveToFile(keyPath + L"\\FxProperties", guidValueName,
 			L"backup_" + StringHelper::replaceIllegalCharacters(deviceName) + L"_" + StringHelper::replaceIllegalCharacters(connectionName) + L".reg");
