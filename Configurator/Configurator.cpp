@@ -235,7 +235,7 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 					command += L"; ";
 
 				DeviceAPOInfo info = apoInfos[index][item.lParam];
-				command += StringHelper::replaceCharacters(info.deviceName + L" " + info.connectionName + L" " + info.deviceGuid, L";", L' ');
+				command += StringHelper::replaceCharacters(info.deviceName + L" " + info.connectionName + L" " + info.deviceGuid, L";", L" ");
 			}
 		}
 

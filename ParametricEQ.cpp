@@ -39,7 +39,7 @@ using namespace std;
 using namespace stdext;
 
 static wregex regexType(L"^\\s*ON\\s+([A-Za-z]+)");
-static wregex regexFreq(L"\\s+Fc\\s*([0-9.]+)\\s*H\\s*z");
+static wregex regexFreq(L"\\s+Fc\\s*([0-9.\u00A0]+)\\s*H\\s*z");
 static wregex regexGain(L"\\s+Gain\\s*([-+0-9.]+)\\s*dB");
 static wregex regexQ(L"\\s+Q\\s*([0-9.]+)");
 static wregex regexBW(L"\\s+BW\\s+Oct\\s*([0-9.]+)");
@@ -395,7 +395,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 			else if(key.find(L"Filter") == 0)
 			{
 				//Conversion to period as decimal mark, if needed
-				value = StringHelper::replaceCharacters(value, L",", L'.');
+				value = StringHelper::replaceCharacters(value, L",", L".");
 
 				wsmatch match;
 				wstring typeString;
@@ -547,7 +547,7 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 			else if(key == L"Preamp")
 			{
 				//Conversion to period as decimal mark, if needed
-				value = StringHelper::replaceCharacters(value, L",", L'.');
+				value = StringHelper::replaceCharacters(value, L",", L".");
 
 				float preamp_dB;
 				int matched = swscanf_s(value.c_str(), L" %f dB", &preamp_dB);
@@ -646,12 +646,14 @@ void ParametricEQ::process(float *output, float *input, unsigned frameCount)
 float ParametricEQ::getFreq(const wstring& freqString)
 {
 	float result;
-	int matched = swscanf_s(freqString.c_str(), L"%f", &result);
+	// remove thousand's separator for locales utilizing non-breaking space
+	wstring s = StringHelper::replaceCharacters(freqString, L"\u00A0", L"");
+	int matched = swscanf_s(s.c_str(), L"%f", &result);
 	if(matched == 1)
 	{
-		if(freqString.length() >= 5)
+		if(s.length() >= 5)
 		{
-			if(freqString[freqString.length() - 4] == L'.')
+			if(s[s.length() - 4] == L'.')
 			{
 				//Interpret as thousands separator because of Room EQ Wizard
 				result *= 1000.0f;

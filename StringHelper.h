@@ -25,7 +25,8 @@
 class StringHelper
 {
 public:
-	static std::wstring replaceCharacters(std::wstring s, std::wstring chars, wchar_t replacement);
+	// replaces any occurrence of a character from chars in s with the replacement string
+	static std::wstring replaceCharacters(std::wstring s, std::wstring chars, std::wstring replacement);
 	static std::wstring replaceIllegalCharacters(std::wstring filename);
 	static std::wstring toWString(std::string s, unsigned codepage);
 	static std::wstring toLowerCase(std::wstring s);

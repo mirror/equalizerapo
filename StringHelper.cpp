@@ -25,7 +25,7 @@
 
 using namespace std;
 
-wstring StringHelper::replaceCharacters(std::wstring s, std::wstring chars, wchar_t replacement)
+wstring StringHelper::replaceCharacters(wstring s, wstring chars, wstring replacement)
 {
 	wstring result;
 	result.reserve(s.length());
@@ -33,10 +33,10 @@ wstring StringHelper::replaceCharacters(std::wstring s, std::wstring chars, wcha
 	for(unsigned i=0; i<s.length(); i++)
 	{
 		wchar_t c = s[i];
-		if(chars.find(c) != -1)
-			c = replacement;
-
-		result += c;
+		if(chars.find(c) == -1)
+			result += c;
+		else
+			result += replacement;
 	}
 
 	return result;
@@ -44,7 +44,7 @@ wstring StringHelper::replaceCharacters(std::wstring s, std::wstring chars, wcha
 
 wstring StringHelper::replaceIllegalCharacters(wstring filename)
 {
-	return replaceCharacters(filename, L"<>:\"/\\|?*", '_');
+	return replaceCharacters(filename, L"<>:\"/\\|?*", L"_");
 }
 
 wstring StringHelper::toWString(string s, unsigned codepage)

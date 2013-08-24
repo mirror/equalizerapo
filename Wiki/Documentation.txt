@@ -120,3 +120,29 @@ Surround | 1 | 2 | 3 | | | | 4 | |
 
 Although it might be tempting to assign low frequency filters only to the subwoofer channel, this might not lead to the expected results. Many audio systems apply bass redirection after Equalizer APO has processed the signal, so filters applied to the subwoofer channel won't be effective for redirected sound. Furthermore, as crossover filters only gradually fade in, the low frequency audio might be played over multiple speakers, not just the subwoofer, reducing the effectivity of subwoofer-only filters. Therefore, to avoid these problems, it's recommended to <b>apply low frequency filters to all channels</b>.
 </div>
+
+<a name="troubleshooting"></a>
+# Troubleshooting
+
+This section describes approaches to solve possible problems impeding the successful operation of Equalizer APO.
+
+## Control Panel
+If you installed Equalizer APO and no changes to the configuration file lead to any changes in the signal, APOs might have been disabled for the device in the Control Panel.
+To check this, open Start Menu -> Control Panel -> Sound and double click on your audio device to open the properties dialog.
+
+If the dialog has an "Enhancements" tab, go to that tab. You should see a view similar to the left screenshot below. Make sure the "Disable all enhancements" check box (red box) is unchecked, even if you don't use any of the enhancements in the list.
+
+If the dialog does not have an "Enhancements" tab, go to the "Advanced" tab. You should see a view similar to the right screenshot below. Make sure the "Enable audio enhancements" check box (red box) is checked.
+
+<a href="/p/equalizerapo/wiki/Images/attachment/EnhancementsTab.png"><img src="/p/equalizerapo/wiki/Images/attachment/EnhancementsTab.png/thumb"></a><a href="/p/equalizerapo/wiki/Images/attachment/NoEnhancementsTab.png"><img src="/p/equalizerapo/wiki/Images/attachment/NoEnhancementsTab.png/thumb"></a>
+
+## Log files
+When Equalizer APO encounters a critical problem while running, it writes a line into the log file C:\\Windows\\ServiceProfiles\\LocalService\\AppData\\Local\\Temp\\EqualizerAPO.log . So, in case of problems this file might contain useful information. Under normal circumstances, this file does not even exist, as it will only be created when an error occurs.
+
+To get more information, you can enable trace messages, which means that Equalizer APO will write lines marked with "(TRACE)" to the file even when running normally. To do this, open regedit.exe, go to HKEY_LOCAL_MACHINE\\SOFTWARE\\EqualizerAPO and set the value EnableTrace to true. Then, when playing back or recording audio via a device that Equalizer APO is installed to, information about initialization and the configuration files will be output to the log file. This might help e.g. to see if the configuration files are interpreted as intended. After you have finished, you should set EnableTrace back to false, so that the log file does not grow unnecessarily.
+
+## Hardware-accelerated OpenAL
+Normally, applications utilizing OpenAL for their audio output do not present a problem as they will often use DirectSound as their backend, which supports APOs. Some sound card manufacturers however provide OpenAL libraries with hardware-acceleration that access the hardware directly, circumventing APOs. There is no way to enable APO support for hardware-accelerated OpenAL, so the only solution for this is to either switch to another output library, if the application supports that, or to make OpenAL fall back to software.
+
+To force OpenAL to fall back to software, the OpenAL32.dll may be replaced with a different one, for example from http://kcat.strangesoft.net/openal.html
+A way to globally disable OpenAL hardware-acceleration however is to move or rename the vendor-specific OpenAL library in C:\\Windows\\System32 or C:\\Windows\\SysWOW64, which is often called like *_oal.dll, for example ct_oal.dll . Warning: This is a modification to the sound driver, which is of course not officially supported and can lead to unexpected results.
