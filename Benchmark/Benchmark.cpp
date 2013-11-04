@@ -38,6 +38,8 @@ int main(int argc, char** argv)
 	{
 		stringstream versionStream;
 		versionStream << MAJOR << "." << MINOR;
+		if(REVISION != 0)
+			versionStream << "." << REVISION;
 		TCLAP::CmdLine cmd("Benchmark generates a linear sine sweep or reads from the given input file. "
 			"It then filters the waveform using the Equalizer APO filter configuration "
 			"and finally writes to the given file or into the user's temp directory.", ' ', versionStream.str());
@@ -67,7 +69,11 @@ int main(int argc, char** argv)
 		float length;
 		float* buf;
 
-		printf("Benchmark %d.%d\n", MAJOR, MINOR);
+		if(REVISION == 0)
+			printf("Benchmark %d.%d\n", MAJOR, MINOR);
+		else
+			printf("Benchmark %d.%d.%d\n", MAJOR, MINOR, REVISION);
+
 		printf("Run \"%s -h\" to show usage info\n", argv[0]);
 		printf("\n");
 

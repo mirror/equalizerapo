@@ -31,6 +31,8 @@ class DeviceAPOInfo
 public:
 	static std::vector<DeviceAPOInfo> loadAllInfos(bool input);
 	bool load(const std::wstring& deviceGuid);
+	bool canBeUpgraded();
+	bool isExperimental();
 	void install();
 	void uninstall();
 
@@ -41,4 +43,9 @@ public:
 	bool isInput;
 	bool isInstalled;
 	bool isLFX;
+	bool isAPO2;
+	bool foundAPO2Values;
+
+private:
+	bool tryAPOGuid(const std::wstring& keyPath, const wchar_t* valueName, bool lfx, bool apo2);
 };

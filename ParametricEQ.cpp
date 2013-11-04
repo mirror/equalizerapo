@@ -81,6 +81,8 @@ ParametricEQ::ParametricEQ()
 	filterNameToTypeMap[L"BP"] = BiQuad::BAND_PASS;
 	filterNameToTypeMap[L"LS"] = BiQuad::LOW_SHELF;
 	filterNameToTypeMap[L"HS"] = BiQuad::HIGH_SHELF;
+	filterNameToTypeMap[L"LSC"] = BiQuad::LOW_SHELF;
+	filterNameToTypeMap[L"HSC"] = BiQuad::HIGH_SHELF;
 	filterNameToTypeMap[L"NO"] = BiQuad::NOTCH;
 	filterNameToTypeMap[L"AP"] = BiQuad::ALL_PASS;
 
@@ -517,12 +519,15 @@ void ParametricEQ::loadConfig(const wstring& path, vector<bool> selectedChannels
 						{
 							// Maximum S is 1 for 12 dB
 							bandwidthOrQOrS /= 12.0f;
-							// frequency adjustment for DCX2496
-							float centerFreqFactor = pow(10.0f, abs(gain) / 80.0f / bandwidthOrQOrS);
-							if(type == BiQuad::LOW_SHELF)
-								freq *= centerFreqFactor;
-							else
-								freq /= centerFreqFactor;
+							if(typeString[typeString.length()-1] != L'C')
+							{
+								// frequency adjustment for DCX2496
+								float centerFreqFactor = pow(10.0f, abs(gain) / 80.0f / bandwidthOrQOrS);
+								if(type == BiQuad::LOW_SHELF)
+									freq *= centerFreqFactor;
+								else
+									freq /= centerFreqFactor;
+							}
 						}
 
 						if(!error)

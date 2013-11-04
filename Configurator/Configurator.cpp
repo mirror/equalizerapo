@@ -109,13 +109,13 @@ void Configurator::onInitDialog(HWND hDlg)
 				if(it->isInstalled)
 				{
 					ListView_SetCheckState(deviceList, itemCount, TRUE);
-					if(!it->isInput && it->isLFX)
+					if(it->canBeUpgraded())
 						LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 					else
 						LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 					ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
 				}
-				else if(it->originalApoGuid == APOGUID_NOKEY)
+				else if(it->isExperimental())
 				{
 					LoadStringW(hInstance, IDS_CAN_BE_INSTALLED_EXPERIMENTAL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 					ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
@@ -156,11 +156,11 @@ void Configurator::onLvnItemChanged(unsigned sourceId, LPNMLISTVIEW info)
 			LoadStringW(hInstance, IDS_WILL_BE_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 		else if(!checked && apoInfo.isInstalled)
 			LoadStringW(hInstance, IDS_WILL_BE_UNINSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-		else if(apoInfo.isInstalled && !apoInfo.isInput && apoInfo.isLFX)
+		else if(apoInfo.isInstalled && apoInfo.canBeUpgraded())
 			LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 		else if(apoInfo.isInstalled)
 			LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-		else if(apoInfo.originalApoGuid == APOGUID_NOKEY)
+		else if(apoInfo.isExperimental())
 			LoadStringW(hInstance, IDS_CAN_BE_INSTALLED_EXPERIMENTAL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 		else
 			LoadStringW(hInstance, IDS_CAN_BE_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
@@ -196,7 +196,7 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 						info.install();
 					else if(!ListView_GetCheckState(deviceList, i) && info.isInstalled)
 						info.uninstall();
-					else if(ListView_GetCheckState(deviceList, i) && !info.isInput && info.isLFX)
+					else if(ListView_GetCheckState(deviceList, i) && info.canBeUpgraded())
 					{
 						info.uninstall();
 						info.load(info.deviceGuid);
@@ -269,6 +269,33 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 			LoadStringW(hInstance, IDS_AFTERINSTALL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 			MessageBoxW(hDlg, stringBuf, L"Info", MB_ICONINFORMATION | MB_OK);
 		}
+		else if(sourceId == IDOK)
+		{
+			wchar_t captionBuf[255];
+			LoadStringW(hInstance, IDS_SHOULD_REBOOT_CAPTION, captionBuf, sizeof(captionBuf)/sizeof(wchar_t));
+			wchar_t stringBuf[255];
+			LoadStringW(hInstance, IDS_SHOULD_REBOOT, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+			if(MessageBoxW(hDlg, stringBuf, captionBuf, MB_ICONQUESTION | MB_YESNO) == IDYES)
+			{
+				HANDLE tokenHandle;
+				if(OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &tokenHandle))
+				{
+					LUID luid;
+					if(LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &luid))
+					{
+						TOKEN_PRIVILEGES tp;
+						tp.PrivilegeCount = 1;
+						tp.Privileges[0].Luid = luid;
+						tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+
+						if(AdjustTokenPrivileges(tokenHandle, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
+							InitiateShutdownW(NULL, NULL, 0, SHUTDOWN_RESTART | SHUTDOWN_GRACE_OVERRIDE, SHTDN_REASON_MAJOR_APPLICATION | SHTDN_REASON_MINOR_MAINTENANCE);
+					}
+
+					CloseHandle(tokenHandle);
+				}
+			}
+		}
 
 		return true;
 	}
@@ -304,7 +331,7 @@ bool Configurator::isChanged()
 			item.mask = LVIF_PARAM;
 			ListView_GetItem(deviceList, &item);
 			if((ListView_GetCheckState(deviceList, i) != 0) != apoInfos[index][item.lParam].isInstalled
-				|| ListView_GetCheckState(deviceList, i) && apoInfos[index][item.lParam].isInstalled && !apoInfos[index][item.lParam].isInput && apoInfos[index][item.lParam].isLFX)
+				|| ListView_GetCheckState(deviceList, i) && apoInfos[index][item.lParam].isInstalled && apoInfos[index][item.lParam].canBeUpgraded())
 			{
 				changed = true;
 				break;
@@ -330,7 +357,7 @@ bool Configurator::hasUpgrades()
 			item.iSubItem = 0;
 			item.mask = LVIF_PARAM;
 			ListView_GetItem(deviceList, &item);
-			if(ListView_GetCheckState(deviceList, i) && apoInfos[index][item.lParam].isInstalled && !apoInfos[index][item.lParam].isInput && apoInfos[index][item.lParam].isLFX)
+			if(ListView_GetCheckState(deviceList, i) && apoInfos[index][item.lParam].isInstalled && apoInfos[index][item.lParam].canBeUpgraded())
 			{
 				hasUpgrades = true;
 				break;

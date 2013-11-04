@@ -31,6 +31,7 @@ public:
 	static std::wstring readValue(std::wstring key, std::wstring valuename);
 	static unsigned long readDWORDValue(std::wstring key, std::wstring valuename);
 	static void writeValue(std::wstring key, std::wstring valuename, std::wstring value);
+	static void writeMultiValue(std::wstring key, std::wstring valuename, std::wstring value);
 	static void deleteValue(std::wstring key, std::wstring valuename);
 	static void createKey(std::wstring key);
 	static void deleteKey(std::wstring key);

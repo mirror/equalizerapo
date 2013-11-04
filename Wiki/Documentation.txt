@@ -57,16 +57,16 @@ Example:
 	Preamp: -5 dB
 	#Filters only for left channel
 	Include: demo.txt
-	Filter  3: ON  LS       Fc     300 Hz  Gain   5.0 dB
+	Filter  1: ON  LS       Fc     300 Hz  Gain   5.0 dB
 	
 	Channel: 2 C
 	#Filters for second(right) and center channel
-	Filter  4: ON  HP       Fc     30 Hz
-	Filter  5: ON  LPQ      Fc     10000 Hz  Q  0.400
+	Filter  1: ON  HP       Fc     30 Hz
+	Filter  2: ON  LPQ      Fc     10000 Hz  Q  0.400
 	
 	Device: Microphone
 	#From here, the lines only apply to microphone devices
-	Filter 1: ON  NO       Fc     50 Hz
+	Filter: ON  NO       Fc     50 Hz
 
 The commands currently defined are:
 
@@ -74,8 +74,8 @@ Command | Parameters | Description
 -|-|-
 Preamp | ***Negative number*** dB | Sets a preamplification value in decibels. This is useful when you are using filters with positive gain, to make sure that no clipping occurs. Since version 0.8, when multiple preamps apply to the same channel, the resulting preamp is the sum in dB.
 Include | ***File name*** | Loads the given file as a configuration file. Instead of directly replacing config.txt, it can be better to load the actual filter definition from a separate file so that you can e.g. set a preamp before.
-Filter ***n*** | ON ***Type*** Fc ***Frequency*** Hz Gain ***Gain value*** dB Q ***Q value*** | Adds a filter of the given type with the given frequency, gain and Q. The supported filter types and their parameters are listed <a href="filter_types">below</a>. This is the filter text format used by Room EQ Wizard for equalizer type "Generic".
-Filter ***n*** | ON ***Type*** Fc ***Frequency*** Hz Gain ***Gain value*** dB BW Oct ***Bandwidth value*** | Adds a filter of the given type with the given frequency, gain and bandwidth. The supported filter types and their parameters are listed <a href="filter_types">below</a>. This is the filter text format used by Room EQ Wizard for equalizer type "FBQ2496".
+Filter ***n*** | ON ***Type*** Fc ***Frequency*** Hz Gain ***Gain value*** dB Q ***Q value*** | Adds a filter of the given type with the given frequency, gain and Q. The supported filter types and their parameters are listed <a href="filter_types">below</a>. This is the filter text format used by Room EQ Wizard for equalizer type "Generic". The filter number (n) is not interpreted and can be omitted.
+Filter ***n*** | ON ***Type*** Fc ***Frequency*** Hz Gain ***Gain value*** dB BW Oct ***Bandwidth value*** | Adds a filter of the given type with the given frequency, gain and bandwidth. The supported filter types and their parameters are listed <a href="filter_types">below</a>. This is the filter text format used by Room EQ Wizard for equalizer type "FBQ2496". The filter number (n) is not interpreted and can be omitted.
 Device | ***Device identification pattern*** | Matches the given pattern to the connection name, device name and GUID of the current output device. If the pattern does not match, all following commands except Device commands are ignored. The pattern consists of words separated by space that must all be found in the string "***Device_name*** ***Connection_name*** ***GUID***". Multiple patterns of which one must match can be specified by separating the patterns with ';'. The special pattern "all" matches always. The benchmark application uses the device name "Benchmark" and connection name "File output". The easiest way to generate a Device command is to use the button in the Configurator application. (added in version 0.7)
 Channel | *** Channel positions *** | Selects the channels to which the following Filter and Preamp commands will be applied. Channel positions can be given by identifier (acronym of 1 up to 3 characters) or by number (counted from 1). The supported channel configurations are listed <a href="channel_configs">below</a>. If a channel configuration is not supported, channels can only be selected by number. Multiple channels can be specified by separating with space. The special position "all" selects all channels. (added in version 0.8)
 
@@ -84,7 +84,7 @@ Lines that contain any command name not in this list are silently ignored.
 <a name="filter_types"></a>
 # Filter types
 
-The following table lists the filter types supported by Equalizer APO since version 0.8. The columns Fc, Gain and Q/BW show the parameters supported by the filter type. An 'X' means that the parameter is required while an 'O' denotes an optional parameter. The filter types supported cover all filters of the "Generic" and the "FBQ2496" equalizer type. Other equalizer types may also be compatible if their filter text format is. There is one exception however: The band-pass filter supported by Equalizer APO is a real band-pass filter that does not support gain, like low/high-pass filters, but unlike the DCX2496's "BP" filter, which is actually a peaking filter.
+The following table lists the filter types supported by Equalizer APO since version 0.8.1. The columns Fc, Gain and Q/BW show the parameters supported by the filter type. An 'X' means that the parameter is required while an 'O' denotes an optional parameter. The filter types supported cover all filters of the "Generic" and the "FBQ2496" equalizer type. Other equalizer types may also be compatible if their filter text format is. There is one exception however: The band-pass filter supported by Equalizer APO is a real band-pass filter that does not support gain, like low/high-pass filters, but unlike the DCX2496's "BP" filter, which is actually a peaking filter.
 
 Type | Description | Fc | Gain | Q/BW | Example for filter parameters
 - | - | - | - | - | -
@@ -92,8 +92,8 @@ PK<br>Modal<br>PEQ | Peaking filter<br>(Parametric EQ) | X | X | X | ON  PK     
 LP<br>LPQ | Low-pass filter | X | | O | ON  LP       Fc   8000 Hz<br>ON  LPQ      Fc  10000 Hz  Q  0.400
 HP<br>HPQ | High-pass filter | X | | O | ON  HP       Fc    30.0 Hz<br>ON  HPQ      Fc    20.0 Hz  Q  0.500
 BP | Band-pass filter<br>(not from DCX2496) | X | | O | ON BP Fc 1000 Hz Q 0.100
-LS | Low-shelf filter<br>(with center freq.) | X | X | | ON  LS       Fc     300 Hz  Gain   5.0 dB
-HS | High-shelf filter<br>(with center freq.) | X | X | | ON  HS       Fc   1000 Hz  Gain  -3.0 dB
+LS<br>LSC x dB | Low-shelf filter<br>(with center freq.,<br>x dB per oct. (LSC)) | X | X | | ON  LS       Fc     300 Hz  Gain   5.0 dB<br>ON  LSC 10.8 dB Fc     300 Hz  Gain   5.0 dB
+HS<br>HSC x dB | High-shelf filter<br>(with center freq.,<br>x dB per oct. (HSC)) | X | X | | ON  HS       Fc   1000 Hz  Gain  -3.0 dB<br>ON  HSC 6 dB Fc     100 Hz  Gain   -6.0 dB
 LS 6dB<br>LS 12dB | Low-shelf filter<br>(6 / 12 dB per octave<br>with corner freq.) | X | X | | ON  LS 6dB   Fc    50.0 Hz  Gain   7.2 dB<br>ON  LS 12dB  Fc   2000 Hz  Gain  -5.0 dB
 HS 6dB<br>HS 12dB | High-shelf filter<br>(6 / 12 dB per octave<br>with corner freq.) | X | X | | ON  HS 6dB   Fc  12000 Hz  Gain  10.0 dB<br>ON  HS 12dB  Fc     500 Hz  Gain   5.0 dB
 NO | Notch filter | X | | O | ON  NO       Fc     800 Hz

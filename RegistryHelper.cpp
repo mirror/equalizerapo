@@ -131,6 +131,29 @@ void RegistryHelper::writeValue(wstring key, wstring valuename, wstring value)
 		throw RegistryException(L"Error while writing to registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L": " + getSystemErrorString(status));
 }
 
+void RegistryHelper::writeMultiValue(wstring key, wstring valuename, wstring value)
+{
+	LSTATUS status;
+	HKEY keyHandle;
+	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_SET_VALUE | KEY_WOW64_64KEY, &keyHandle);
+	if(status != ERROR_SUCCESS)
+		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+
+	wchar_t* data = new wchar_t[value.size() + 2];
+	value._Copy_s(data, (value.size()+2)*sizeof(wchar_t), value.size());
+	data[value.size()] = L'\0';
+	data[value.size()+1] = L'\0';
+
+	status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_MULTI_SZ, (const BYTE*)data, (DWORD)((value.size()+2)*sizeof(wchar_t)));
+
+	delete data;
+
+	RegCloseKey(keyHandle);
+
+	if(status != ERROR_SUCCESS)
+		throw RegistryException(L"Error while writing to registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L": " + getSystemErrorString(status));
+}
+
 void RegistryHelper::deleteValue(wstring key, wstring valuename)
 {
 	LSTATUS status;

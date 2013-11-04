@@ -5,6 +5,12 @@
 
 !searchparse /file ..\version.h `#define MAJOR ` MAJOR
 !searchparse /file ..\version.h `#define MINOR ` MINOR
+!searchparse /file ..\version.h `#define REVISION ` REVISION
+!if ${REVISION} == 0
+!define VERSION ${MAJOR}.${MINOR}
+!else
+!define VERSION ${MAJOR}.${MINOR}.${REVISION}
+!endif
 
 !define REGPATH "Software\EqualizerAPO"
 !define UNINST_REGPATH "Software\Microsoft\Windows\CurrentVersion\Uninstall\EqualizerAPO"
@@ -13,7 +19,7 @@
 ;General
 
   ;Name and file
-  Name "Equalizer APO ${MAJOR}.${MINOR}"
+  Name "Equalizer APO ${VERSION}"
 
   ;Request application privileges for Windows Vista
   RequestExecutionLevel admin
@@ -80,7 +86,7 @@ Function .onInit
     
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
   ;Try to replace version number in start menu folder
-  ${REReplace} $0 "Equalizer APO [0-9]+\.[0-9]+" "$StartMenuFolder" "Equalizer APO ${MAJOR}.${MINOR}" 1
+  ${REReplace} $0 "Equalizer APO [0-9]+\.[0-9]+(?:\.[0-9]+)?" "$StartMenuFolder" "Equalizer APO ${VERSION}" 1
   StrCmp $0 "" +2 0
     StrCpy $StartMenuFolder "$0"
   
@@ -141,7 +147,7 @@ Section "Install" SecInstall
   !insertmacro MUI_STARTMENU_WRITE_END
   
   WriteRegStr HKLM ${UNINST_REGPATH} "DisplayName" "Equalizer APO"
-  WriteRegStr HKLM ${UNINST_REGPATH} "DisplayVersion" "${MAJOR}.${MINOR}"
+  WriteRegStr HKLM ${UNINST_REGPATH} "DisplayVersion" "${VERSION}"
   WriteRegStr HKLM ${UNINST_REGPATH} "UninstallString" '"$INSTDIR\Uninstall.exe"'
   WriteRegDWORD HKLM ${UNINST_REGPATH} "NoModify" 1
   WriteRegDWORD HKLM ${UNINST_REGPATH} "NoRepair" 1

@@ -13,4 +13,4 @@ Function initCheck
 	Abort
 FunctionEnd
 
-OutFile "EqualizerAPO64-${MAJOR}.${MINOR}.exe"
+OutFile "EqualizerAPO64-${VERSION}.exe"
