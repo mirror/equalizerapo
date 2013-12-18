@@ -28,6 +28,8 @@
 
 using namespace std;
 
+DWORD RegistryHelper::windowsVersion = 0;
+
 wstring RegistryHelper::readValue(wstring key, wstring valuename)
 {
 	wstring result;
@@ -213,7 +215,7 @@ void RegistryHelper::makeWritable(wstring key)
 	PSID sid = NULL;
 	SID_IDENTIFIER_AUTHORITY authority = SECURITY_NT_AUTHORITY;
 	if(!AllocateAndInitializeSid(&authority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
-		0, 0, 0, 0, 0, 0, &sid)) 
+		0, 0, 0, 0, 0, 0, &sid))
 		throw RegistryException(L"Error in AllocateAndInitializeSid while ensuring writability");
 
 	EXPLICIT_ACCESS ea;
@@ -225,14 +227,14 @@ void RegistryHelper::makeWritable(wstring key)
 	ea.Trustee.ptstrName = (LPWSTR)sid;
 
 	PACL acl = NULL;
-	if(ERROR_SUCCESS != SetEntriesInAcl(1, &ea, oldAcl, &acl)) 
+	if(ERROR_SUCCESS != SetEntriesInAcl(1, &ea, oldAcl, &acl))
 		throw RegistryException(L"Error in SetEntriesInAcl while ensuring writability");
 
-	PSECURITY_DESCRIPTOR sd = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH); 
-	if(NULL == sd) 
+	PSECURITY_DESCRIPTOR sd = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
+	if(NULL == sd)
 		throw RegistryException(L"Error in LocalAlloc while ensuring writability");
 
-	if(!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION)) 
+	if(!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION))
 		throw RegistryException(L"Error in InitializeSecurityDescriptor while ensuring writability");
 
 	if(!SetSecurityDescriptorDacl(sd, TRUE, acl, FALSE))
@@ -272,17 +274,17 @@ void RegistryHelper::takeOwnership(wstring key)
 	if(status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
 
-	PSECURITY_DESCRIPTOR sd = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH); 
-	if(NULL == sd) 
+	PSECURITY_DESCRIPTOR sd = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
+	if(NULL == sd)
 		throw RegistryException(L"Error in SetPrivilege while taking ownership");
 
-	if(!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION)) 
+	if(!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION))
 		throw RegistryException(L"Error in InitializeSecurityDescriptor while taking ownership");
 
 	PSID sid = NULL;
 	SID_IDENTIFIER_AUTHORITY authority = SECURITY_NT_AUTHORITY;
 	if(!AllocateAndInitializeSid(&authority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
-		0, 0, 0, 0, 0, 0, &sid)) 
+		0, 0, 0, 0, 0, 0, &sid))
 		throw RegistryException(L"Error in AllocateAndInitializeSid while taking ownership");
 
 	if(!SetSecurityDescriptorOwner(sd, sid, FALSE))
@@ -403,6 +405,32 @@ wstring RegistryHelper::getGuidString(GUID guid)
 	CoTaskMemFree(temp);
 
 	return result;
+}
+
+bool RegistryHelper::isWindowsVersionAtLeast(unsigned major, unsigned minor)
+{
+	if(windowsVersion == 0)
+	{
+		DWORD handle;
+		DWORD size = GetFileVersionInfoSizeW(L"kernel32.dll", &handle);
+		if(size != 0)
+		{
+			void* data = malloc(size);
+			if(GetFileVersionInfo(L"kernel32.dll", handle, size, data))
+			{
+				VS_FIXEDFILEINFO* info;
+				UINT len;
+				if(VerQueryValueW(data, L"\\", (LPVOID*)&info, &len))
+					windowsVersion = info->dwProductVersionMS;
+			}
+			free(data);
+		}
+	}
+
+	// this will only work for major and minor up to 99
+	DWORD compareVersion = ((major / 10) << 20) + ((major % 10) << 16) + ((minor / 10) << 4) + (minor % 10);
+
+	return windowsVersion >= compareVersion;
 }
 
 wstring RegistryHelper::getSystemErrorString(long status)

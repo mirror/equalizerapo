@@ -102,8 +102,9 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid)
 		if(!found)
 			found = tryAPOGuid(keyPath, gfxGuidValueName2, false, true);
 
-		foundAPO2Values = RegistryHelper::valueExists(keyPath + L"\\FxProperties", lfxGuidValueName2)
-			|| RegistryHelper::valueExists(keyPath + L"\\FxProperties", gfxGuidValueName2);
+		foundAPO2Values = RegistryHelper::isWindowsVersionAtLeast(6, 3) // Windows 8.1
+			&& (RegistryHelper::valueExists(keyPath + L"\\FxProperties", lfxGuidValueName2)
+			|| RegistryHelper::valueExists(keyPath + L"\\FxProperties", gfxGuidValueName2));
 
 		if(found)
 		{

@@ -43,9 +43,11 @@ public:
 	static unsigned long valueCount(std::wstring key);
 	static void saveToFile(std::wstring key, std::wstring valuename, std::wstring filepath);
 	static std::wstring getGuidString(GUID guid);
+	static bool isWindowsVersionAtLeast(unsigned major, unsigned minor);
 
 private:
 	static std::wstring getSystemErrorString(long status);
+	static unsigned long windowsVersion;
 };
 
 class RegistryException

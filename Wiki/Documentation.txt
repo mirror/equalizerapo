@@ -1,4 +1,4 @@
-Welcome to the Wiki of Equalizer APO. This is currently the only documentation resource for this project. To begin using Equalizer APO, you should read the <a href="#install_tutorial">tutorials</a>.
+Welcome to the Wiki of Equalizer APO. This is the documentation for users of Equalizer APO. Developers might also be interested in reading the [developer documentation](https://sourceforge.net/p/equalizerapo/wiki/Developer%20documentation/). To begin using Equalizer APO, you should read the <a href="#install_tutorial">tutorials</a>.
 
 **Table of contents:**
 
