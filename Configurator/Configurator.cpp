@@ -241,12 +241,12 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 
 		OpenClipboard(hDlg);
 
-		HGLOBAL hData = GlobalAlloc(GMEM_MOVEABLE, (command.length() + 1) * sizeof(wchar_t)); 
+		HGLOBAL hData = GlobalAlloc(GMEM_MOVEABLE, (command.length() + 1) * sizeof(wchar_t));
 		wchar_t* data = (wchar_t*)GlobalLock(hData);
-		memcpy(data, command.c_str(), (command.length() + 1) * sizeof(wchar_t)); 
-	    GlobalUnlock(data); 
- 
-		SetClipboardData(CF_UNICODETEXT, hData); 
+		memcpy(data, command.c_str(), (command.length() + 1) * sizeof(wchar_t));
+		GlobalUnlock(data);
+
+		SetClipboardData(CF_UNICODETEXT, hData);
 
 		CloseClipboard();
 	}
@@ -269,7 +269,7 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 			LoadStringW(hInstance, IDS_AFTERINSTALL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 			MessageBoxW(hDlg, stringBuf, L"Info", MB_ICONINFORMATION | MB_OK);
 		}
-		else if(sourceId == IDOK)
+		else if(sourceId == IDOK && RegistryHelper::isWindowsVersionAtLeast(6, 3)) // Windows 8.1
 		{
 			wchar_t captionBuf[255];
 			LoadStringW(hInstance, IDS_SHOULD_REBOOT_CAPTION, captionBuf, sizeof(captionBuf)/sizeof(wchar_t));
