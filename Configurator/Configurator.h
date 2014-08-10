@@ -22,7 +22,7 @@
 #include "resource.h"
 #include <string>
 #include <vector>
-#include "../DeviceAPOInfo.h"
+#include "DeviceAPOInfo.h"
 
 class Configurator
 {

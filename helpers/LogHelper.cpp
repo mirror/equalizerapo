@@ -33,7 +33,7 @@ FILE* LogHelper::presetFP = NULL;
 bool LogHelper::compact = false;
 bool LogHelper::useConsoleColors = false;
 
-void LogHelper::log(const char* file, int line, void* caller, bool trace, const wchar_t* format, ...)
+void LogHelper::log(const char* file, int line, const void* caller, bool trace, const wchar_t* format, ...)
 {
 	if(!initialized)
 	{
@@ -85,8 +85,9 @@ void LogHelper::log(const char* file, int line, void* caller, bool trace, const 
 	{
 		SYSTEMTIME ___st;
 		GetLocalTime(&___st);
-		fwprintf(fp, L"%04d-%02d-%02d %02d:%02d:%02d.%03d %08X (%S:%d): ",
-			___st.wYear, ___st.wMonth, ___st.wDay, ___st.wHour, ___st.wMinute, ___st.wSecond, ___st.wMilliseconds, caller, file, line);
+		DWORD threadId = GetCurrentThreadId();
+		fwprintf(fp, L"%04d-%02d-%02d %02d:%02d:%02d.%03d %d %08X (%S:%d): ",
+			___st.wYear, ___st.wMonth, ___st.wDay, ___st.wHour, ___st.wMinute, ___st.wSecond, ___st.wMilliseconds, threadId, caller, file, line);
 	}
 
 	if(trace)

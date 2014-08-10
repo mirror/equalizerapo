@@ -1,3 +1,21 @@
+/*
+	This file is part of EqualizerAPO, a system-wide equalizer.
+	Copyright (C) 2013  Jonas Thedering
+
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along
+	with this program; if not, write to the Free Software Foundation, Inc.,
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+*/
 
 #define _USE_MATH_DEFINES
 #include <cmath>
@@ -6,18 +24,18 @@
 
 using namespace std;
 
-BiQuad::BiQuad(Type type, float dbGain, float freq, float srate, float bandwidthOrQOrS, bool isBandwidth)
+BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandwidthOrQOrS, bool isBandwidth)
 {
-    float A;
+    double A;
 	if(type == PEAKING || type == LOW_SHELF || type == HIGH_SHELF)
 		A = pow(10, dbGain / 40);
 	else
 		A = pow(10, dbGain / 20);
-    float omega = 2 * (float)M_PI * freq / srate;
-    float sn = sin(omega);
-    float cs = cos(omega);
-	float alpha;
-	float beta = -1;
+    double omega = 2 * M_PI * freq / srate;
+    double sn = sin(omega);
+    double cs = cos(omega);
+	double alpha;
+	double beta = -1;
 
 	if (type == LOW_SHELF || type == HIGH_SHELF) // S
 	{
@@ -25,11 +43,11 @@ BiQuad::BiQuad(Type type, float dbGain, float freq, float srate, float bandwidth
 		beta = 2 * sqrt(A) * alpha;
 	}
 	else if(isBandwidth) // BW
-		alpha = sn * sinh((float)M_LN2/2 * bandwidthOrQOrS * omega / sn);
+		alpha = sn * sinh(M_LN2/2 * bandwidthOrQOrS * omega / sn);
 	else // Q
 		alpha = sn / (2 * bandwidthOrQOrS);
-    
-	float b0, b1, b2, a0, a1, a2;
+
+	double b0, b1, b2, a0, a1, a2;
 
 	switch(type)
 	{
@@ -99,11 +117,11 @@ BiQuad::BiQuad(Type type, float dbGain, float freq, float srate, float bandwidth
 		break;
 	}
 
-    this->a0 = b0 /a0;
-    this->a[0] = b1 /a0;
-    this->a[1] = b2 /a0;
-    this->a[2] = -a1 /a0;
-    this->a[3] = -a2 /a0;
+    this->a0 = float(b0 / a0);
+    this->a[0] = float(b1 / a0);
+    this->a[1] = float(b2 / a0);
+    this->a[2] = float(a1 / a0);
+    this->a[3] = float(a2 / a0);
 
 	x1 = 0;
 	x2 = 0;

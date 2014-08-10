@@ -19,11 +19,10 @@
 
 #include <fstream>
 #include <sstream>
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
 #include <ObjBase.h>
 #include <aclapi.h>
 
+#include "StringHelper.h"
 #include "RegistryHelper.h"
 
 using namespace std;
@@ -34,25 +33,22 @@ wstring RegistryHelper::readValue(wstring key, wstring valuename)
 {
 	wstring result;
 
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, KEY_QUERY_VALUE | KEY_WOW64_64KEY);
 
+	LSTATUS status;
 	DWORD type;
 	DWORD bufSize;
 	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
 	if(status != ERROR_SUCCESS)
 	{
 		RegCloseKey(keyHandle);
-		throw RegistryException(L"Error while reading registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
 	if(type != REG_SZ)
 	{
 		RegCloseKey(keyHandle);
-		throw RegistryException(L"Registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L" has wrong type");
+		throw RegistryException(L"Registry value " + key + L"\\" + valuename + L" has wrong type");
 	}
 
 	wchar_t* buf = new wchar_t[bufSize / sizeof(wchar_t) + 1];
@@ -63,7 +59,7 @@ wstring RegistryHelper::readValue(wstring key, wstring valuename)
 	if(status != ERROR_SUCCESS)
 	{
 		delete buf;
-		throw RegistryException(L"Error while reading registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
 	//Remove zero-termination
@@ -79,25 +75,22 @@ unsigned long RegistryHelper::readDWORDValue(wstring key, wstring valuename)
 {
 	unsigned long result;
 
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, KEY_QUERY_VALUE | KEY_WOW64_64KEY);
 
+	LSTATUS status;
 	DWORD type;
 	DWORD bufSize;
 	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
 	if(status != ERROR_SUCCESS)
 	{
 		RegCloseKey(keyHandle);
-		throw RegistryException(L"Error while reading registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
 	if(type != REG_DWORD)
 	{
 		RegCloseKey(keyHandle);
-		throw RegistryException(L"Registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L" has wrong type");
+		throw RegistryException(L"Registry value " + key + L"\\" + valuename + L" has wrong type");
 	}
 
 	BYTE* buf = new BYTE[bufSize];
@@ -108,7 +101,7 @@ unsigned long RegistryHelper::readDWORDValue(wstring key, wstring valuename)
 	if(status != ERROR_SUCCESS)
 	{
 		delete buf;
-		throw RegistryException(L"Error while reading registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
 	result = ((unsigned long*)buf)[0];
@@ -119,93 +112,81 @@ unsigned long RegistryHelper::readDWORDValue(wstring key, wstring valuename)
 
 void RegistryHelper::writeValue(wstring key, wstring valuename, wstring value)
 {
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_SET_VALUE | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
 
-	status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_SZ, (const BYTE*)value.c_str(), (DWORD)((value.size()+1)*sizeof(wchar_t)));
+	LSTATUS status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_SZ, (const BYTE*)value.c_str(), (DWORD)((value.size()+1)*sizeof(wchar_t)));
 
 	RegCloseKey(keyHandle);
 
 	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while writing to registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while writing to registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 }
 
 void RegistryHelper::writeMultiValue(wstring key, wstring valuename, wstring value)
 {
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_SET_VALUE | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
 
 	wchar_t* data = new wchar_t[value.size() + 2];
 	value._Copy_s(data, (value.size()+2)*sizeof(wchar_t), value.size());
 	data[value.size()] = L'\0';
 	data[value.size()+1] = L'\0';
 
-	status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_MULTI_SZ, (const BYTE*)data, (DWORD)((value.size()+2)*sizeof(wchar_t)));
+	LSTATUS status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_MULTI_SZ, (const BYTE*)data, (DWORD)((value.size()+2)*sizeof(wchar_t)));
 
 	delete data;
 
 	RegCloseKey(keyHandle);
 
 	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while writing to registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while writing to registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 }
 
 void RegistryHelper::deleteValue(wstring key, wstring valuename)
 {
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_SET_VALUE | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
 
-	status = RegDeleteValueW(keyHandle, valuename.c_str());
+	LSTATUS status = RegDeleteValueW(keyHandle, valuename.c_str());
 
 	RegCloseKey(keyHandle);
 
 	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while deleting registry value HKEY_LOCAL_MACHINE\\" + key + L"\\" + valuename + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while deleting registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 }
 
 void RegistryHelper::createKey(wstring key)
 {
+	HKEY rootKey;
+	wstring subKey = splitKey(key, &rootKey);
+
 	HKEY keyHandle;
-	LSTATUS status;
-	status = RegCreateKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, NULL, 0, KEY_SET_VALUE | KEY_WOW64_64KEY, NULL, &keyHandle, NULL);
+	LSTATUS status = RegCreateKeyExW(rootKey, subKey.c_str(), 0, NULL, 0, KEY_SET_VALUE | KEY_WOW64_64KEY, NULL, &keyHandle, NULL);
 	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while creating registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while creating registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	RegCloseKey(keyHandle);
 }
 
 void RegistryHelper::deleteKey(wstring key)
 {
-	LSTATUS status;
-	status = RegDeleteKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), KEY_WOW64_64KEY, 0);
+	HKEY rootKey;
+	wstring subKey = splitKey(key, &rootKey);
+
+	LSTATUS status = RegDeleteKeyExW(rootKey, subKey.c_str(), KEY_WOW64_64KEY, 0);
 	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while deleting registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while deleting registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 }
 
 void RegistryHelper::makeWritable(wstring key)
 {
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, READ_CONTROL | WRITE_DAC | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, READ_CONTROL | WRITE_DAC | KEY_WOW64_64KEY);
 
 	DWORD descriptorSize = 0;
 	RegGetKeySecurity(keyHandle, DACL_SECURITY_INFORMATION, NULL, &descriptorSize);
 
 	PSECURITY_DESCRIPTOR oldSd = (PSECURITY_DESCRIPTOR)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, descriptorSize);
-	status = RegGetKeySecurity(keyHandle, DACL_SECURITY_INFORMATION, oldSd, &descriptorSize);
+	LSTATUS status = RegGetKeySecurity(keyHandle, DACL_SECURITY_INFORMATION, oldSd, &descriptorSize);
 	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while getting security information for registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while getting security information for registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	BOOL aclPresent, aclDefaulted;
 	PACL oldAcl = NULL;
@@ -242,7 +223,7 @@ void RegistryHelper::makeWritable(wstring key)
 
 	status = RegSetKeySecurity(keyHandle, DACL_SECURITY_INFORMATION, sd);
 	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while setting security information for registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while setting security information for registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	FreeSid(sid);
 	LocalFree(acl);
@@ -268,11 +249,7 @@ void RegistryHelper::takeOwnership(wstring key)
 	if(!AdjustTokenPrivileges(tokenHandle, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
 		throw RegistryException(L"Error in AdjustTokenPrivileges while taking ownership");
 
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, WRITE_OWNER | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, WRITE_OWNER | KEY_WOW64_64KEY);
 
 	PSECURITY_DESCRIPTOR sd = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
 	if(NULL == sd)
@@ -290,9 +267,9 @@ void RegistryHelper::takeOwnership(wstring key)
 	if(!SetSecurityDescriptorOwner(sd, sid, FALSE))
 		throw RegistryException(L"Error in SetSecurityDescriptorOwner while taking ownership");
 
-	status = RegSetKeySecurity(keyHandle, OWNER_SECURITY_INFORMATION, sd);
+	LSTATUS status = RegSetKeySecurity(keyHandle, OWNER_SECURITY_INFORMATION, sd);
 	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while setting security information for registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while setting security information for registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	tp.Privileges[0].Attributes = 0;
 
@@ -307,8 +284,11 @@ bool RegistryHelper::keyExists(wstring key)
 {
 	bool result;
 
+	HKEY rootKey;
+	wstring subKey = splitKey(key, &rootKey);
+
 	HKEY keyHandle;
-	result = (RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &keyHandle) == ERROR_SUCCESS);
+	result = (RegOpenKeyExW(rootKey, subKey.c_str(), 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &keyHandle) == ERROR_SUCCESS);
 
 	if(result)
 		RegCloseKey(keyHandle);
@@ -318,15 +298,11 @@ bool RegistryHelper::keyExists(wstring key)
 
 bool RegistryHelper::valueExists(wstring key, wstring valuename)
 {
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, KEY_QUERY_VALUE | KEY_WOW64_64KEY);
 
 	DWORD type;
 	DWORD bufSize;
-	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
+	LSTATUS status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
 	RegCloseKey(keyHandle);
 	return status == ERROR_SUCCESS;
 }
@@ -335,17 +311,14 @@ vector<wstring> RegistryHelper::enumSubKeys(wstring key)
 {
 	vector<wstring> result;
 
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_ENUMERATE_SUB_KEYS | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, KEY_ENUMERATE_SUB_KEYS | KEY_WOW64_64KEY);
 
 	wchar_t keyName[256];
 	DWORD keyLength = sizeof(keyName) / sizeof(wchar_t);
 	int i=0;
 	int itemCount=0;
 
+	LSTATUS status;
 	while((status = RegEnumKeyExW(keyHandle, i++, keyName, &keyLength, NULL, NULL, NULL, NULL)) == ERROR_SUCCESS)
 	{
 		keyLength = sizeof(keyName) / sizeof(wchar_t);
@@ -356,41 +329,42 @@ vector<wstring> RegistryHelper::enumSubKeys(wstring key)
 	RegCloseKey(keyHandle);
 
 	if(status != ERROR_NO_MORE_ITEMS)
-		throw RegistryException(L"Error while enumerating sub keys of registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while enumerating sub keys of registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	return result;
 }
 
-unsigned long RegistryHelper::valueCount(wstring key)
+bool RegistryHelper::keyEmpty(wstring key)
 {
-	LSTATUS status;
-	HKEY keyHandle;
-	status = RegOpenKeyExW(HKEY_LOCAL_MACHINE, key.c_str(), 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &keyHandle);
-	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while opening registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+	HKEY keyHandle = openKey(key, KEY_QUERY_VALUE | KEY_WOW64_64KEY);
 
+	DWORD keyCount;
 	DWORD valueCount;
-	status = RegQueryInfoKeyW(keyHandle, NULL, NULL, NULL, NULL, NULL, NULL, &valueCount, NULL, NULL, NULL, NULL);
+	LSTATUS status = RegQueryInfoKeyW(keyHandle, NULL, NULL, NULL, &keyCount, NULL, NULL, &valueCount, NULL, NULL, NULL, NULL);
 
 	RegCloseKey(keyHandle);
 
 	if(status != ERROR_SUCCESS)
-		throw RegistryException(L"Error while reading info for registry key HKEY_LOCAL_MACHINE\\" + key + L": " + getSystemErrorString(status));
+		throw RegistryException(L"Error while reading info for registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
-	return valueCount;
+	return keyCount == 0 && valueCount == 0;
 }
 
-void RegistryHelper::saveToFile(wstring key, wstring valuename, wstring filepath)
+void RegistryHelper::saveToFile(wstring key, vector<wstring> valuenames, wstring filepath)
 {
-	wstring value = readValue(key, valuename);
-
 	wofstream stream(filepath);
 	if(!stream.good())
 		throw RegistryException(L"Error while opening file " + filepath + L" for writing");
 
 	stream << L"Windows Registry Editor Version 5.00\n" << endl;
 	stream << L"[HKEY_LOCAL_MACHINE\\" << key << L"]" << endl;
-	stream << L"\"" << valuename << L"\"=\"" << value << L"\"" << endl;
+	for(vector<wstring>::iterator it = valuenames.begin(); it != valuenames.end(); it++)
+	{
+		wstring& valuename = *it;
+		wstring value = readValue(key, valuename);
+
+		stream << L"\"" << valuename << L"\"=\"" << value << L"\"" << endl;
+	}
 	stream << endl;
 
 	stream.close();
@@ -433,17 +407,41 @@ bool RegistryHelper::isWindowsVersionAtLeast(unsigned major, unsigned minor)
 	return windowsVersion >= compareVersion;
 }
 
-wstring RegistryHelper::getSystemErrorString(long status)
+HKEY RegistryHelper::openKey(const wstring& key, REGSAM samDesired)
 {
-	wchar_t* buf;
+	HKEY rootKey;
+	wstring subKey = splitKey(key, &rootKey);
 
-	if(FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, status, 0, (LPTSTR)&buf, 0, NULL) != 0)
-	{
-		wstring result(buf);
-		LocalFree(buf);
+	HKEY keyHandle;
+	LSTATUS status = RegOpenKeyExW(rootKey, subKey.c_str(), 0, samDesired, &keyHandle);
+	if(status != ERROR_SUCCESS)
+		throw RegistryException(L"Error while opening registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
-		return result;
-	}
+	return keyHandle;
+}
+
+wstring RegistryHelper::splitKey(const wstring& key, HKEY* rootKey)
+{
+	size_t pos = key.find(L'\\');
+	if(pos == wstring::npos)
+		throw RegistryException(L"Key " + key + L" has invalid format");
+
+	wstring rootPart = key.substr(0, pos);
+	wstring pathPart = key.substr(pos+1);
+
+	wstring p = StringHelper::toUpperCase(rootPart);
+	if(p == L"HKEY_CLASSES_ROOT")
+		*rootKey = HKEY_CLASSES_ROOT;
+	else if(p == L"HKEY_CURRENT_CONFIG")
+		*rootKey = HKEY_CURRENT_CONFIG;
+	else if(p == L"HKEY_CURRENT_USER")
+		*rootKey = HKEY_CURRENT_USER;
+	else if(p == L"HKEY_LOCAL_MACHINE")
+		*rootKey = HKEY_LOCAL_MACHINE;
+	else if(p == L"HKEY_USERS")
+		*rootKey = HKEY_USERS;
 	else
-		return L"";
+		throw RegistryException(L"Unknown root key " + rootPart);
+
+	return pathPart;
 }

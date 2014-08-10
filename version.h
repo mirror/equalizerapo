@@ -1,3 +1,3 @@
 #define MAJOR 0
-#define MINOR 8
-#define REVISION 1
+#define MINOR 9
+#define REVISION 0

@@ -1,0 +1,18 @@
+# This shows how to create a lowpass biquad filter using the IIR filter type
+# The result should be equivalent to the command
+# Filter: ON LP Fc 3000 Hz
+
+Do: `freq = 3000`
+Do: `Q = 1/sqrt(2)`
+Do: `omega = 2 * pi * freq / sampleRate`
+Do: `sn = sin(omega)`
+Do: `cs = cos(omega)`
+Do: `alpha = sin(omega) / (2 * Q)`
+Do: `a0 = (1 - cs) / 2`
+Do: `a1 = 1 - cs`
+Do: `a2 = (1 - cs) / 2`
+Do: `b0 = 1 + alpha`
+Do: `b1 = -2 * cs`
+Do: `b2 = 1 - alpha`
+
+Filter: ON IIR Order 2 Coefficients `a0` `a1` `a2` `b0` `b1` `b2`

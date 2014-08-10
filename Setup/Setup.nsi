@@ -118,6 +118,7 @@ Section "Install" SecInstall
   File "${LIBPATH}\msvcr100.dll"
   
   File "Configuration tutorial (online).url"
+  File "Configuration reference (online).url"
   
   CreateDirectory "$INSTDIR\config"
   
@@ -126,6 +127,8 @@ Section "Install" SecInstall
   File /oname=config\example.txt "config\example.txt"
   File /oname=config\demo.txt "config\demo.txt"
   File /oname=config\multichannel.txt "config\multichannel.txt"
+  File /oname=config\iir_lowpass.txt "config\iir_lowpass.txt"
+  File /oname=config\selective_delay.txt "config\selective_delay.txt"
   SetOverwrite on
 
   ;Grant write access to the config directory for all users
@@ -141,6 +144,7 @@ Section "Install" SecInstall
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration tutorial (online).lnk" "$INSTDIR\Configuration tutorial (online).url"
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration reference (online).lnk" "$INSTDIR\Configuration reference (online).url"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configurator.lnk" "$INSTDIR\Configurator.exe"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Benchmark.lnk" "$INSTDIR\Benchmark.exe"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
@@ -184,6 +188,7 @@ Section "-un.Uninstall"
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
   RMDir /r "$SMPROGRAMS\$StartMenuFolder"
   
+  Delete "$INSTDIR\Configuration reference (online).url"
   Delete "$INSTDIR\Configuration tutorial (online).url"
   
   Delete /REBOOTOK "$INSTDIR\msvcr100.dll"

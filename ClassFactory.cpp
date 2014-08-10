@@ -18,7 +18,7 @@
 */
 
 #include "EqualizerAPO.h"
-#include "LogHelper.h"
+#include "helpers/LogHelper.h"
 #include "ClassFactory.h"
 
 long ClassFactory::lockCount = 0;

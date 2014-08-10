@@ -20,8 +20,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commctrl.h>
-#include "../StringHelper.h"
-#include "../RegistryHelper.h"
+#include "helpers/StringHelper.h"
+#include "helpers/RegistryHelper.h"
 #include "Configurator.h"
 
 using namespace std;

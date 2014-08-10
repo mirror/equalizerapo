@@ -22,7 +22,7 @@
 #include <Unknwn.h>
 #include <audioenginebaseapo.h>
 #include <BaseAudioProcessingObject.h>
-#include "ParametricEQ.h"
+#include "FilterEngine.h"
 
 class INonDelegatingUnknown
 {
@@ -31,7 +31,12 @@ class INonDelegatingUnknown
 	virtual ULONG __stdcall NonDelegatingRelease() = 0;
 };
 
-class __declspec(uuid("{EC1CC9CE-FAED-4822-828A-82A81A6F018F}")) EqualizerAPO 
+// {EACD2258-FCAC-4FF4-B36D-419E924A6D79}
+const GUID EQUALIZERAPO_LFX_GUID = { 0xeacd2258, 0xfcac, 0x4ff4, { 0xb3, 0x6d, 0x41, 0x9e, 0x92, 0x4a, 0x6d, 0x79 } };
+// {EC1CC9CE-FAED-4822-828A-82A81A6F018F}
+const GUID EQUALIZERAPO_GFX_GUID = { 0xec1cc9ce, 0xfaed, 0x4822, { 0x82, 0x8a, 0x82, 0xa8, 0x1a, 0x6f, 0x01, 0x8f } };
+
+class EqualizerAPO
 	: public CBaseAudioProcessingObject, public IAudioSystemEffects, public INonDelegatingUnknown
 {
 public:
@@ -49,16 +54,16 @@ public:
 	virtual HRESULT __stdcall IsInputFormatSupported(IAudioMediaType* pOutputFormat,
 		IAudioMediaType* pRequestedInputFormat, IAudioMediaType** ppSupportedInputFormat);
 
-	// IAudioProcessingObjectRT
-	virtual void __stdcall APOProcess(UINT32 u32NumInputConnections,
-		APO_CONNECTION_PROPERTY** ppInputConnections, UINT32 u32NumOutputConnections,
-		APO_CONNECTION_PROPERTY** ppOutputConnections);
-
 	// IAudioProcessingObjectConfiguration
 	virtual HRESULT __stdcall LockForProcess(UINT32 u32NumInputConnections,
 		APO_CONNECTION_DESCRIPTOR** ppInputConnections, UINT32 u32NumOutputConnections,
 		APO_CONNECTION_DESCRIPTOR** ppOutputConnections);
     virtual HRESULT __stdcall UnlockForProcess(void);
+
+	// IAudioProcessingObjectRT
+	virtual void __stdcall APOProcess(UINT32 u32NumInputConnections,
+		APO_CONNECTION_PROPERTY** ppInputConnections, UINT32 u32NumOutputConnections,
+		APO_CONNECTION_PROPERTY** ppOutputConnections);
 
 	// INonDelegatingUnknown
 	virtual HRESULT __stdcall NonDelegatingQueryInterface(const IID& iid, void** ppv);
@@ -66,12 +71,13 @@ public:
 	virtual ULONG __stdcall NonDelegatingRelease();
 
 	static long instCount;
-	static const CRegAPOProperties<1> regProperties;
+	static const CRegAPOProperties<1> regGfxProperties;
+	static const CRegAPOProperties<1> regLfxProperties;
 
 private:
 	long refCount;
 	IUnknown* pUnkOuter;
-	ParametricEQ peq;
+	FilterEngine engine;
 
 	void resetChild();
 

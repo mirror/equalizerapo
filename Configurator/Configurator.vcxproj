@@ -20,15 +20,20 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DeviceAPOInfo.h" />
-    <ClInclude Include="..\RegistryHelper.h" />
-    <ClInclude Include="..\StringHelper.h" />
+    <ClInclude Include="..\helpers\LogHelper.h" />
+    <ClInclude Include="..\helpers\MemoryHelper.h" />
+    <ClInclude Include="..\helpers\PrecisionTimer.h" />
+    <ClInclude Include="..\helpers\RegistryHelper.h" />
+    <ClInclude Include="..\helpers\StringHelper.h" />
     <ClInclude Include="Configurator.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\DeviceAPOInfo.cpp" />
-    <ClCompile Include="..\RegistryHelper.cpp" />
-    <ClCompile Include="..\StringHelper.cpp" />
+    <ClCompile Include="..\helpers\LogHelper.cpp" />
+    <ClCompile Include="..\helpers\MemoryHelper.cpp" />
+    <ClCompile Include="..\helpers\RegistryHelper.cpp" />
+    <ClCompile Include="..\helpers\StringHelper.cpp" />
     <ClCompile Include="Configurator.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -89,35 +94,39 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(DDK_PATH)\inc\api</IncludePath>
+    <IncludePath>$(SolutionDir);$(IncludePath);$(DDK_PATH)\inc\api</IncludePath>
     <GenerateManifest>false</GenerateManifest>
+    <LibraryPath>$(LibraryPath);$(DDK_PATH)\lib\win7\i386</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(IncludePath);$(DDK_PATH)\inc\api</IncludePath>
+    <IncludePath>$(SolutionDir);$(IncludePath);$(DDK_PATH)\inc\api</IncludePath>
     <GenerateManifest>false</GenerateManifest>
+    <LibraryPath>$(LibraryPath);$(DDK_PATH)\lib\win7\amd64</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath);$(DDK_PATH)\inc\api</IncludePath>
+    <IncludePath>$(SolutionDir);$(IncludePath);$(DDK_PATH)\inc\api</IncludePath>
     <GenerateManifest>false</GenerateManifest>
+    <LibraryPath>$(LibraryPath);$(DDK_PATH)\lib\win7\i386</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(IncludePath);$(DDK_PATH)\inc\api</IncludePath>
+    <IncludePath>$(SolutionDir);$(IncludePath);$(DDK_PATH)\inc\api</IncludePath>
     <GenerateManifest>false</GenerateManifest>
+    <LibraryPath>$(LibraryPath);$(DDK_PATH)\lib\win7\amd64</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;USE_WINDDK;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>version.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>audioeng.lib;version.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -125,12 +134,12 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;USE_WINDDK;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>version.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>audioeng.lib;version.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -140,14 +149,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;USE_WINDDK;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>version.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>audioeng.lib;version.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -157,14 +166,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;USE_WINDDK;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>version.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>audioeng.lib;version.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

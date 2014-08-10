@@ -22,8 +22,10 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
-#define APP_REGPATH L"SOFTWARE\\EqualizerAPO"
+#define APP_REGPATH L"HKEY_LOCAL_MACHINE\\SOFTWARE\\EqualizerAPO"
 
 class RegistryHelper
 {
@@ -40,13 +42,15 @@ public:
 	static std::vector<std::wstring> enumSubKeys(std::wstring key);
 	static bool keyExists(std::wstring key);
 	static bool valueExists(std::wstring key, std::wstring valuename);
-	static unsigned long valueCount(std::wstring key);
-	static void saveToFile(std::wstring key, std::wstring valuename, std::wstring filepath);
+	static bool keyEmpty(std::wstring key);
+	static void saveToFile(std::wstring key, std::vector<std::wstring> valuenames, std::wstring filepath);
 	static std::wstring getGuidString(GUID guid);
 	static bool isWindowsVersionAtLeast(unsigned major, unsigned minor);
+	static HKEY openKey(const std::wstring& key, REGSAM samDesired);
 
 private:
-	static std::wstring getSystemErrorString(long status);
+	static std::wstring splitKey(const std::wstring& key, HKEY* rootKey);
+
 	static unsigned long windowsVersion;
 };
 

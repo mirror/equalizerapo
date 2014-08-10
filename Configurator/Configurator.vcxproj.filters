@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\DeviceAPOInfo.cpp" />
+    <ClCompile Include="Configurator.cpp" />
+    <ClCompile Include="..\helpers\LogHelper.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\helpers\MemoryHelper.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\helpers\RegistryHelper.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\helpers\StringHelper.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\DeviceAPOInfo.h" />
+    <ClInclude Include="Configurator.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="..\helpers\LogHelper.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers\MemoryHelper.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers\PrecisionTimer.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers\RegistryHelper.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers\StringHelper.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Configurator.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Configurator.ico" />
+    <None Include="small.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="Configurator.exe.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="helpers">
+      <UniqueIdentifier>{2584359f-ce98-42d5-b685-6c295bb97f68}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -64,23 +64,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\libsndfile\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir);C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\libsndfile\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\libsndfile\lib64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir);C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\libsndfile\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\libsndfile\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir);C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\libsndfile\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files\libsndfile\lib64;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir);C:\Program Files\tclap-1.2.1\include;C:\Program Files\libsndfile\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Program Files\libsndfile\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -93,7 +93,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>version.lib;Shlwapi.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserxd.lib;version.lib;Shlwapi.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -107,7 +107,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>version.lib;Shlwapi.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserxd.lib;version.lib;Shlwapi.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -126,7 +126,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>version.lib;Shlwapi.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserx.lib;version.lib;Shlwapi.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,24 +145,71 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>version.lib;Shlwapi.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserx.lib;version.lib;Shlwapi.lib;libsndfile-1.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\BiQuad.cpp" />
-    <ClCompile Include="..\LogHelper.cpp" />
-    <ClCompile Include="..\ParametricEQ.cpp" />
-    <ClCompile Include="..\RegistryHelper.cpp" />
-    <ClCompile Include="..\StringHelper.cpp" />
+    <ClCompile Include="..\FilterConfiguration.cpp" />
+    <ClCompile Include="..\FilterEngine.cpp" />
+    <ClCompile Include="..\filters\BiQuad.cpp" />
+    <ClCompile Include="..\filters\BiQuadFilter.cpp" />
+    <ClCompile Include="..\filters\BiQuadFilterFactory.cpp" />
+    <ClCompile Include="..\filters\ChannelFilter.cpp" />
+    <ClCompile Include="..\filters\ChannelFilterFactory.cpp" />
+    <ClCompile Include="..\filters\CopyFilter.cpp" />
+    <ClCompile Include="..\filters\CopyFilterFactory.cpp" />
+    <ClCompile Include="..\filters\DelayFilter.cpp" />
+    <ClCompile Include="..\filters\DelayFilterFactory.cpp" />
+    <ClCompile Include="..\filters\DeviceFilterFactory.cpp" />
+    <ClCompile Include="..\filters\ExpressionFilterFactory.cpp" />
+    <ClCompile Include="..\filters\IfFilterFactory.cpp" />
+    <ClCompile Include="..\filters\IIRFilter.cpp" />
+    <ClCompile Include="..\filters\IIRFilterFactory.cpp" />
+    <ClCompile Include="..\filters\IncludeFilterFactory.cpp" />
+    <ClCompile Include="..\filters\PreampFilter.cpp" />
+    <ClCompile Include="..\filters\PreampFilterFactory.cpp" />
+    <ClCompile Include="..\filters\StageFilterFactory.cpp" />
+    <ClCompile Include="..\helpers\LogHelper.cpp" />
+    <ClCompile Include="..\helpers\MemoryHelper.cpp" />
+    <ClCompile Include="..\helpers\RegistryHelper.cpp" />
+    <ClCompile Include="..\helpers\StringHelper.cpp" />
+    <ClCompile Include="..\IFilter.cpp" />
+    <ClCompile Include="..\parser\RegexFunctions.cpp" />
+    <ClCompile Include="..\parser\RegistryFunctions.cpp" />
+    <ClCompile Include="..\parser\StringOperators.cpp" />
     <ClCompile Include="Benchmark.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\BiQuad.h" />
-    <ClInclude Include="..\LogHelper.h" />
-    <ClInclude Include="..\ParametricEQ.h" />
-    <ClInclude Include="..\RegistryHelper.h" />
-    <ClInclude Include="..\StringHelper.h" />
-    <ClInclude Include="PerformanceCounter.h" />
+    <ClInclude Include="..\FilterConfiguration.h" />
+    <ClInclude Include="..\FilterEngine.h" />
+    <ClInclude Include="..\filters\BiQuad.h" />
+    <ClInclude Include="..\filters\BiQuadFilter.h" />
+    <ClInclude Include="..\filters\BiQuadFilterFactory.h" />
+    <ClInclude Include="..\filters\ChannelFilter.h" />
+    <ClInclude Include="..\filters\ChannelFilterFactory.h" />
+    <ClInclude Include="..\filters\CopyFilter.h" />
+    <ClInclude Include="..\filters\CopyFilterFactory.h" />
+    <ClInclude Include="..\filters\DelayFilter.h" />
+    <ClInclude Include="..\filters\DelayFilterFactory.h" />
+    <ClInclude Include="..\filters\DeviceFilterFactory.h" />
+    <ClInclude Include="..\filters\ExpressionFilterFactory.h" />
+    <ClInclude Include="..\filters\IfFilterFactory.h" />
+    <ClInclude Include="..\filters\IIRFilter.h" />
+    <ClInclude Include="..\filters\IIRFilterFactory.h" />
+    <ClInclude Include="..\filters\IncludeFilterFactory.h" />
+    <ClInclude Include="..\filters\PreampFilter.h" />
+    <ClInclude Include="..\filters\PreampFilterFactory.h" />
+    <ClInclude Include="..\filters\StageFilterFactory.h" />
+    <ClInclude Include="..\helpers\LogHelper.h" />
+    <ClInclude Include="..\helpers\MemoryHelper.h" />
+    <ClInclude Include="..\helpers\PrecisionTimer.h" />
+    <ClInclude Include="..\helpers\RegistryHelper.h" />
+    <ClInclude Include="..\helpers\StringHelper.h" />
+    <ClInclude Include="..\IFilter.h" />
+    <ClInclude Include="..\IFilterFactory.h" />
+    <ClInclude Include="..\parser\RegexFunctions.h" />
+    <ClInclude Include="..\parser\RegistryFunctions.h" />
+    <ClInclude Include="..\parser\StringOperators.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

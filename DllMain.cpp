@@ -23,8 +23,8 @@
 
 #include "EqualizerAPO.h"
 #include "ClassFactory.h"
-#include "RegistryHelper.h"
-#include "LogHelper.h"
+#include "helpers/RegistryHelper.h"
+#include "helpers/LogHelper.h"
 
 using namespace std;
 
@@ -48,7 +48,7 @@ STDAPI DllCanUnloadNow()
 
 STDAPI DllGetClassObject(const CLSID& clsid, const IID& iid, void** ppv)
 {
-	if(clsid != __uuidof(EqualizerAPO))
+	if(clsid != EQUALIZERAPO_GFX_GUID && clsid != EQUALIZERAPO_LFX_GUID)
 		return CLASS_E_CLASSNOTAVAILABLE;
 
 	ClassFactory* factory = new ClassFactory();
@@ -66,26 +66,43 @@ STDAPI DllRegisterServer()
 	wchar_t filename[1024];
 	GetModuleFileNameW(hModule, filename, sizeof(filename)/sizeof(wchar_t));
 
-	HRESULT hr = RegisterAPO(EqualizerAPO::regProperties);
+	HRESULT hr = RegisterAPO(EqualizerAPO::regGfxProperties);
 	if(FAILED(hr))
 	{
-		UnregisterAPO(__uuidof(EqualizerAPO));
+		UnregisterAPO(EQUALIZERAPO_GFX_GUID);
+		return hr;
+	}
+
+	hr = RegisterAPO(EqualizerAPO::regLfxProperties);
+	if(FAILED(hr))
+	{
+		UnregisterAPO(EQUALIZERAPO_GFX_GUID);
+		UnregisterAPO(EQUALIZERAPO_LFX_GUID);
 		return hr;
 	}
 
 	try
 	{
-		wstring apoClsidString = RegistryHelper::getGuidString(__uuidof(EqualizerAPO));
+		wstring apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_GFX_GUID);
 
-		RegistryHelper::createKey(L"SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
-		RegistryHelper::writeValue(L"SOFTWARE\\Classes\\CLSID\\" + apoClsidString, L"", L"EqualizerAPO Class");
-		RegistryHelper::createKey(L"SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
-		RegistryHelper::writeValue(L"SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"", filename);
-		RegistryHelper::writeValue(L"SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"ThreadingModel", L"Both");
+		RegistryHelper::createKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
+		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString, L"", L"EqualizerAPO GFX Class");
+		RegistryHelper::createKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
+		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"", filename);
+		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"ThreadingModel", L"Both");
+
+		apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_LFX_GUID);
+
+		RegistryHelper::createKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
+		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString, L"", L"EqualizerAPO LFX Class");
+		RegistryHelper::createKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
+		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"", filename);
+		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"ThreadingModel", L"Both");
 	}
 	catch(RegistryException e)
 	{
-		UnregisterAPO(__uuidof(EqualizerAPO));
+		UnregisterAPO(EQUALIZERAPO_GFX_GUID);
+		UnregisterAPO(EQUALIZERAPO_LFX_GUID);
 		return E_FAIL;
 	}
 
@@ -96,17 +113,23 @@ STDAPI DllUnregisterServer()
 {
 	try
 	{
-		wstring apoClsidString = RegistryHelper::getGuidString(__uuidof(EqualizerAPO));
+		wstring apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_GFX_GUID);
 
-		RegistryHelper::deleteKey(L"SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
-		RegistryHelper::deleteKey(L"SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
+		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
+		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
+
+		apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_LFX_GUID);
+
+		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
+		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
 	}
 	catch(RegistryException e)
 	{
 		return E_FAIL;
 	}
 
-	HRESULT hr = UnregisterAPO(__uuidof(EqualizerAPO));
+	HRESULT hr = UnregisterAPO(EQUALIZERAPO_GFX_GUID);
+	UnregisterAPO(EQUALIZERAPO_LFX_GUID);
 
 	return hr;
 }

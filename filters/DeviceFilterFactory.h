@@ -1,6 +1,6 @@
 /*
 	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2012  Jonas Thedering
+	Copyright (C) 2014  Jonas Thedering
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -20,25 +20,19 @@
 #pragma once
 
 #include <string>
-#include <cstdio>
 
-#define TraceF(format, ...) LogHelper::log(__FILE__, __LINE__, this, true, format, __VA_ARGS__)
-#define TraceFStatic(format, ...) LogHelper::log(__FILE__, __LINE__, NULL, true, format, __VA_ARGS__)
-#define LogF(format, ...) LogHelper::log(__FILE__, __LINE__, this, false, format, __VA_ARGS__)
-#define LogFStatic(format, ...) LogHelper::log(__FILE__, __LINE__, NULL, false, format, __VA_ARGS__)
+#include "IFilterFactory.h"
+#include "IFilter.h"
 
-class LogHelper
+class DeviceFilterFactory : public IFilterFactory
 {
 public:
-	static void log(const char* file, int line, void* caller, bool trace, const wchar_t* format, ...);
-	static void reset();
-	static void set(FILE* fp, bool enableTrace, bool compact, bool useConsoleColors);
+	virtual void initialize(FilterEngine* engine);
+	virtual std::vector<IFilter*> startOfConfiguration();
+	virtual std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters);
+	virtual std::vector<IFilter*> endOfFile(const std::wstring& configPath);
 
 private:
-	static bool initialized;
-	static std::wstring logPath;
-	static bool enableTrace;
-	static FILE* presetFP;
-	static bool compact;
-	static bool useConsoleColors;
+	bool deviceMatches;
+	std::wstring deviceString;
 };

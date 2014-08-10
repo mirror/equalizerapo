@@ -1,6 +1,6 @@
 /*
 	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2013  Jonas Thedering
+	Copyright (C) 2014  Jonas Thedering
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -19,15 +19,19 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
+#include "IFilter.h"
 
-class StringHelper
+#pragma AVRT_VTABLES_BEGIN
+class PreampFilter : public IFilter
 {
 public:
-	// replaces any occurrence of a character from chars in s with the replacement string
-	static std::wstring replaceCharacters(std::wstring s, std::wstring chars, std::wstring replacement);
-	static std::wstring replaceIllegalCharacters(std::wstring filename);
-	static std::wstring toWString(std::string s, unsigned codepage);
-	static std::wstring toLowerCase(std::wstring s);
+	PreampFilter(double dbGain);
+	virtual std::vector<std::wstring> initialize(float sampleRate, unsigned maxFrameCount, std::vector<std::wstring> channelNames);
+	virtual void process(float** output, float** input, unsigned frameCount);
+
+private:
+	float gain;
+	double dbGain;
+	size_t channelCount;
 };
+#pragma AVRT_VTABLES_END

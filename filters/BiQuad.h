@@ -17,6 +17,8 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#pragma once
+
 #include <string>
 
 #define IS_DENORMAL(f) (((*(unsigned int *)&(f))&0x7f800000) == 0)
@@ -30,7 +32,7 @@ public:
 	};
 
 	BiQuad() {}
-	BiQuad(Type type, float dbGain, float freq, float srate, float bandwidthOrQOrS, bool isBandwidth);
+	BiQuad(Type type, double dbGain, double freq, double srate, double bandwidthOrQOrS, bool isBandwidth);
 
 	__forceinline
 	void removeDenormals()
@@ -48,8 +50,8 @@ public:
 	__forceinline
 	float process(float sample)
 	{
-		float result = a0 * sample + a[0] * x1 + a[1] * x2 +
-			a[2] * y1 + a[3] * y2;
+		// changed order of additions leads to better pipelining
+		float result = a0 * sample + a[1] * x2 + a[0] * x1 - a[3] * y2 - a[2] * y1;
 
 		x2 = x1;
 		x1 = sample;
@@ -57,7 +59,6 @@ public:
 		y2 = y1;
 		y1 = result;
 
-		//Input for next stage
 		return result;
 	}
 
