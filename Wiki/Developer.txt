@@ -27,7 +27,9 @@ The following software has been successfully used to compile Equalizer APO.
 
 4. [TCLAP](http://tclap.sourceforge.net/). As this is a template library, only the source is needed, which will be compiled into the application. This library is also only used in the Benchmark application.
 
-5. [NSIS](http://nsis.sourceforge.net/). Needed to create the installer. Additionaly, the plugins [NSISpcre](http://nsis.sourceforge.net/NSISpcre_plug-in) and [AccessControl](http://nsis.sourceforge.net/AccessControl_plug-in) are needed.
+5. [muParserX 3.0.1](https://code.google.com/p/muparserx/). Unfortunately, there are no prebuilt files, so compilation from source is needed. The source code has to be compiled to a static library muparserx.lib (muparserxd.lib for debug build) and the include and library path has to be added via a [user property page](http://social.msdn.microsoft.com/Forums/vstudio/en-US/a494abb8-3561-4ebe-9eb0-6f644a679862/visual-studio-2010-professional-how-to-add-include-directory-for-all-projects?forum=vcgeneral#7b5ab5f2-f793-4b0e-a18a-679948d12bdd). Please note that the version has to be 3.0.1 as an important feature was removed in 3.0.2 (semicolon). 
+
+6. [NSIS](http://nsis.sourceforge.net/). Needed to create the installer. Additionaly, the plugins [NSISpcre](http://nsis.sourceforge.net/NSISpcre_plug-in) and [AccessControl](http://nsis.sourceforge.net/AccessControl_plug-in) are needed.
 
 ## Source code organization
 The Equalizer APO project consists of four parts:
