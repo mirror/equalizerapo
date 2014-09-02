@@ -60,7 +60,6 @@ FilterEngine::FilterEngine()
 	capture = false;
 	inputChannelCount = 0;
 	lastInputWasSilent = false;
-	lastInputSize = -1;
 	threadHandle = NULL;
 	currentConfig = NULL;
 	nextConfig = NULL;
@@ -353,7 +352,7 @@ void FilterEngine::loadConfig(const wstring& path)
 			addFilters(newFilters);
 	}
 
-	while(!inputStream.eof())
+	while(inputStream.good())
 	{
 		string encodedLine;
 		getline(inputStream, encodedLine);
@@ -419,13 +418,6 @@ void FilterEngine::watchRegistryKey(const std::wstring& key)
 void FilterEngine::process(float *output, float *input, unsigned frameCount)
 {
 	bool inputSilent = true;
-
-	if(lastInputSize != frameCount)
-	{
-		if(lastInputSize != -1)
-			LogF(L"Input size changed from %d to %d", lastInputSize, frameCount);
-		lastInputSize = frameCount;
-	}
 
 	for (unsigned i = 0; i < frameCount * realChannelCount; i++)
 	{

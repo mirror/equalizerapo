@@ -104,7 +104,6 @@ private:
 	void* shutdownEvent;
 	stdext::hash_set<std::wstring> watchRegistryKeys;
 	bool lastInputWasSilent;
-	unsigned lastInputSize;
 	stdext::hash_map<std::wstring, int> channelNameToPosMap;
 	stdext::hash_map<int, std::wstring> channelPosToNameMap;
 };
