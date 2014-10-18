@@ -46,6 +46,7 @@ std::vector<IFilter*> IfFilterFactory::startOfFile(const std::wstring& configPat
 {
 	trueCountStack.push(trueCount);
 	trueCount = 0;
+	executeElse = false;
 	if(falseCount != 0)
 	{
 		LogF(L"File was included inside If that evaluated to false!");
@@ -74,9 +75,14 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 					TraceF(L"If(%s) evaluated to %s (%s)", expression.c_str(), result.ToString().c_str(), isTrue ? L"true" : L"false");
 
 				if(isTrue)
+				{
 					trueCount++;
+				}
 				else
+				{
 					falseCount++;
+					executeElse = true;
+				}
 			}
 			catch(ParserError e)
 			{
@@ -91,7 +97,19 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 	}
 	else if(command == L"ElseIf")
 	{
-		if(falseCount == 1)
+		if(falseCount == 0)
+		{
+			if(trueCount == 0)
+			{
+				LogF(L"ElseIf without If!");
+			}
+			else
+			{
+				falseCount++;
+				trueCount--;
+			}
+		}
+		else if(falseCount == 1 && executeElse)
 		{
 			try
 			{
@@ -107,6 +125,7 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 				{
 					falseCount--;
 					trueCount++;
+					executeElse = false;
 				}
 			}
 			catch(ParserError e)
@@ -114,21 +133,26 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 				LogF(L"Error while evaluating ElseIf(%s): %s", expression.c_str(), e.GetMsg().c_str());
 			}
 		}
-		else if(falseCount == 0 && trueCount == 0)
-		{
-			LogF(L"ElseIf without If!");
-		}
 	}
 	else if(command == L"Else")
 	{
-		if(falseCount == 1)
+		if(falseCount == 0)
+		{
+			if(trueCount == 0)
+			{
+				LogF(L"Else without If!");
+			}
+			else
+			{
+				falseCount++;
+				trueCount--;
+			}
+		}
+		else if(falseCount == 1 && executeElse)
 		{
 			falseCount--;
 			trueCount++;
-		}
-		else if(falseCount == 0 && trueCount == 0)
-		{
-			LogF(L"Else without If!");
+			executeElse = false;
 		}
 	}
 	else if(command == L"EndIf")
@@ -144,6 +168,9 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 		{
 			falseCount--;
 		}
+
+		if(falseCount == 0)
+			executeElse = false;
 	}
 
 	if(falseCount > 0)

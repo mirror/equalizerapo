@@ -39,6 +39,7 @@ private:
 
 	unsigned trueCount;
 	unsigned falseCount;
+	bool executeElse;
 	std::stack<unsigned> trueCountStack;
 
 	bool toBoolean(const mup::Value& value);

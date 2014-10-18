@@ -126,7 +126,7 @@ Copy: &lt;Target channel&gt;=&lt;Source channel&gt;+...
 Copy: &lt;Target channel&gt;=&lt;Constant value&gt;+...
 
 **Description:**
-Replaces the audio on the target channel by the sum of the given source channels with optional factors. To add instead of replace the audio on the target channel, the target channel itself can also be a source channel. The factor can also be specified in dB by appending dB. Multiple channel assignments can be specified on a single line by separating them with spaces, therefore a single assignment must not contain spaces. Instead of channel and factor, a constant value can be specified. To avoid ambiguity with numerical channel indices, the constant value must contain a decimal point.
+Replaces the audio on the target channel by the sum of the given source channels with optional factors. To add instead of replace the audio on the target channel, the target channel itself can also be a source channel. The factor can also be specified in dB by appending dB. Multiple channel assignments can be specified on a single line by separating them with spaces, therefore a single assignment must not contain spaces. Instead of channel and factor, a constant value can be specified. To avoid ambiguity with numerical channel indices, the constant value must contain a decimal point. For more information about channel identifiers, see the [Channel](#channel-since-version-08) command.
 
 **Example:**
 
@@ -142,6 +142,10 @@ Replaces the audio on the target channel by the sum of the given source channels
 	# Attention: Sets the audio on channel L to the audio on the second channel
 	# (not to constant value 2, because no decimal point is present)
 	Copy: L=2
+	# Real world example: Replaces the audio on the subwoofer channel with
+	# the audio on the left channel while muting all other channels of a 5.1 speaker system
+	# (useful for measuring the subwoofer response in REW)
+	Copy: SUB=L L=0.0 R=0.0 C=0.0 RL=0.0 RR=0.0
 
 <br>
 # Control commands
