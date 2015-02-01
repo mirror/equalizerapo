@@ -41,13 +41,14 @@ public:
 	std::wstring deviceGuid;
 	std::wstring originalLfxGuid;
 	std::wstring originalGfxGuid;
+	std::wstring originalSfxGuid;
+	std::wstring originalMfxGuid;
+	std::wstring originalEfxGuid;
 	bool isInput;
 	bool isInstalled;
 	bool isLFX;
-	bool isAPO2;
 	bool isDual;
-	bool installAsAPO2;
 
 private:
-	bool tryAPOGuid(const std::wstring& keyPath, const std::wstring& valueName, GUID guid, bool lfx, bool apo2);
+	bool tryAPOGuid(const std::wstring& keyPath, const std::wstring& valueName, GUID guid, bool lfx);
 };
