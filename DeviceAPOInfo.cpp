@@ -34,11 +34,13 @@ static const wchar_t* connectionValueName = L"{a45c254e-df1c-4efd-8020-67d146a85
 static const wchar_t* deviceValueName = L"{b3f8fa53-0004-438e-9003-51a46e139bfc},6";
 static const wchar_t* lfxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},1";
 static const wchar_t* gfxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},2";
-static const wchar_t* lfxGuidValueName2 = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},5";
-static const wchar_t* gfxGuidValueName2 = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},6";
+static const wchar_t* sfxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},5";
+static const wchar_t* mfxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},6";
+static const wchar_t* efxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},7";
 static const wchar_t* fxTitleValueName = L"{b725f130-47ef-101a-a5f1-02608c9eebac},10";
 static const wchar_t* sfxProcessingModesValueName = L"{d3993a3f-99c2-4402-b5ec-a92a0367664b},5";
 static const wchar_t* mfxProcessingModesValueName = L"{d3993a3f-99c2-4402-b5ec-a92a0367664b},6";
+static const wchar_t* efxProcessingModesValueName = L"{d3993a3f-99c2-4402-b5ec-a92a0367664b},7";
 static const wchar_t* defaultProcessingModeValue = L"{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}";
 
 vector<DeviceAPOInfo> DeviceAPOInfo::loadAllInfos(bool input)
@@ -82,8 +84,6 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid)
 
 	isInstalled = false;
 	isLFX = false;
-	isAPO2 = false;
-	installAsAPO2 = false;
 
 	if(!RegistryHelper::keyExists(keyPath + L"\\FxProperties"))
 	{
@@ -94,55 +94,33 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid)
 	{
 		originalLfxGuid = APOGUID_NOVALUE;
 		originalGfxGuid = APOGUID_NOVALUE;
-
-		installAsAPO2 = RegistryHelper::isWindowsVersionAtLeast(6, 3) // Windows 8.1
-			&& (RegistryHelper::valueExists(keyPath + L"\\FxProperties", lfxGuidValueName2)
-			|| RegistryHelper::valueExists(keyPath + L"\\FxProperties", gfxGuidValueName2));
-
-		wstring lfxValueName;
-		wstring gfxValueName;
-		if(installAsAPO2)
-		{
-			lfxValueName = lfxGuidValueName2;
-			gfxValueName = gfxGuidValueName2;
-		}
-		else
-		{
-			lfxValueName = lfxGuidValueName;
-			gfxValueName = gfxGuidValueName;
-		}
+		originalSfxGuid = APOGUID_NOVALUE;
+		originalMfxGuid = APOGUID_NOVALUE;
+		originalEfxGuid = APOGUID_NOVALUE;
 
 		bool found = false;
 		if(isInput)
-			found = tryAPOGuid(keyPath, lfxValueName, EQUALIZERAPO_LFX_GUID, true, installAsAPO2);
+			found = tryAPOGuid(keyPath, lfxGuidValueName, EQUALIZERAPO_LFX_GUID, true);
 		else
-			found = tryAPOGuid(keyPath, lfxValueName, EQUALIZERAPO_LFX_GUID, true, installAsAPO2) && tryAPOGuid(keyPath, gfxValueName, EQUALIZERAPO_GFX_GUID, false, installAsAPO2);
+			found = tryAPOGuid(keyPath, lfxGuidValueName, EQUALIZERAPO_LFX_GUID, true) && tryAPOGuid(keyPath, gfxGuidValueName, EQUALIZERAPO_GFX_GUID, false);
+		found = tryAPOGuid(keyPath, lfxGuidValueName, EQUALIZERAPO_LFX_GUID, true) && tryAPOGuid(keyPath, gfxGuidValueName, EQUALIZERAPO_GFX_GUID, false);
 		isDual = found;
 
 		if(!found)
-			found = tryAPOGuid(keyPath, lfxGuidValueName, EQUALIZERAPO_GFX_GUID, true, false);
+			found = tryAPOGuid(keyPath, lfxGuidValueName, EQUALIZERAPO_GFX_GUID, true);
 		if(!found)
-			found = tryAPOGuid(keyPath, gfxGuidValueName, EQUALIZERAPO_GFX_GUID, false, false);
-		if(!found)
-			found = tryAPOGuid(keyPath, lfxGuidValueName2, EQUALIZERAPO_GFX_GUID, true, true);
-		if(!found)
-			found = tryAPOGuid(keyPath, gfxGuidValueName2, EQUALIZERAPO_GFX_GUID, false, true);
+			found = tryAPOGuid(keyPath, gfxGuidValueName, EQUALIZERAPO_GFX_GUID, false);
 		isInstalled = found;
 
 		if(found)
 		{
 			if(RegistryHelper::keyExists(APP_REGPATH L"\\Child APOs\\" + deviceGuid))
 			{
-				if(isAPO2)
-				{
-					originalLfxGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, lfxGuidValueName2);
-					originalGfxGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, gfxGuidValueName2);
-				}
-				else
-				{
-					originalLfxGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, lfxGuidValueName);
-					originalGfxGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, gfxGuidValueName);
-				}
+				originalLfxGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, lfxGuidValueName);
+				originalGfxGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, gfxGuidValueName);
+				originalSfxGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, sfxGuidValueName);
+				originalMfxGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, mfxGuidValueName);
+				originalEfxGuid = RegistryHelper::readValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, efxGuidValueName);
 			}
 			else if(RegistryHelper::valueExists(APP_REGPATH L"\\Child APOs", deviceGuid))
 			{
@@ -160,10 +138,10 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid)
 		}
 		else
 		{
-			if(RegistryHelper::valueExists(keyPath + L"\\FxProperties", lfxValueName))
-				originalLfxGuid = RegistryHelper::readValue(keyPath + L"\\FxProperties", lfxValueName);
-			if(RegistryHelper::valueExists(keyPath + L"\\FxProperties", gfxValueName))
-				originalGfxGuid = RegistryHelper::readValue(keyPath + L"\\FxProperties", gfxValueName);
+			if(RegistryHelper::valueExists(keyPath + L"\\FxProperties", lfxGuidValueName))
+				originalLfxGuid = RegistryHelper::readValue(keyPath + L"\\FxProperties", lfxGuidValueName);
+			if(RegistryHelper::valueExists(keyPath + L"\\FxProperties", gfxGuidValueName))
+				originalGfxGuid = RegistryHelper::readValue(keyPath + L"\\FxProperties", gfxGuidValueName);
 		}
 	}
 
@@ -185,24 +163,14 @@ void DeviceAPOInfo::install()
 	RegistryHelper::createKey(APP_REGPATH L"\\Child APOs");
 	RegistryHelper::createKey(APP_REGPATH L"\\Child APOs\\" + deviceGuid);
 
-	wstring lfxValueName;
-	wstring gfxValueName;
-	if(installAsAPO2)
-	{
-		lfxValueName = lfxGuidValueName2;
-		gfxValueName = gfxGuidValueName2;
-	}
-	else
-	{
-		lfxValueName = lfxGuidValueName;
-		gfxValueName = gfxGuidValueName;
-	}
-
-	RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, lfxValueName, originalLfxGuid);
+	RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, lfxGuidValueName, originalLfxGuid);
 	if(isInput)
-		RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, gfxValueName, L"");
+		RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, gfxGuidValueName, L"");
 	else
-		RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, gfxValueName, originalGfxGuid);
+		RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, gfxGuidValueName, originalGfxGuid);
+	RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, sfxGuidValueName, originalSfxGuid);
+	RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, mfxGuidValueName, originalMfxGuid);
+	RegistryHelper::writeValue(APP_REGPATH L"\\Child APOs\\" + deviceGuid, efxGuidValueName, originalEfxGuid);
 
 	wstring keyPath;
 	if(isInput)
@@ -226,25 +194,29 @@ void DeviceAPOInfo::install()
 		}
 
 		RegistryHelper::writeValue(keyPath + L"\\FxProperties", fxTitleValueName, L"Equalizer APO");
-		RegistryHelper::writeMultiValue(keyPath + L"\\FxProperties", sfxProcessingModesValueName, defaultProcessingModeValue);
-		RegistryHelper::writeMultiValue(keyPath + L"\\FxProperties", mfxProcessingModesValueName, defaultProcessingModeValue);
 	}
 	else
 	{
 		vector<wstring> valuenames;
 		if(originalLfxGuid != APOGUID_NOVALUE)
-			valuenames.push_back(lfxValueName);
+			valuenames.push_back(lfxGuidValueName);
 		if(!isInput && originalGfxGuid != APOGUID_NOVALUE)
-			valuenames.push_back(gfxValueName);
+			valuenames.push_back(gfxGuidValueName);
+		if(originalSfxGuid != APOGUID_NOVALUE)
+			valuenames.push_back(sfxGuidValueName);
+		if(originalMfxGuid != APOGUID_NOVALUE)
+			valuenames.push_back(mfxGuidValueName);
+		if(originalEfxGuid != APOGUID_NOVALUE)
+			valuenames.push_back(efxGuidValueName);
 
 		if(!valuenames.empty())
 			RegistryHelper::saveToFile(keyPath + L"\\FxProperties", valuenames,
 				L"backup_" + StringHelper::replaceIllegalCharacters(deviceName) + L"_" + StringHelper::replaceIllegalCharacters(connectionName) + L".reg");
 	}
 
-	RegistryHelper::writeValue(keyPath + L"\\FxProperties", lfxValueName, RegistryHelper::getGuidString(EQUALIZERAPO_LFX_GUID));
+	RegistryHelper::writeValue(keyPath + L"\\FxProperties", lfxGuidValueName, RegistryHelper::getGuidString(EQUALIZERAPO_LFX_GUID));
 	if(!isInput)
-		RegistryHelper::writeValue(keyPath + L"\\FxProperties", gfxValueName, RegistryHelper::getGuidString(EQUALIZERAPO_GFX_GUID));
+		RegistryHelper::writeValue(keyPath + L"\\FxProperties", gfxGuidValueName, RegistryHelper::getGuidString(EQUALIZERAPO_GFX_GUID));
 }
 
 void DeviceAPOInfo::uninstall()
@@ -261,28 +233,22 @@ void DeviceAPOInfo::uninstall()
 	}
 	else
 	{
-		wstring lfxValueName;
-		wstring gfxValueName;
-		if(isAPO2)
-		{
-			lfxValueName = lfxGuidValueName2;
-			gfxValueName = gfxGuidValueName2;
-		}
-		else
-		{
-			lfxValueName = lfxGuidValueName;
-			gfxValueName = gfxGuidValueName;
-		}
-
 		if(originalLfxGuid == APOGUID_NOVALUE)
-			RegistryHelper::deleteValue(keyPath + L"\\FxProperties", lfxValueName);
+			RegistryHelper::deleteValue(keyPath + L"\\FxProperties", lfxGuidValueName);
 		else if(originalLfxGuid != L"")
-			RegistryHelper::writeValue(keyPath + L"\\FxProperties", lfxValueName, originalLfxGuid);
+			RegistryHelper::writeValue(keyPath + L"\\FxProperties", lfxGuidValueName, originalLfxGuid);
 
 		if(originalGfxGuid == APOGUID_NOVALUE)
-			RegistryHelper::deleteValue(keyPath + L"\\FxProperties", gfxValueName);
+			RegistryHelper::deleteValue(keyPath + L"\\FxProperties", gfxGuidValueName);
 		else if(originalGfxGuid != L"")
-			RegistryHelper::writeValue(keyPath + L"\\FxProperties", gfxValueName, originalGfxGuid);
+			RegistryHelper::writeValue(keyPath + L"\\FxProperties", gfxGuidValueName, originalGfxGuid);
+
+		if(originalSfxGuid != APOGUID_NOVALUE)
+			RegistryHelper::writeValue(keyPath + L"\\FxProperties", sfxGuidValueName, originalSfxGuid);
+		if(originalMfxGuid != APOGUID_NOVALUE)
+			RegistryHelper::writeValue(keyPath + L"\\FxProperties", mfxGuidValueName, originalMfxGuid);
+		if(originalEfxGuid != APOGUID_NOVALUE)
+			RegistryHelper::writeValue(keyPath + L"\\FxProperties", efxGuidValueName, originalEfxGuid);
 	}
 
 	if(RegistryHelper::valueExists(APP_REGPATH L"\\Child APOs", deviceGuid))
@@ -295,7 +261,7 @@ void DeviceAPOInfo::uninstall()
 		RegistryHelper::deleteKey(APP_REGPATH L"\\Child APOs");
 }
 
-bool DeviceAPOInfo::tryAPOGuid(const wstring& keyPath, const wstring& valueName, GUID guid, bool lfx, bool apo2)
+bool DeviceAPOInfo::tryAPOGuid(const wstring& keyPath, const wstring& valueName, GUID guid, bool lfx)
 {
 	if(RegistryHelper::valueExists(keyPath + L"\\FxProperties", valueName))
 	{
@@ -307,7 +273,6 @@ bool DeviceAPOInfo::tryAPOGuid(const wstring& keyPath, const wstring& valueName,
 			if(apoGuid == guid)
 			{
 				isLFX = lfx;
-				isAPO2 = apo2;
 
 				return true;
 			}
