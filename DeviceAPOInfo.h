@@ -29,25 +29,61 @@
 class DeviceAPOInfo
 {
 public:
+	enum InstallMode
+	{
+		INSTALL_LFX_GFX = 0,
+		INSTALL_SFX_MFX = 1,
+		INSTALL_SFX_EFX = 2
+	};
+
+	struct InstallState
+	{
+		bool installPreMix;
+		bool installPostMix;
+		bool useOriginalAPOPreMix;
+		bool useOriginalAPOPostMix;
+		InstallMode installMode;
+
+		InstallState()
+		{
+			installPreMix = false;
+			installPostMix = false;
+			useOriginalAPOPreMix = false;
+			useOriginalAPOPostMix = false;
+			installMode = INSTALL_LFX_GFX;
+		}
+
+		bool operator!=(InstallState& other)
+		{
+			return memcmp(this, &other, sizeof(InstallState)) != 0;
+		}
+	};
+
 	static std::vector<DeviceAPOInfo> loadAllInfos(bool input);
 	bool load(const std::wstring& deviceGuid);
 	bool canBeUpgraded();
+	bool hasChanges();
 	bool isExperimental();
+	std::wstring getOriginalAPOPreMix();
+	std::wstring getOriginalAPOPostMix();
 	void install();
 	void uninstall();
 
 	std::wstring deviceName;
 	std::wstring connectionName;
 	std::wstring deviceGuid;
-	std::wstring originalLfxGuid;
-	std::wstring originalGfxGuid;
+
+	// used for creating child APO
+	std::wstring preMixChildGuid;
+	std::wstring postMixChildGuid;
+
+	// used for uninstallation
+	std::wstring originalApoGuids[5];
+
 	bool isInput;
 	bool isInstalled;
-	bool isLFX;
-	bool isAPO2;
-	bool isDual;
-	bool installAsAPO2;
-
-private:
-	bool tryAPOGuid(const std::wstring& keyPath, const std::wstring& valueName, GUID guid, bool lfx, bool apo2);
+	std::wstring version;
+	InstallState currentInstallState;
+	// selection in GUI
+	InstallState selectedInstallState;
 };

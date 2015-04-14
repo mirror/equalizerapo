@@ -44,7 +44,21 @@ private:
 	HWND cancelButton;
 	HWND copyDeviceCommandButton;
 	HWND requestLabel;
+	HWND toggleTroubleShooting;
+	HWND troubleShootingGroup;
+	HWND preMixLabel;
+	HWND postMixLabel;
+	HWND installPreMix;
+	HWND installPostMix;
+	HWND useOriginalAPOPreMix;
+	HWND useOriginalAPOPostMix;
+	HWND installModeComboBox;
+
 	std::wstring cmdLine;
+	void expandTroubleShooting(bool expand);
+	HDWP moveWindow(HDWP hdwp, HWND hWnd, int x, int y);
+	void updateList(int listIndex, int itemIndex);
+	void updateButtons(int listIndex);
 
 	std::vector<DeviceAPOInfo> apoInfos[2];
 };

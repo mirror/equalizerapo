@@ -48,7 +48,7 @@ STDAPI DllCanUnloadNow()
 
 STDAPI DllGetClassObject(const CLSID& clsid, const IID& iid, void** ppv)
 {
-	if(clsid != EQUALIZERAPO_GFX_GUID && clsid != EQUALIZERAPO_LFX_GUID)
+	if(clsid != EQUALIZERAPO_POST_MIX_GUID && clsid != EQUALIZERAPO_PRE_MIX_GUID)
 		return CLASS_E_CLASSNOTAVAILABLE;
 
 	ClassFactory* factory = new ClassFactory();
@@ -66,43 +66,43 @@ STDAPI DllRegisterServer()
 	wchar_t filename[1024];
 	GetModuleFileNameW(hModule, filename, sizeof(filename)/sizeof(wchar_t));
 
-	HRESULT hr = RegisterAPO(EqualizerAPO::regGfxProperties);
+	HRESULT hr = RegisterAPO(EqualizerAPO::regPostMixProperties);
 	if(FAILED(hr))
 	{
-		UnregisterAPO(EQUALIZERAPO_GFX_GUID);
+		UnregisterAPO(EQUALIZERAPO_POST_MIX_GUID);
 		return hr;
 	}
 
-	hr = RegisterAPO(EqualizerAPO::regLfxProperties);
+	hr = RegisterAPO(EqualizerAPO::regPreMixProperties);
 	if(FAILED(hr))
 	{
-		UnregisterAPO(EQUALIZERAPO_GFX_GUID);
-		UnregisterAPO(EQUALIZERAPO_LFX_GUID);
+		UnregisterAPO(EQUALIZERAPO_POST_MIX_GUID);
+		UnregisterAPO(EQUALIZERAPO_PRE_MIX_GUID);
 		return hr;
 	}
 
 	try
 	{
-		wstring apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_GFX_GUID);
+		wstring apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_POST_MIX_GUID);
 
 		RegistryHelper::createKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
-		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString, L"", L"EqualizerAPO GFX Class");
+		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString, L"", L"EqualizerAPO Post-Mix Class");
 		RegistryHelper::createKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
 		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"", filename);
 		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"ThreadingModel", L"Both");
 
-		apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_LFX_GUID);
+		apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_PRE_MIX_GUID);
 
 		RegistryHelper::createKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
-		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString, L"", L"EqualizerAPO LFX Class");
+		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString, L"", L"EqualizerAPO Pre-Mix Class");
 		RegistryHelper::createKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
 		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"", filename);
 		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"ThreadingModel", L"Both");
 	}
 	catch(RegistryException e)
 	{
-		UnregisterAPO(EQUALIZERAPO_GFX_GUID);
-		UnregisterAPO(EQUALIZERAPO_LFX_GUID);
+		UnregisterAPO(EQUALIZERAPO_POST_MIX_GUID);
+		UnregisterAPO(EQUALIZERAPO_PRE_MIX_GUID);
 		return E_FAIL;
 	}
 
@@ -113,12 +113,12 @@ STDAPI DllUnregisterServer()
 {
 	try
 	{
-		wstring apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_GFX_GUID);
+		wstring apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_POST_MIX_GUID);
 
 		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
 		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
 
-		apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_LFX_GUID);
+		apoClsidString = RegistryHelper::getGuidString(EQUALIZERAPO_PRE_MIX_GUID);
 
 		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
 		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
@@ -128,8 +128,8 @@ STDAPI DllUnregisterServer()
 		return E_FAIL;
 	}
 
-	HRESULT hr = UnregisterAPO(EQUALIZERAPO_GFX_GUID);
-	UnregisterAPO(EQUALIZERAPO_LFX_GUID);
+	HRESULT hr = UnregisterAPO(EQUALIZERAPO_POST_MIX_GUID);
+	UnregisterAPO(EQUALIZERAPO_PRE_MIX_GUID);
 
 	return hr;
 }

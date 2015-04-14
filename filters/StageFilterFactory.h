@@ -34,8 +34,9 @@ public:
 	virtual std::vector<IFilter*> endOfFile(const std::wstring& configPath);
 
 private:
-	bool lfx;
+	bool preMix;
 	bool capture;
+	bool postMixInstalled;
 
 	bool stageMatches;
 	std::stack<bool> stageMatchesStack;

@@ -163,7 +163,7 @@ int main(int argc, char** argv)
 		timer.start();
 
 		FilterEngine engine;
-		engine.setDeviceInfo(false, StringHelper::toWString(devicenameArg.getValue(), CP_ACP),
+		engine.setDeviceInfo(false, true, StringHelper::toWString(devicenameArg.getValue(), CP_ACP),
 			StringHelper::toWString(connectionnameArg.getValue(), CP_ACP),
 			StringHelper::toWString(guidArg.getValue(), CP_ACP));
 		engine.initialize((float)sampleRate, channelCount, channelCount, channelCount, channelMask, batchsize);

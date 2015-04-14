@@ -30,15 +30,15 @@
 using namespace std;
 
 long EqualizerAPO::instCount = 0;
-const CRegAPOProperties<1> EqualizerAPO::regGfxProperties(
-	EQUALIZERAPO_GFX_GUID, L"EqualizerAPO", L"Copyright (C) 2014", 1, 0, __uuidof(IAudioProcessingObject),
+const CRegAPOProperties<1> EqualizerAPO::regPostMixProperties(
+	EQUALIZERAPO_POST_MIX_GUID, L"EqualizerAPO", L"Copyright (C) 2015", 1, 0, __uuidof(IAudioProcessingObject),
 	(APO_FLAG)( APO_FLAG_FRAMESPERSECOND_MUST_MATCH | APO_FLAG_BITSPERSAMPLE_MUST_MATCH | APO_FLAG_INPLACE));
-const CRegAPOProperties<1> EqualizerAPO::regLfxProperties(
-	EQUALIZERAPO_LFX_GUID, L"EqualizerAPO", L"Copyright (C) 2014", 1, 0, __uuidof(IAudioProcessingObject),
+const CRegAPOProperties<1> EqualizerAPO::regPreMixProperties(
+	EQUALIZERAPO_PRE_MIX_GUID, L"EqualizerAPO", L"Copyright (C) 2015", 1, 0, __uuidof(IAudioProcessingObject),
 	(APO_FLAG)( APO_FLAG_FRAMESPERSECOND_MUST_MATCH | APO_FLAG_BITSPERSAMPLE_MUST_MATCH | APO_FLAG_INPLACE));
 
 EqualizerAPO::EqualizerAPO(IUnknown* pUnkOuter)
-	:CBaseAudioProcessingObject(regGfxProperties)
+	:CBaseAudioProcessingObject(regPostMixProperties)
 {
 	refCount = 1;
 	if(pUnkOuter != NULL)
@@ -113,7 +113,7 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 	{
 		LogF(L"Could not convert apo guid to guid string");
 	}
-	engine.setLfx((apoGuid == EQUALIZERAPO_LFX_GUID) != 0);
+	engine.setPreMix((apoGuid == EQUALIZERAPO_PRE_MIX_GUID) != 0);
 
     PROPVARIANT var;
     PropVariantInit(&var);
@@ -133,12 +133,12 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 		DeviceAPOInfo apoInfo;
 		if(apoInfo.load(deviceGuid))
 		{
-			engine.setDeviceInfo(apoInfo.isInput, apoInfo.deviceName, apoInfo.connectionName, apoInfo.deviceGuid);
+			engine.setDeviceInfo(apoInfo.isInput, apoInfo.currentInstallState.installPostMix, apoInfo.deviceName, apoInfo.connectionName, apoInfo.deviceGuid);
 
-			if(apoGuid == EQUALIZERAPO_LFX_GUID)
-				childApoGuid = apoInfo.originalLfxGuid;
+			if(apoGuid == EQUALIZERAPO_PRE_MIX_GUID)
+				childApoGuid = apoInfo.preMixChildGuid;
 			else
-				childApoGuid = apoInfo.originalGfxGuid;
+				childApoGuid = apoInfo.postMixChildGuid;
 		}
 	}
 	catch(RegistryException e)
@@ -154,7 +154,7 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 		hr = CLSIDFromString(childApoGuid.c_str(), &childGuid);
 		if(FAILED(hr))
 		{
-			LogF(L"Can't convert guid string to guid");
+			LogF(L"Can't convert child apo guid string to guid");
 			return hr;
 		}
 
@@ -247,7 +247,7 @@ HRESULT EqualizerAPO::IsInputFormatSupported(IAudioMediaType* pOutputFormat,
 		// we do not support downmixing currently
 		if(hr == S_OK && inFormat.dwSamplesPerFrame > 2 && inFormat.dwSamplesPerFrame > outFormat.dwSamplesPerFrame)
 		{
-			*ppSupportedInputFormat = pOutputFormat;
+			CreateAudioMediaTypeFromUncompressedAudioFormat(&outFormat, ppSupportedInputFormat);
 			hr = S_FALSE;
 		}
 	}

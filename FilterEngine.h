@@ -39,16 +39,17 @@ public:
 	FilterEngine();
 	~FilterEngine();
 
-	void setLfx(bool lfx);
-	void setDeviceInfo(bool capture, const std::wstring& deviceName, const std::wstring& connectionName, const std::wstring& deviceGuid);
+	void setPreMix(bool preMix);
+	void setDeviceInfo(bool capture, bool postMixInstalled, const std::wstring& deviceName, const std::wstring& connectionName, const std::wstring& deviceGuid);
 	void initialize(float sampleRate, unsigned inputChannelCount, unsigned realChannelCount, unsigned outputChannelCount, unsigned channelMask, unsigned maxFrameCount);
 	void loadConfig();
 	void loadConfig(const std::wstring& path);
 	void watchRegistryKey(const std::wstring& key);
 	void process(float *output, float *input, unsigned frameCount);
 
-	bool isLfx() const {return lfx;}
+	bool isPreMix() const {return preMix;}
 	bool isCapture() const {return capture;}
+	bool isPostMixInstalled() const {return postMixInstalled;}
 	std::wstring getDeviceName() const {return deviceName;}
 	std::wstring getConnectionName() const {return connectionName;}
 	std::wstring getDeviceGuid() const {return deviceGuid;}
@@ -67,8 +68,9 @@ private:
 
 	std::vector<IFilterFactory*> factories;
 
-	bool lfx;
+	bool preMix;
 	bool capture;
+	bool postMixInstalled;
 	std::wstring deviceName;
 	std::wstring connectionName;
 	std::wstring deviceGuid;

@@ -56,8 +56,9 @@ using namespace mup;
 FilterEngine::FilterEngine()
 	:parser(0)
 {
-	lfx = false;
+	preMix = false;
 	capture = false;
+	postMixInstalled = true;
 	inputChannelCount = 0;
 	lastInputWasSilent = false;
 	threadHandle = NULL;
@@ -119,14 +120,15 @@ FilterEngine::~FilterEngine()
 	DeleteCriticalSection(&loadSection);
 }
 
-void FilterEngine::setLfx(bool lfx)
+void FilterEngine::setPreMix(bool preMix)
 {
-	this->lfx = lfx;
+	this->preMix = preMix;
 }
 
-void FilterEngine::setDeviceInfo(bool capture, const wstring& deviceName, const wstring& connectionName, const wstring& deviceGuid)
+void FilterEngine::setDeviceInfo(bool capture, bool postMixInstalled, const wstring& deviceName, const wstring& connectionName, const wstring& deviceGuid)
 {
 	this->capture = capture;
+	this->postMixInstalled = postMixInstalled;
 	this->deviceName = deviceName;
 	this->connectionName = connectionName;
 	this->deviceGuid = deviceGuid;
@@ -593,7 +595,7 @@ unsigned long __stdcall FilterEngine::notificationThread(void* parameter)
 {
 	FilterEngine* engine = (FilterEngine*)parameter;
 
-	HANDLE notificationHandle = FindFirstChangeNotificationW(engine->configPath.c_str(), true, FILE_NOTIFY_CHANGE_LAST_WRITE);
+	HANDLE notificationHandle = FindFirstChangeNotificationW(engine->configPath.c_str(), true, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE);
 	if(notificationHandle == INVALID_HANDLE_VALUE)
 		notificationHandle = NULL;
 

@@ -26,15 +26,16 @@ using namespace std;
 
 void StageFilterFactory::initialize(FilterEngine* engine)
 {
-	lfx = engine->isLfx();
+	preMix = engine->isPreMix();
 	capture = engine->isCapture();
+	postMixInstalled = engine->isPostMixInstalled();
 
-	engine->getParser()->DefineConst(L"stage", engine->isCapture() ? L"capture" : engine->isLfx() ? L"pre-mix" : L"post-mix");
+	engine->getParser()->DefineConst(L"stage", engine->isCapture() ? L"capture" : engine->isPreMix() ? L"pre-mix" : L"post-mix");
 }
 
 vector<IFilter*> StageFilterFactory::startOfConfiguration()
 {
-	stageMatches = capture || !lfx;
+	stageMatches = capture || !preMix || !postMixInstalled;
 	while(!stageMatchesStack.empty())
 		stageMatchesStack.pop();
 
@@ -62,7 +63,7 @@ vector<IFilter*> StageFilterFactory::createFilter(const wstring& configPath, wst
 			const wstring& part = *it;
 			if(part == L"pre-mix")
 			{
-				if(!capture && lfx)
+				if(!capture && preMix)
 				{
 					stageMatches = true;
 					matchingPart = part;
@@ -70,7 +71,7 @@ vector<IFilter*> StageFilterFactory::createFilter(const wstring& configPath, wst
 			}
 			else if(part == L"post-mix")
 			{
-				if(!capture && !lfx)
+				if(!capture && !preMix)
 				{
 					stageMatches = true;
 					matchingPart = part;

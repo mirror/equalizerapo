@@ -1,0 +1,7 @@
+1. Change version number in version.h
+2. Create setups using build.bat
+3. Export trunk to an external folder, create EqualizerAPO-src-x.zip from the folder contents
+4. Upload EqualizerAPO32-x.zip, EqualizerAPO64-x.zip and EqualizerAPO-src-x.zip to new folder x
+5. Update readme.txt using subversion log
+6. Set EqualizerAPO64-x.zip as new default download
+7. Create tag of trunk in tags/x

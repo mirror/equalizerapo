@@ -316,7 +316,6 @@ vector<wstring> RegistryHelper::enumSubKeys(wstring key)
 	wchar_t keyName[256];
 	DWORD keyLength = sizeof(keyName) / sizeof(wchar_t);
 	int i=0;
-	int itemCount=0;
 
 	LSTATUS status;
 	while((status = RegEnumKeyExW(keyHandle, i++, keyName, &keyLength, NULL, NULL, NULL, NULL)) == ERROR_SUCCESS)
