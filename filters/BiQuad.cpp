@@ -17,23 +17,20 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-#include <string>
 #include "BiQuad.h"
 
 using namespace std;
 
 BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandwidthOrQOrS, bool isBandwidth)
 {
-    double A;
+	double A;
 	if(type == PEAKING || type == LOW_SHELF || type == HIGH_SHELF)
 		A = pow(10, dbGain / 40);
 	else
 		A = pow(10, dbGain / 20);
-    double omega = 2 * M_PI * freq / srate;
-    double sn = sin(omega);
-    double cs = cos(omega);
+	double omega = 2 * M_PI * freq / srate;
+	double sn = sin(omega);
+	double cs = cos(omega);
 	double alpha;
 	double beta = -1;
 
@@ -52,36 +49,36 @@ BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandw
 	switch(type)
 	{
 	case LOW_PASS:
-        b0 = (1 - cs) /2;
-        b1 = 1 - cs;
-        b2 = (1 - cs) /2;
-        a0 = 1 + alpha;
-        a1 = -2 * cs;
-        a2 = 1 - alpha;
+		b0 = (1 - cs) /2;
+		b1 = 1 - cs;
+		b2 = (1 - cs) /2;
+		a0 = 1 + alpha;
+		a1 = -2 * cs;
+		a2 = 1 - alpha;
 		break;
 	case HIGH_PASS:
-        b0 = (1 + cs) /2;
-        b1 = -(1 + cs);
-        b2 = (1 + cs) /2;
-        a0 = 1 + alpha;
-        a1 = -2 * cs;
-        a2 = 1 - alpha;
+		b0 = (1 + cs) /2;
+		b1 = -(1 + cs);
+		b2 = (1 + cs) /2;
+		a0 = 1 + alpha;
+		a1 = -2 * cs;
+		a2 = 1 - alpha;
 		break;
 	case BAND_PASS:
-        b0 = alpha;
-        b1 = 0;
-        b2 = -alpha;
-        a0 = 1 + alpha;
-        a1 = -2 * cs;
-        a2 = 1 - alpha;
+		b0 = alpha;
+		b1 = 0;
+		b2 = -alpha;
+		a0 = 1 + alpha;
+		a1 = -2 * cs;
+		a2 = 1 - alpha;
 		break;
 	case NOTCH:
-        b0 = 1;
-        b1 = -2 * cs;
-        b2 = 1;
-        a0 = 1 + alpha;
-        a1 = -2 * cs;
-        a2 = 1 - alpha;
+		b0 = 1;
+		b1 = -2 * cs;
+		b2 = 1;
+		a0 = 1 + alpha;
+		a1 = -2 * cs;
+		a2 = 1 - alpha;
 		break;
 	case ALL_PASS:
 		b0 = 1 - alpha;
@@ -92,12 +89,12 @@ BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandw
 		a2 = 1 - alpha;
 		break;
 	case PEAKING:
-        b0 = 1 + (alpha * A);
-        b1 = -2 * cs;
-        b2 = 1 - (alpha * A);
-        a0 = 1 + (alpha / A);
-        a1 = -2 * cs;
-        a2 = 1 - (alpha / A);
+		b0 = 1 + (alpha * A);
+		b1 = -2 * cs;
+		b2 = 1 - (alpha * A);
+		a0 = 1 + (alpha / A);
+		a1 = -2 * cs;
+		a2 = 1 - (alpha / A);
 		break;
 	case LOW_SHELF:
 		b0 = A * ((A + 1) - (A - 1) * cs + beta);
@@ -108,20 +105,20 @@ BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandw
 		a2 = (A + 1) + (A - 1) * cs - beta;
 		break;
 	case HIGH_SHELF:
-        b0 = A * ((A + 1) + (A - 1) * cs + beta);
-        b1 = -2 * A * ((A - 1) + (A + 1) * cs);
-        b2 = A * ((A + 1) + (A - 1) * cs - beta);
-        a0 = (A + 1) - (A - 1) * cs + beta;
-        a1 = 2 * ((A - 1) - (A + 1) * cs);
-        a2 = (A + 1) - (A - 1) * cs - beta;
+		b0 = A * ((A + 1) + (A - 1) * cs + beta);
+		b1 = -2 * A * ((A - 1) + (A + 1) * cs);
+		b2 = A * ((A + 1) + (A - 1) * cs - beta);
+		a0 = (A + 1) - (A - 1) * cs + beta;
+		a1 = 2 * ((A - 1) - (A + 1) * cs);
+		a2 = (A + 1) - (A - 1) * cs - beta;
 		break;
 	}
 
-    this->a0 = float(b0 / a0);
-    this->a[0] = float(b1 / a0);
-    this->a[1] = float(b2 / a0);
-    this->a[2] = float(a1 / a0);
-    this->a[3] = float(a2 / a0);
+	this->a0 = b0 / a0;
+	this->a[0] = b1 / a0;
+	this->a[1] = b2 / a0;
+	this->a[2] = a1 / a0;
+	this->a[3] = a2 / a0;
 
 	x1 = 0;
 	x2 = 0;
@@ -129,19 +126,19 @@ BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandw
 	y2 = 0;
 }
 
-float BiQuad::gainAt(float freq, float srate)
+double BiQuad::gainAt(double freq, double srate)
 {
-    float omega = 2 * (float)M_PI * freq / srate;
-    float sn = sin(omega/2.0f);
-	float phi = sn * sn;
-	float b0 = this->a0;
-	float b1 = this->a[0];
-	float b2 = this->a[1];
-	float a0 = 1.0f;
-	float a1 = -this->a[2];
-	float a2 = -this->a[3];
+	double omega = 2 * M_PI * freq / srate;
+	double sn = sin(omega/2.0);
+	double phi = sn * sn;
+	double b0 = this->a0;
+	double b1 = this->a[0];
+	double b2 = this->a[1];
+	double a0 = 1.0;
+	double a1 = this->a[2];
+	double a2 = this->a[3];
 
-	float dbGain = 10*log10( pow(b0+b1+b2, 2) - 4*(b0*b1 + 4*b0*b2 + b1*b2)*phi + 16*b0*b2*phi*phi )
+	double dbGain = 10*log10( pow(b0+b1+b2, 2) - 4*(b0*b1 + 4*b0*b2 + b1*b2)*phi + 16*b0*b2*phi*phi )
 		-10*log10( pow(a0+a1+a2, 2) - 4*(a0*a1 + 4*a0*a2 + a1*a2)*phi + 16*a0*a2*phi*phi );
 
 	return dbGain;

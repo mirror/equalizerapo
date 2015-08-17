@@ -33,11 +33,11 @@ public:
 
 private:
 	unsigned order;
-	float b0;
-	float* a;
-	float* b;
+	double b0;
+	double* a;
+	double* b;
 	unsigned channelCount;
-	float* x;
-	float* y;
+	double* x;
+	double* y;
 };
 #pragma AVRT_VTABLES_END

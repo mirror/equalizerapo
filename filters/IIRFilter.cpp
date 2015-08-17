@@ -22,22 +22,22 @@
 
 using namespace std;
 
-#define IS_DENORMAL(f) (((*(unsigned int *)&(f))&0x7f800000) == 0)
+#define IS_DENORMAL(d) (abs(d) < DBL_MIN)
 
 IIRFilter::IIRFilter(const vector<double>& coefficients)
 {
 	order = (unsigned)coefficients.size() / 2 - 1;
-	a = (float*)MemoryHelper::alloc(order * sizeof(float));
-	b = (float*)MemoryHelper::alloc(order * sizeof(float));
+	a = (double*)MemoryHelper::alloc(order * sizeof(double));
+	b = (double*)MemoryHelper::alloc(order * sizeof(double));
 	x = NULL;
 	y = NULL;
 
 	double a0 = coefficients[order+1];
-	b0 = float(coefficients[0] / a0);
+	b0 = coefficients[0] / a0;
 	for(unsigned i=0; i<order; i++)
 	{
-		b[i] = float(coefficients[i+1] / a0);
-		a[i] = float(-coefficients[i+order+2] / a0);
+		b[i] = coefficients[i+1] / a0;
+		a[i] = -coefficients[i+order+2] / a0;
 	}
 }
 
@@ -61,10 +61,10 @@ vector<wstring> IIRFilter::initialize(float sampleRate, unsigned maxFrameCount, 
 	if(y != NULL)
 		MemoryHelper::free(y);
 
-	x = (float*)MemoryHelper::alloc(order * channelCount * sizeof(float));
-	y = (float*)MemoryHelper::alloc(order * channelCount * sizeof(float));
-	memset(x, 0, order * channelCount * sizeof(float));
-	memset(y, 0, order * channelCount * sizeof(float));
+	x = (double*)MemoryHelper::alloc(order * channelCount * sizeof(double));
+	y = (double*)MemoryHelper::alloc(order * channelCount * sizeof(double));
+	memset(x, 0, order * channelCount * sizeof(double));
+	memset(y, 0, order * channelCount * sizeof(double));
 
 	return channelNames;
 }
@@ -78,16 +78,17 @@ void IIRFilter::process(float** output, float** input, unsigned frameCount)
 		float* outputChannel = output[i];
 
 		unsigned channelOffset = i*order;
-		float* xo = x+channelOffset;
-		float* yo = y+channelOffset;
+		double* xo = x+channelOffset;
+		double* yo = y+channelOffset;
 		for(unsigned j=0; j<frameCount; j++)
 		{
-			float sample = inputChannel[j];
-			float sum = b0 * sample;
+			double sample = inputChannel[j];
+			double sum = b0 * sample;
 
 			for(unsigned k=order-1; k>0; k--)
 			{
 				sum += b[k] * xo[k];
+				xo[k] = xo[k-1];
 			}
 
 			sum += b[0] * xo[0];
@@ -95,29 +96,24 @@ void IIRFilter::process(float** output, float** input, unsigned frameCount)
 			for(unsigned k=order-1; k>0; k--)
 			{
 				sum += a[k] * yo[k];
+				yo[k] = yo[k-1];
 			}
 
 			sum += a[0] * yo[0];
 
-			for(unsigned k=order-1; k>0; k--)
-			{
-				xo[k] = xo[k-1];
-				yo[k] = yo[k-1];
-			}
-
 			xo[0] = sample;
 			yo[0] = sum;
 
-			outputChannel[j] = sum;
+			outputChannel[j] = (float)sum;
 		}
 	}
 
 	for(unsigned i=0; i<channelCount*order; i++)
 	{
 		if(IS_DENORMAL(x[i]))
-			x[i] = 0.0f;
+			x[i] = 0.0;
 		if(IS_DENORMAL(y[i]))
-			y[i] = 0.0f;
+			y[i] = 0.0;
 	}
 }
 #pragma AVRT_CODE_END

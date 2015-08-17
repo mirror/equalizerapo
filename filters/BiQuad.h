@@ -19,9 +19,12 @@
 
 #pragma once
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+#include <climits>
 #include <string>
 
-#define IS_DENORMAL(f) (((*(unsigned int *)&(f))&0x7f800000) == 0)
+#define IS_DENORMAL(d) (abs(d) < DBL_MIN)
 
 class BiQuad
 {
@@ -38,20 +41,20 @@ public:
 	void removeDenormals()
 	{
 		if(IS_DENORMAL(x1))
-			x1 = 0.0f;
+			x1 = 0.0;
 		if(IS_DENORMAL(x2))
-			x2 = 0.0f;
+			x2 = 0.0;
 		if(IS_DENORMAL(y1))
-			y1 = 0.0f;
+			y1 = 0.0;
 		if(IS_DENORMAL(y2))
-			y2 = 0.0f;
+			y2 = 0.0;
 	}
 
 	__forceinline
-	float process(float sample)
+	double process(double sample)
 	{
 		// changed order of additions leads to better pipelining
-		float result = a0 * sample + a[1] * x2 + a[0] * x1 - a[3] * y2 - a[2] * y1;
+		double result = a0 * sample + a[1] * x2 + a[0] * x1 - a[3] * y2 - a[2] * y1;
 
 		x2 = x1;
 		x1 = sample;
@@ -62,12 +65,12 @@ public:
 		return result;
 	}
 
-	float gainAt(float freq, float srate);
+	double gainAt(double freq, double srate);
 
 private:
-	__declspec(align(16)) float a[4];
-	float a0;
+	__declspec(align(16)) double a[4];
+	double a0;
 
-	float x1, x2;
-	float y1, y2;
+	double x1, x2;
+	double y1, y2;
 };

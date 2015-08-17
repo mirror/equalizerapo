@@ -22,9 +22,11 @@
 
 using namespace std;
 
-BiQuadFilter::BiQuadFilter(BiQuad::Type type, double dbGain, double freq, double bandwidthOrQOrS, bool isBandwidth)
-	:type(type), dbGain(dbGain), freq(freq), bandwidthOrQOrS(bandwidthOrQOrS), isBandwidth(isBandwidth)
+BiQuadFilter::BiQuadFilter(BiQuad::Type type, double dbGain, double freq, double bandwidthOrQOrS, bool isBandwidth, bool isCornerFreq)
+	:type(type), dbGain(dbGain), freq(freq), bandwidthOrQOrS(bandwidthOrQOrS), isBandwidth(isBandwidth), isCornerFreq(isCornerFreq)
 {
+	channelCount = 0;
+	biquads = NULL;
 }
 
 BiQuadFilter::~BiQuadFilter()
@@ -40,10 +42,20 @@ vector<wstring> BiQuadFilter::initialize(float sampleRate, unsigned maxFrameCoun
 {
 	this->channelCount = channelNames.size();
 	biquads = (BiQuad*)MemoryHelper::alloc(channelCount * sizeof(BiQuad));
+	double biquadFreq = freq;
+	if(isCornerFreq && (type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF))
+	{
+		// frequency adjustment for DCX2496
+		double centerFreqFactor = pow(10.0, abs(dbGain) / 80.0 / bandwidthOrQOrS);
+		if(type == BiQuad::LOW_SHELF)
+			biquadFreq *= centerFreqFactor;
+		else
+			biquadFreq /= centerFreqFactor;
+	}
 
 	for(unsigned i=0; i<channelCount; i++)
 	{
-		new (biquads + i) BiQuad(type, dbGain, freq, sampleRate, bandwidthOrQOrS, isBandwidth);
+		new (biquads + i) BiQuad(type, dbGain, biquadFreq, sampleRate, bandwidthOrQOrS, isBandwidth);
 	}
 
 	return channelNames;
@@ -60,10 +72,41 @@ void BiQuadFilter::process(float** output, float** input, unsigned frameCount)
 		float* outputChannel = output[i];
 
 		for(unsigned j=0; j<frameCount; j++)
-			outputChannel[j] = bq.process(inputChannel[j]);
+			outputChannel[j] = (float)bq.process(inputChannel[j]);
 
 		bq.removeDenormals();
 		biquads[i] = bq;
 	}
 }
+
+BiQuad::Type BiQuadFilter::getType() const
+{
+	return type;
+}
+
+double BiQuadFilter::getDbGain() const
+{
+	return dbGain;
+}
+
+double BiQuadFilter::getFreq() const
+{
+	return freq;
+}
+
+double BiQuadFilter::getBandwidthOrQOrS() const
+{
+	return bandwidthOrQOrS;
+}
+
+bool BiQuadFilter::getIsBandwidth() const
+{
+	return isBandwidth;
+}
+
+bool BiQuadFilter::getIsCornerFreq() const
+{
+	return isCornerFreq;
+}
+
 #pragma AVRT_CODE_END

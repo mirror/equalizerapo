@@ -93,6 +93,7 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 				double gain = 0;
 				double bandwidthOrQOrS = 0;
 				bool isBandwidth = false;
+				bool isCornerFreq = false;
 				bool error = false;
 
 				found = regex_search(parameters, match, regexFreq);
@@ -194,14 +195,7 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 					// Maximum S is 1 for 12 dB
 					bandwidthOrQOrS /= 12.0;
 					if(typeString[typeString.length()-1] != L'C')
-					{
-						// frequency adjustment for DCX2496
-						double centerFreqFactor = pow(10.0, abs(gain) / 80.0 / bandwidthOrQOrS);
-						if(type == BiQuad::LOW_SHELF)
-							freq *= centerFreqFactor;
-						else
-							freq /= centerFreqFactor;
-					}
+						isCornerFreq = true;
 				}
 
 				if(!error)
@@ -209,7 +203,7 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 					TraceF(L"%s", stream.str().c_str());
 
 					void* mem = MemoryHelper::alloc(sizeof(BiQuadFilter));
-					filter = new(mem) BiQuadFilter(type, gain, freq, bandwidthOrQOrS, isBandwidth);
+					filter = new(mem) BiQuadFilter(type, gain, freq, bandwidthOrQOrS, isBandwidth, isCornerFreq);
 				}
 			}
 			else if(typeString != L"None")
