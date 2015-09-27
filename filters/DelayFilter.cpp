@@ -17,6 +17,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #include <cmath>
 
 #include "helpers/MemoryHelper.h"
@@ -109,4 +110,14 @@ void DelayFilter::cleanup()
 		MemoryHelper::free(buffers);
 		buffers = NULL;
 	}
+}
+
+bool DelayFilter::getIsMs() const
+{
+	return isMs;
+}
+
+double DelayFilter::getDelay() const
+{
+	return delay;
 }

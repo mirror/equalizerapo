@@ -32,6 +32,7 @@ public:
 	void onLvnItemChanged(unsigned sourceId, LPNMLISTVIEW info);
 	bool onButtonClicked(unsigned sourceId);
 	void onTcnSelChange(unsigned sourceId);
+	bool isAnySelected();
 	bool isChanged();
 	bool hasUpgrades();
 
@@ -53,6 +54,7 @@ private:
 	HWND useOriginalAPOPreMix;
 	HWND useOriginalAPOPostMix;
 	HWND installModeComboBox;
+	HWND selectOneDeviceLabel;
 
 	std::wstring cmdLine;
 	void expandTroubleShooting(bool expand);

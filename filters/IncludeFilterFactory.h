@@ -27,8 +27,8 @@
 class IncludeFilterFactory : public IFilterFactory
 {
 public:
-	virtual void initialize(FilterEngine* engine);
-	virtual std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters);
+	void initialize(FilterEngine* engine) override;
+	std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters) override;
 
 private:
 	FilterEngine* engine;

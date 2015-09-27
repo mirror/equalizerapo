@@ -27,10 +27,14 @@
 class DeviceFilterFactory : public IFilterFactory
 {
 public:
-	virtual void initialize(FilterEngine* engine);
-	virtual std::vector<IFilter*> startOfConfiguration();
-	virtual std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters);
-	virtual std::vector<IFilter*> endOfFile(const std::wstring& configPath);
+#ifndef NO_FILTERENGINE
+	void initialize(FilterEngine* engine) override;
+#endif
+	std::vector<IFilter*> startOfConfiguration() override;
+	std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters) override;
+	std::vector<IFilter*> endOfFile(const std::wstring& configPath) override;
+
+	static bool matchDevice(const std::wstring& deviceString, const std::wstring& pattern);
 
 private:
 	bool deviceMatches;

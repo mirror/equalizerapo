@@ -41,6 +41,5 @@ public:
 	virtual void process(float** output, float** input, unsigned frameCount) = 0;
 
 protected:
-	int getChannelIndex(std::wstring word, const std::vector<std::wstring>& channelNames, bool allowNew = false);
 };
 #pragma AVRT_VTABLES_END

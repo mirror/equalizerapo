@@ -17,6 +17,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #include <cstdarg>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -87,7 +88,7 @@ void LogHelper::log(const char* file, int line, const void* caller, bool trace, 
 		GetLocalTime(&___st);
 		DWORD threadId = GetCurrentThreadId();
 		fwprintf(fp, L"%04d-%02d-%02d %02d:%02d:%02d.%03d %d %08X (%S:%d): ",
-			___st.wYear, ___st.wMonth, ___st.wDay, ___st.wHour, ___st.wMinute, ___st.wSecond, ___st.wMilliseconds, threadId, (DWORD)caller, file, line);
+			___st.wYear, ___st.wMonth, ___st.wDay, ___st.wHour, ___st.wMinute, ___st.wSecond, ___st.wMilliseconds, threadId, (DWORD)(unsigned long long)caller, file, line);
 	}
 
 	if(trace)

@@ -1,6 +1,9 @@
 !include "MUI2.nsh"
 !include "NSISpcre.nsh"
 
+;Use more efficient compression
+SetCompressor /SOLID lzma
+
 !insertmacro REReplace
 
 !searchparse /file ..\version.h `#define MAJOR ` MAJOR
@@ -106,16 +109,35 @@ Section "Install" SecInstall
 
   ;Rename before delete as these files may be in use
   !insertmacro RenameAndDelete "$INSTDIR\EqualizerAPO.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\libsndfile-1.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\libfftw3f-3.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcp100.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcr100.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\msvcp120.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\msvcr120.dll"
     
   File "${BINPATH}\EqualizerAPO.dll"
   File "${BINPATH}\Configurator.exe"
   File "${BINPATH}\Benchmark.exe"
   
+  File "${BINPATH_EDITOR}\Editor.exe"
+  
   File "${LIBPATH}\libsndfile-1.dll"
-  File "${LIBPATH}\msvcp100.dll"
-  File "${LIBPATH}\msvcr100.dll"
+  File "${LIBPATH}\libfftw3f-3.dll"
+  File "${LIBPATH}\msvcp120.dll"
+  File "${LIBPATH}\msvcr120.dll"
+  File "${LIBPATH}\Qt5Core.dll"
+  File "${LIBPATH}\Qt5Gui.dll"
+  File "${LIBPATH}\Qt5Widgets.dll"
+  
+  CreateDirectory "$INSTDIR\qt"
+  CreateDirectory "$INSTDIR\qt\platforms"
+  CreateDirectory "$INSTDIR\qt\imageformats"
+  
+  File /oname=qt\platforms\qwindows.dll "${LIBPATH}\qt\platforms\qwindows.dll"
+  File /oname=qt\imageformats\qgif.dll "${LIBPATH}\qt\imageformats\qgif.dll"
+  File /oname=qt\imageformats\qico.dll "${LIBPATH}\qt\imageformats\qico.dll"
+  File /oname=qt\imageformats\qjpeg.dll "${LIBPATH}\qt\imageformats\qjpeg.dll"
   
   File "Configuration tutorial (online).url"
   File "Configuration reference (online).url"
@@ -143,6 +165,7 @@ Section "Install" SecInstall
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration editor.lnk" "$INSTDIR\Editor.exe"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration tutorial (online).lnk" "$INSTDIR\Configuration tutorial (online).url"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration reference (online).lnk" "$INSTDIR\Configuration reference (online).url"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configurator.lnk" "$INSTDIR\Configurator.exe"
@@ -191,9 +214,17 @@ Section "-un.Uninstall"
   Delete "$INSTDIR\Configuration reference (online).url"
   Delete "$INSTDIR\Configuration tutorial (online).url"
   
-  Delete /REBOOTOK "$INSTDIR\msvcr100.dll"
-  Delete /REBOOTOK "$INSTDIR\msvcp100.dll"
-  Delete "$INSTDIR\libsndfile-1.dll"
+  RMDir /r "$INSTDIR\qt"
+  
+  Delete "$INSTDIR\Qt5Widgets.dll"
+  Delete "$INSTDIR\Qt5Gui.dll"
+  Delete "$INSTDIR\Qt5Core.dll"
+  Delete /REBOOTOK "$INSTDIR\msvcr120.dll"
+  Delete /REBOOTOK "$INSTDIR\msvcp120.dll"
+  Delete /REBOOTOK "$INSTDIR\libfftw3f-3.dll"
+  Delete /REBOOTOK "$INSTDIR\libsndfile-1.dll"
+  
+  Delete "$INSTDIR\Editor.exe"
   
   Delete "$INSTDIR\Benchmark.exe"
   Delete "$INSTDIR\Configurator.exe"

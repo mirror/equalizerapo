@@ -17,11 +17,13 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #include <sstream>
 #include <algorithm>
 
 #include "helpers/MemoryHelper.h"
 #include "helpers/LogHelper.h"
+#include "helpers/ChannelHelper.h"
 #include "ChannelFilter.h"
 
 using namespace std;
@@ -48,7 +50,7 @@ vector<wstring> ChannelFilter::initialize(float sampleRate, unsigned maxFrameCou
 		if(currentWord == L"ALL")
 			selectedChannels = vector<bool>(channelCount, true);
 		else
-			channelNr = getChannelIndex(currentWord, channelNames);
+			channelNr = ChannelHelper::getChannelIndex(currentWord, channelNames);
 
 		if(channelNr != -1 && channelNr < (int)channelCount)
 		{

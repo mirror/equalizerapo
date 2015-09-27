@@ -21,8 +21,7 @@
 
 #include <string>
 #include <vector>
-#include <hash_map>
-#include <hash_set>
+#include <unordered_set>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <mpParser.h>
@@ -104,9 +103,7 @@ private:
 	PrecisionTimer timer;
 	void* threadHandle;
 	void* shutdownEvent;
-	stdext::hash_set<std::wstring> watchRegistryKeys;
+	std::unordered_set<std::wstring> watchRegistryKeys;
 	bool lastInputWasSilent;
-	stdext::hash_map<std::wstring, int> channelNameToPosMap;
-	stdext::hash_map<int, std::wstring> channelPosToNameMap;
 };
 #pragma AVRT_VTABLES_END

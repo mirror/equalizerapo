@@ -17,16 +17,19 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #include <mmdeviceapi.h>
+#include <mmreg.h>
 
 #include "DeviceAPOInfo.h"
 
-#include "EqualizerAPO.h"
 #include "helpers/StringHelper.h"
 #include "helpers/RegistryHelper.h"
 
 using namespace std;
 
+#define protectedDGKeyPath L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Audio"
+#define protectedDGValueName L"DisableProtectedAudioDG"
 #define commonKeyPath L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MMDevices\\Audio"
 #define renderKeyPath commonKeyPath L"\\Render"
 #define captureKeyPath commonKeyPath L"\\Capture"
@@ -36,6 +39,8 @@ static const wchar_t* postMixChildGuidValueName = L"PostMixChild";
 static const wchar_t* versionValueName = L"Version";
 static const wchar_t* connectionValueName = L"{a45c254e-df1c-4efd-8020-67d146a850e0},2";
 static const wchar_t* deviceValueName = L"{b3f8fa53-0004-438e-9003-51a46e139bfc},6";
+static const wchar_t* formatValueName = L"{f19f064d-082c-4e27-bc73-6882a1bb8e4c},0";
+static const wchar_t* channelMaskValueName = L"{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},3";
 static const wchar_t* lfxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},1";
 static const wchar_t* gfxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},2";
 static const wchar_t* sfxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},5";
@@ -43,7 +48,7 @@ static const wchar_t* mfxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d
 static const wchar_t* efxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},7";
 static const unsigned allGuidValueNameCount = 5;
 static const wchar_t* allGuidValueNames[] = {lfxGuidValueName, gfxGuidValueName, sfxGuidValueName, mfxGuidValueName, efxGuidValueName};
-static enum GuidValueIndices
+enum GuidValueIndices
 {
 	LFX_INDEX = 0,
 	GFX_INDEX = 1,
@@ -56,18 +61,21 @@ static const wchar_t* sfxProcessingModesValueName = L"{d3993a3f-99c2-4402-b5ec-a
 static const wchar_t* mfxProcessingModesValueName = L"{d3993a3f-99c2-4402-b5ec-a92a0367664b},6";
 static const wchar_t* efxProcessingModesValueName = L"{d3993a3f-99c2-4402-b5ec-a92a0367664b},7";
 static const wchar_t* defaultProcessingModeValue = L"{C18E2F7E-933D-4965-B7D1-1EEF228D2AF3}";
+static const wchar_t* disableEnhancementsValueName = L"{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},5";
 static const wchar_t* installVersion = L"2";
+static PROPERTYKEY guidPropertyKey = {{0x1da5d803, 0xd492, 0x4edd, 0x8c, 0x23, 0xe0, 0xc0, 0xff, 0xee, 0x7f, 0x0e}, 4};
 
 vector<DeviceAPOInfo> DeviceAPOInfo::loadAllInfos(bool input)
 {
 	vector<DeviceAPOInfo> result;
 	vector<wstring> deviceGuidStrings = RegistryHelper::enumSubKeys(input ? captureKeyPath : renderKeyPath);
+	wstring defaultDeviceGuid = getDefaultDevice(input);
 	for(vector<wstring>::iterator it = deviceGuidStrings.begin(); it != deviceGuidStrings.end(); it++)
 	{
 		wstring deviceGuidString = *it;
 
 		DeviceAPOInfo info;
-		if(info.load(deviceGuidString))
+		if(info.load(deviceGuidString, defaultDeviceGuid))
 		{
 			info.selectedInstallState = info.currentInstallState;
 			result.push_back(info);
@@ -77,7 +85,56 @@ vector<DeviceAPOInfo> DeviceAPOInfo::loadAllInfos(bool input)
 	return result;
 }
 
-bool DeviceAPOInfo::load(const wstring& deviceGuid)
+wstring DeviceAPOInfo::getDefaultDevice(bool input, int role)
+{
+	wstring result;
+
+	IMMDeviceEnumerator* enumerator = NULL;
+	HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL, CLSCTX_ALL, __uuidof(IMMDeviceEnumerator), (void**)&enumerator);
+	if(SUCCEEDED(hr))
+	{
+		IMMDevice* endPoint = NULL;
+		hr = enumerator->GetDefaultAudioEndpoint(input ? eCapture : eRender, (ERole)role, &endPoint);
+		if(SUCCEEDED(hr))
+		{
+			IPropertyStore* propertyStore = NULL;
+			hr = endPoint->OpenPropertyStore(STGM_READ, &propertyStore);
+			if(SUCCEEDED(hr))
+			{
+				PROPVARIANT variant;
+				PropVariantInit(&variant);
+				hr = propertyStore->GetValue(guidPropertyKey, &variant);
+				if(SUCCEEDED(hr))
+				{
+					result = variant.pwszVal;
+					PropVariantClear(&variant);
+				}
+				propertyStore->Release();
+			}
+			endPoint->Release();
+		}
+		enumerator->Release();
+	}
+
+	return result;
+}
+
+bool DeviceAPOInfo::checkProtectedAudioDG(bool fix)
+{
+	bool result = true;
+
+	if (!RegistryHelper::valueExists(protectedDGKeyPath, protectedDGValueName) || RegistryHelper::readDWORDValue(protectedDGKeyPath, protectedDGValueName) != 1)
+	{
+		result = false;
+
+		if (fix)
+			RegistryHelper::writeDWORDValue(protectedDGKeyPath, protectedDGValueName, 1);
+	}
+
+	return result;
+}
+
+bool DeviceAPOInfo::load(const wstring& deviceGuid, wstring defaultDeviceGuid)
 {
 	wstring keyPath;
 	if(RegistryHelper::keyExists(renderKeyPath L"\\" + deviceGuid))
@@ -100,6 +157,40 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid)
 	connectionName = RegistryHelper::readValue(keyPath + L"\\Properties", connectionValueName);
 	deviceName = RegistryHelper::readValue(keyPath + L"\\Properties", deviceValueName);
 
+	channelCount = 0;
+	sampleRate = 0;
+	channelMask = 0;
+	if(RegistryHelper::valueExists(keyPath + L"\\Properties", formatValueName))
+	{
+		std::vector<unsigned char> format = RegistryHelper::readBinaryValue(keyPath + L"\\Properties", formatValueName);
+		if(format.size() >= sizeof(WAVEFORMATEX) + 8)
+		{
+			WAVEFORMATEX* waveFormat = (WAVEFORMATEX*)&format[8];
+			channelCount = waveFormat->nChannels;
+			sampleRate = waveFormat->nSamplesPerSec;
+			if(waveFormat->wFormatTag == WAVE_FORMAT_EXTENSIBLE)
+			{
+				WAVEFORMATEXTENSIBLE* waveFormatExtensible = (WAVEFORMATEXTENSIBLE*)waveFormat;
+				channelMask = waveFormatExtensible->dwChannelMask;
+			}
+		}
+	}
+	if(channelMask == 0 && RegistryHelper::valueExists(keyPath + L"\\Properties", channelMaskValueName))
+		channelMask = RegistryHelper::readDWORDValue(keyPath + L"\\Properties", channelMaskValueName);
+
+	if(defaultDeviceGuid == L"")
+		defaultDeviceGuid = getDefaultDevice(isInput);
+
+	GUID guid1, guid2;
+	if(SUCCEEDED(CLSIDFromString(deviceGuid.c_str(), &guid1)) && SUCCEEDED(CLSIDFromString(defaultDeviceGuid.c_str(), &guid2)))
+		isDefaultDevice = (guid1 == guid2) != 0;
+	else
+		isDefaultDevice = false;
+
+	isEnhancementsDisabled = false;
+	if(RegistryHelper::keyExists(keyPath + L"\\FxProperties") && RegistryHelper::valueExists(keyPath + L"\\FxProperties", disableEnhancementsValueName))
+		isEnhancementsDisabled = RegistryHelper::readDWORDValue(keyPath + L"\\FxProperties", disableEnhancementsValueName) != 0;
+
 	isInstalled = false;
 	currentInstallState.installMode = INSTALL_LFX_GFX;
 	version = L"0";
@@ -112,12 +203,12 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid)
 
 	if(!RegistryHelper::keyExists(keyPath + L"\\FxProperties"))
 	{
-		for(int i=0; i < allGuidValueNameCount; i++)
+		for(int i = 0; i < allGuidValueNameCount; i++)
 			originalApoGuids[i] = APOGUID_NOKEY;
 	}
 	else
 	{
-		for(int i=0; i < allGuidValueNameCount; i++)
+		for(int i = 0; i < allGuidValueNameCount; i++)
 		{
 			if(RegistryHelper::valueExists(keyPath + L"\\FxProperties", allGuidValueNames[i]))
 				originalApoGuids[i] = RegistryHelper::readValue(keyPath + L"\\FxProperties", allGuidValueNames[i]);
@@ -127,7 +218,7 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid)
 
 		bool found = false;
 		bool foundAt[allGuidValueNameCount];
-		for(int i=0; i < allGuidValueNameCount; i++)
+		for(int i = 0; i < allGuidValueNameCount; i++)
 		{
 			foundAt[i] = false;
 
@@ -164,7 +255,7 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid)
 					version = L"1";
 				}
 
-				for(int i=0; i < allGuidValueNameCount; i++)
+				for(int i = 0; i < allGuidValueNameCount; i++)
 				{
 					if(RegistryHelper::valueExists(childApoPath L"\\" + deviceGuid, allGuidValueNames[i]))
 						originalApoGuids[i] = RegistryHelper::readValue(childApoPath L"\\" + deviceGuid, allGuidValueNames[i]);
@@ -208,7 +299,7 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid)
 			}
 			else if(RegistryHelper::valueExists(childApoPath, deviceGuid))
 			{
-				for(int i=0; i < allGuidValueNameCount; i++)
+				for(int i = 0; i < allGuidValueNameCount; i++)
 				{
 					if(foundAt[i])
 					{
@@ -335,7 +426,7 @@ void DeviceAPOInfo::install()
 
 		RegistryHelper::writeValue(keyPath + L"\\FxProperties", fxTitleValueName, L"Equalizer APO");
 
-		for(int i=0; i < allGuidValueNameCount; i++)
+		for(int i = 0; i < allGuidValueNameCount; i++)
 		{
 			RegistryHelper::writeValue(childApoPath L"\\" + deviceGuid, allGuidValueNames[i], APOGUID_NOKEY);
 		}
@@ -344,7 +435,7 @@ void DeviceAPOInfo::install()
 	{
 		vector<wstring> valuenames;
 
-		for(int i=0; i < allGuidValueNameCount; i++)
+		for(int i = 0; i < allGuidValueNameCount; i++)
 		{
 			wstring apoGuidString = APOGUID_NOVALUE;
 			if(RegistryHelper::valueExists(keyPath + L"\\FxProperties", allGuidValueNames[i]))
@@ -358,7 +449,7 @@ void DeviceAPOInfo::install()
 
 		if(!valuenames.empty())
 			RegistryHelper::saveToFile(keyPath + L"\\FxProperties", valuenames,
-				L"backup_" + StringHelper::replaceIllegalCharacters(deviceName) + L"_" + StringHelper::replaceIllegalCharacters(connectionName) + L".reg");
+									   L"backup_" + StringHelper::replaceIllegalCharacters(deviceName) + L"_" + StringHelper::replaceIllegalCharacters(connectionName) + L".reg");
 	}
 
 	wstring preMixValue;
@@ -425,6 +516,10 @@ void DeviceAPOInfo::install()
 				RegistryHelper::writeMultiValue(keyPath + L"\\FxProperties", efxProcessingModesValueName, defaultProcessingModeValue);
 		}
 	}
+
+	// force-enable enhancements
+	if(RegistryHelper::valueExists(keyPath + L"\\FxProperties", disableEnhancementsValueName))
+		RegistryHelper::deleteValue(keyPath + L"\\FxProperties", disableEnhancementsValueName);
 }
 
 void DeviceAPOInfo::uninstall()
@@ -441,7 +536,7 @@ void DeviceAPOInfo::uninstall()
 	}
 	else
 	{
-		for(int i=0; i < allGuidValueNameCount; i++)
+		for(int i = 0; i < allGuidValueNameCount; i++)
 		{
 			if(originalApoGuids[i] == APOGUID_NOVALUE)
 			{

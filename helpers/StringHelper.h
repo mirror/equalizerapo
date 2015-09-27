@@ -33,5 +33,6 @@ public:
 	static std::wstring toUpperCase(const std::wstring& s);
 	static std::wstring trim(const std::wstring& s);
 	static std::vector<std::wstring> split(const std::wstring& s, wchar_t splitChar, bool skipEmpty = true);
+	static std::wstring join(const std::vector<std::wstring>& strings, const std::wstring& separator);
 	static std::wstring getSystemErrorString(long status);
 };

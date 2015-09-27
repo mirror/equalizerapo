@@ -148,6 +148,36 @@ Replaces the audio on the target channel by the sum of the given source channels
 	Copy: SUB=L L=0.0 R=0.0 C=0.0 RL=0.0 RR=0.0
 
 <br>
+## GraphicEQ (since version 1.0)
+**Syntax:**
+GraphicEQ: &lt;Frequency&gt; &lt;Gain (dB)&gt;; &lt;Frequency&gt; &lt;Gain (dB)&gt;; ...
+
+**Description:**
+Adds a graphic equalizer with the specified number of bands and corresponding gain values. The gain values are interpolated linearly in the logarithmic frequency spectrum (so that the lines appear linear in a logarithmic view) between the specified bands. Outside of the specified bands, the frequency response is flat.
+
+**Example:**
+
+	:::perl
+	# A 15-band graphic equalizer with ISO bands
+	GraphicEQ: 25 6; 40 4.5; 63 3; 100 1.5; 160 0; 250 0; 400 0; 630 0; 1000 0; 1600 0; 2500 0; 4000 0; 6300 1.5; 10000 3; 16000 3
+	# A custom graphic equalizer
+	GraphicEQ: 20.00 0.00; 25.00 -1.75; 30.00 -3.20; 35.00 -4.15; 40.00 -4.90; 45.00 -5.55; 50.00 -6.10; 60.00 -6.90; 70.00 -7.40; 80.00 -7.80; 90.00 -8.10; 100.00 -8.30
+
+<br>
+## Convolution (since version 1.0)
+**Syntax:**
+Convolution: &lt;File name&gt;
+
+**Description:**
+Adds a convolver that processes the signal using the impulse response contained in the specified file. The file must be in one of the formats supported by [libsndfile](http://www.mega-nerd.com/libsndfile/#Features) (e.g. wav, flac or ogg). If the file contains multiple channels, the channels are assigned to the selected channels in round-robin order (e.g. a stereo file is assigned to 4 channels as L->1, R->2, L->3, R->4). The sample rate of the file <b>must</b> match the sample rate of the device, otherwise the convolver can not be created. Latency and CPU usage depends on the length and the phase behaviour of the impulse response (linear-phase will have a latency of half the file length while minimum-phase has a lower, but inconsistent latency). The specified file name is relative to the current configuration file's path. While impulse response files can be opened from any directory with sufficient access rights, if the files reside in Equalizer APO's config path or a subdirectory, the configuration will be reloaded automatically if the files are changed so that the change is applied immediately.
+
+**Example:**
+
+	:::perl
+	# Convolve with a recorded impulse response for a reverberation effect
+	Convolution: church.wav
+
+<br>
 # Control commands
 These command do not directly affect the audio but control which commands are executed or how they affect the audio.
 

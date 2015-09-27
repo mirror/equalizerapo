@@ -27,9 +27,9 @@ class ReadRegStringFunction:public mup::ICallback
 {
 public:
 	ReadRegStringFunction(FilterEngine* engine);
-	virtual void Eval(mup::ptr_val_type& ret, const mup::ptr_val_type *arg, int argc);
+	void Eval(mup::ptr_val_type& ret, const mup::ptr_val_type *arg, int argc) override;
 	const mup::char_type* GetDesc() const;
-	virtual mup::IToken* Clone() const;
+	mup::IToken* Clone() const override;
 
 private:
 	FilterEngine* engine;
@@ -39,9 +39,9 @@ class ReadRegDWORDFunction:public mup::ICallback
 {
 public:
 	ReadRegDWORDFunction(FilterEngine* engine);
-	virtual void Eval(mup::ptr_val_type& ret, const mup::ptr_val_type *arg, int argc);
+	void Eval(mup::ptr_val_type& ret, const mup::ptr_val_type *arg, int argc) override;
 	const mup::char_type* GetDesc() const;
-	virtual mup::IToken* Clone() const;
+	mup::IToken* Clone() const override;
 
 private:
 	FilterEngine* engine;

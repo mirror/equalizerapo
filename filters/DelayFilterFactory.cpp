@@ -17,6 +17,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #include <sstream>
 
 #include "helpers/MemoryHelper.h"
@@ -36,12 +37,12 @@ vector<IFilter*> DelayFilterFactory::createFilter(const wstring& configPath, wst
 		//Conversion to period as decimal mark, if needed
 		wstring value = StringHelper::replaceCharacters(parameters, L",", L".");
 
-		double delay = 0;
+		double delay = -1;
 		wstring unit;
 		wstringstream stream(value);
 		stream >> delay >> unit;
 
-		if(delay > 0)
+		if(delay >= 0)
 		{
 			if(StringHelper::toLowerCase(unit) == L"ms")
 			{

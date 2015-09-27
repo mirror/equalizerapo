@@ -25,6 +25,11 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
+// {EACD2258-FCAC-4FF4-B36D-419E924A6D79}
+const GUID EQUALIZERAPO_PRE_MIX_GUID = { 0xeacd2258, 0xfcac, 0x4ff4, { 0xb3, 0x6d, 0x41, 0x9e, 0x92, 0x4a, 0x6d, 0x79 } };
+// {EC1CC9CE-FAED-4822-828A-82A81A6F018F}
+const GUID EQUALIZERAPO_POST_MIX_GUID = { 0xec1cc9ce, 0xfaed, 0x4822, { 0x82, 0x8a, 0x82, 0xa8, 0x1a, 0x6f, 0x01, 0x8f } };
+
 #define APP_REGPATH L"HKEY_LOCAL_MACHINE\\SOFTWARE\\EqualizerAPO"
 
 class RegistryHelper
@@ -32,7 +37,9 @@ class RegistryHelper
 public:
 	static std::wstring readValue(std::wstring key, std::wstring valuename);
 	static unsigned long readDWORDValue(std::wstring key, std::wstring valuename);
+	static std::vector<unsigned char> readBinaryValue(std::wstring key, std::wstring valuename);
 	static void writeValue(std::wstring key, std::wstring valuename, std::wstring value);
+	static void writeDWORDValue(std::wstring key, std::wstring valuename, unsigned long value);
 	static void writeMultiValue(std::wstring key, std::wstring valuename, std::wstring value);
 	static void deleteValue(std::wstring key, std::wstring valuename);
 	static void createKey(std::wstring key);

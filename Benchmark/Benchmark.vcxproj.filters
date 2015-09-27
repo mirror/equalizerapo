@@ -80,6 +80,28 @@
     <ClCompile Include="..\parser\StringOperators.cpp">
       <Filter>parser</Filter>
     </ClCompile>
+    <ClCompile Include="..\helpers\ChannelHelper.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filters\GraphicEQFilterFactory.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filters\GraphicEQFilter.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\helpers\GainIterator.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libHybridConv-0.1.1\libHybridConv_eapo.cpp">
+      <Filter>libHybridConv-0.1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filters\ConvolutionFilter.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filters\ConvolutionFilterFactory.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\FilterEngine.h" />
@@ -164,6 +186,28 @@
     <ClInclude Include="..\parser\StringOperators.h">
       <Filter>parser</Filter>
     </ClInclude>
+    <ClInclude Include="..\helpers\ChannelHelper.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filters\GraphicEQFilterFactory.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filters\GraphicEQFilter.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers\GainIterator.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libHybridConv-0.1.1\libHybridConv_eapo.h">
+      <Filter>libHybridConv-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filters\ConvolutionFilterFactory.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filters\ConvolutionFilter.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="parser">
@@ -174,6 +218,9 @@
     </Filter>
     <Filter Include="helpers">
       <UniqueIdentifier>{4bf76d90-8b50-493a-848b-019f88fa1f11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libHybridConv-0.1.1">
+      <UniqueIdentifier>{35b3b6f1-e4df-4214-bd4c-fa058942e547}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -17,6 +17,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #include "helpers/LogHelper.h"
 #include "helpers/StringHelper.h"
 #include "FilterEngine.h"

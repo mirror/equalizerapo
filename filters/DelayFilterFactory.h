@@ -27,5 +27,5 @@
 class DelayFilterFactory : public IFilterFactory
 {
 public:
-	virtual std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters);
+	std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters) override;
 };

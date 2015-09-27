@@ -17,6 +17,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #ifdef DEBUG
 #include <stdlib.h>
 #include <crtdbg.h>
@@ -214,7 +215,7 @@ int main(int argc, char** argv)
 
 		printf("\nWriting output to %s\n", output.c_str());
 
-		SF_INFO info = {frameCount, sampleRate, channelCount, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 0};
+		SF_INFO info = {frameCount, (int)sampleRate, (int)channelCount, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 0};
 		SNDFILE* outFile = sf_open(output.c_str(), SFM_WRITE, &info);
 		if(outFile == NULL)
 		{

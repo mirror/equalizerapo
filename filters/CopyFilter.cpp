@@ -17,11 +17,13 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #include <algorithm>
 #include <sstream>
 
 #include "helpers/LogHelper.h"
 #include "helpers/MemoryHelper.h"
+#include "helpers/ChannelHelper.h"
 #include "CopyFilter.h"
 
 using namespace std;
@@ -54,7 +56,7 @@ vector<wstring> CopyFilter::initialize(float sampleRate, unsigned maxFrameCount,
 		Assignment& a = assignments[i];
 
 		wstring channelName = a.targetChannel;
-		int channelIndex = getChannelIndex(a.targetChannel, channelNames, true);
+		int channelIndex = ChannelHelper::getChannelIndex(a.targetChannel, channelNames, true);
 		if(channelIndex != -1)
 			channelName = channelNames[channelIndex];
 		vector<wstring>::const_iterator it = find(outChannelNames.begin(), outChannelNames.end(), channelName);
@@ -69,9 +71,9 @@ vector<wstring> CopyFilter::initialize(float sampleRate, unsigned maxFrameCount,
 		{
 			InternalAssignment::InternalSummand& is = ia.sourceSum[j];
 			Assignment::Summand& s = a.sourceSum[j];
-			
+
 			if(s.channel != L"")
-				is.channel = getChannelIndex(s.channel, channelNames);
+				is.channel = ChannelHelper::getChannelIndex(s.channel, channelNames);
 			else
 				is.channel = -1;
 
@@ -164,4 +166,9 @@ void CopyFilter::cleanup()
 		MemoryHelper::free(internalAssignments);
 		internalAssignments = NULL;
 	}
+}
+
+std::vector<Assignment> CopyFilter::getAssignments() const
+{
+	return assignments;
 }

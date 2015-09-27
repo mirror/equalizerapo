@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>IncludeFilterGUI</class>
+ <widget class="QWidget" name="IncludeFilterGUI">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>22</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true"/>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0,1,0">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <item row="0" column="0">
+    <widget class="QLabel" name="includeLabel">
+     <property name="text">
+      <string>Include:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="ResizingLineEdit" name="pathLineEdit"/>
+   </item>
+   <item row="0" column="2">
+    <widget class="QToolButton" name="selectFileToolButton">
+     <property name="text">
+      <string>Select file</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Editor.qrc">
+       <normaloff>:/icons/16x16/document-open.png</normaloff>:/icons/16x16/document-open.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="4">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>1</width>
+       <height>1</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="3">
+    <widget class="QToolButton" name="openFileToolButton">
+     <property name="text">
+      <string>Open file in editor</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../Editor.qrc">
+       <normaloff>:/icons/16x16/go-up.png</normaloff>:/icons/16x16/go-up.png</iconset>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ResizingLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>Editor/widgets/ResizingLineEdit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../Editor.qrc"/>
+ </resources>
+ <connections/>
+</ui>

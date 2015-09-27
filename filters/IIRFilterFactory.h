@@ -20,7 +20,6 @@
 #pragma once
 
 #include <string>
-#include <hash_map>
 
 #include "IFilterFactory.h"
 #include "IFilter.h"
@@ -29,5 +28,5 @@ class IIRFilterFactory : public IFilterFactory
 {
 public:
 	IIRFilterFactory();
-	virtual std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters);
+	std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters) override;
 };

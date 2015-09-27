@@ -15,6 +15,7 @@
     <ClCompile Include="..\helpers\StringHelper.cpp">
       <Filter>helpers</Filter>
     </ClCompile>
+    <ClCompile Include="..\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DeviceAPOInfo.h" />
@@ -35,6 +36,7 @@
     <ClInclude Include="..\helpers\StringHelper.h">
       <Filter>helpers</Filter>
     </ClInclude>
+    <ClInclude Include="..\stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Configurator.rc" />

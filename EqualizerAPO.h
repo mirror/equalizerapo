@@ -31,11 +31,6 @@ class INonDelegatingUnknown
 	virtual ULONG __stdcall NonDelegatingRelease() = 0;
 };
 
-// {EACD2258-FCAC-4FF4-B36D-419E924A6D79}
-const GUID EQUALIZERAPO_PRE_MIX_GUID = { 0xeacd2258, 0xfcac, 0x4ff4, { 0xb3, 0x6d, 0x41, 0x9e, 0x92, 0x4a, 0x6d, 0x79 } };
-// {EC1CC9CE-FAED-4822-828A-82A81A6F018F}
-const GUID EQUALIZERAPO_POST_MIX_GUID = { 0xec1cc9ce, 0xfaed, 0x4822, { 0x82, 0x8a, 0x82, 0xa8, 0x1a, 0x6f, 0x01, 0x8f } };
-
 class EqualizerAPO
 	: public CBaseAudioProcessingObject, public IAudioSystemEffects, public INonDelegatingUnknown
 {

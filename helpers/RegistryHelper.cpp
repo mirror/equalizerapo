@@ -17,6 +17,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #include <fstream>
 #include <sstream>
 #include <ObjBase.h>
@@ -110,6 +111,39 @@ unsigned long RegistryHelper::readDWORDValue(wstring key, wstring valuename)
 	return result;
 }
 
+vector<unsigned char> RegistryHelper::readBinaryValue(wstring key, wstring valuename)
+{
+	HKEY keyHandle = openKey(key, KEY_QUERY_VALUE | KEY_WOW64_64KEY);
+
+	LSTATUS status;
+	DWORD type;
+	DWORD bufSize;
+	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
+	if(status != ERROR_SUCCESS)
+	{
+		RegCloseKey(keyHandle);
+		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
+	}
+
+	if(type != REG_BINARY)
+	{
+		RegCloseKey(keyHandle);
+		throw RegistryException(L"Registry value " + key + L"\\" + valuename + L" has wrong type");
+	}
+
+	vector<unsigned char> result(bufSize, 0);
+	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, NULL, result.data(), &bufSize);
+
+	RegCloseKey(keyHandle);
+
+	if(status != ERROR_SUCCESS)
+	{
+		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
+	}
+
+	return result;
+}
+
 void RegistryHelper::writeValue(wstring key, wstring valuename, wstring value)
 {
 	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
@@ -119,6 +153,18 @@ void RegistryHelper::writeValue(wstring key, wstring valuename, wstring value)
 	RegCloseKey(keyHandle);
 
 	if(status != ERROR_SUCCESS)
+		throw RegistryException(L"Error while writing to registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
+}
+
+void RegistryHelper::writeDWORDValue(wstring key, wstring valuename, unsigned long value)
+{
+	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
+
+	LSTATUS status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_DWORD, (const BYTE*)&value, sizeof(unsigned long));
+
+	RegCloseKey(keyHandle);
+
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while writing to registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 }
 

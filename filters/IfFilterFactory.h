@@ -28,11 +28,11 @@
 class IfFilterFactory : public IFilterFactory
 {
 public:
-	virtual void initialize(FilterEngine* engine);
-	virtual std::vector<IFilter*> startOfConfiguration();
-	virtual std::vector<IFilter*> startOfFile(const std::wstring& configPath);
-	virtual std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters);
-	virtual std::vector<IFilter*> endOfFile(const std::wstring& configPath);
+	void initialize(FilterEngine* engine) override;
+	std::vector<IFilter*> startOfConfiguration() override;
+	std::vector<IFilter*> startOfFile(const std::wstring& configPath) override;
+	std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters) override;
+	std::vector<IFilter*> endOfFile(const std::wstring& configPath) override;
 
 private:
 	mup::ParserX* parser;

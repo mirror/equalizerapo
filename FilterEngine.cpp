@@ -17,6 +17,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <sstream>
@@ -37,6 +38,7 @@
 #include "helpers/StringHelper.h"
 #include "helpers/LogHelper.h"
 #include "helpers/MemoryHelper.h"
+#include "helpers/ChannelHelper.h"
 #include "FilterEngine.h"
 #include "filters/ExpressionFilterFactory.h"
 #include "filters/DeviceFilterFactory.h"
@@ -49,6 +51,8 @@
 #include "filters/DelayFilterFactory.h"
 #include "filters/CopyFilterFactory.h"
 #include "filters/IncludeFilterFactory.h"
+#include "filters/ConvolutionFilterFactory.h"
+#include "filters/GraphicEQFilterFactory.h"
 
 using namespace std;
 using namespace mup;
@@ -81,19 +85,8 @@ FilterEngine::FilterEngine()
 	factories.push_back(new PreampFilterFactory());
 	factories.push_back(new DelayFilterFactory());
 	factories.push_back(new CopyFilterFactory());
-
-	channelNameToPosMap[L"L"] = SPEAKER_FRONT_LEFT;
-	channelNameToPosMap[L"R"] = SPEAKER_FRONT_RIGHT;
-	channelNameToPosMap[L"C"] = SPEAKER_FRONT_CENTER;
-	channelNameToPosMap[L"SUB"] = SPEAKER_LOW_FREQUENCY;
-	channelNameToPosMap[L"RL"] = SPEAKER_BACK_LEFT;
-	channelNameToPosMap[L"RR"] = SPEAKER_BACK_RIGHT;
-	channelNameToPosMap[L"RC"] = SPEAKER_BACK_CENTER;
-	channelNameToPosMap[L"SL"] = SPEAKER_SIDE_LEFT;
-	channelNameToPosMap[L"SR"] = SPEAKER_SIDE_RIGHT;
-
-	for(hash_map<wstring, int>::iterator it=channelNameToPosMap.begin(); it!=channelNameToPosMap.end(); it++)
-		channelPosToNameMap[it->second] = it->first;
+	factories.push_back(new ConvolutionFilterFactory());
+	factories.push_back(new GraphicEQFilterFactory());
 }
 
 FilterEngine::~FilterEngine()
@@ -155,45 +148,12 @@ void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsi
 		deviceChannelCount = outputChannelCount;
 
 	if(channelMask == 0)
-	{
-		switch(deviceChannelCount)
-		{
-		case 1:
-			channelMask = KSAUDIO_SPEAKER_MONO;
-			break;
-		case 2:
-			channelMask = KSAUDIO_SPEAKER_STEREO;
-			break;
-		case 4:
-			channelMask = KSAUDIO_SPEAKER_QUAD;
-			break;
-		case 6:
-			channelMask = KSAUDIO_SPEAKER_5POINT1_SURROUND;
-			break;
-		case 8:
-			channelMask = KSAUDIO_SPEAKER_7POINT1_SURROUND;
-			break;
-		}
-	}
+		channelMask = ChannelHelper::getDefaultChannelMask(deviceChannelCount);
+
 	this->channelMask = channelMask;
 
-	wstringstream channelStream;
-	unsigned c=0;
-	for(int i=0; i<31; i++)
-	{
-		int channelPos = 1<<i;
-		if(channelMask & channelPos)
-		{
-			c++;
-			if(channelStream.tellp() > 0)
-				channelStream << L" ";
-			if(channelPosToNameMap.find(channelPos) != channelPosToNameMap.end())
-				channelStream << channelPosToNameMap[channelPos];
-			else
-				channelStream << c;
-		}
-	}
-	TraceF(L"%d channels for this device: %s", deviceChannelCount, channelStream.str().c_str());
+	vector<wstring> channelNames = ChannelHelper::getChannelNames(deviceChannelCount, channelMask);
+	TraceF(L"%d channels for this device: %s", deviceChannelCount, StringHelper::join(channelNames, L" ").c_str());
 
 	try
 	{
@@ -250,24 +210,7 @@ void FilterEngine::loadConfig()
 		previousConfig = NULL;
 	}
 
-	allChannelNames.clear();
-	unsigned c=1;
-	for(int i=0; i<31; i++)
-	{
-		int channelPos = 1<<i;
-		if(channelMask & channelPos)
-		{
-			if(channelPosToNameMap.find(channelPos) != channelPosToNameMap.end())
-				allChannelNames.push_back(channelPosToNameMap[channelPos]);
-			else
-				allChannelNames.push_back(to_wstring((unsigned long long)c));
-			c++;
-		}
-	}
-
-	// handle channels not covered by channelMask
-	for(; c<=max(realChannelCount, outputChannelCount); c++)
-		allChannelNames.push_back(to_wstring((unsigned long long)c));
+	allChannelNames = ChannelHelper::getChannelNames(max(realChannelCount, outputChannelCount), channelMask);
 
 	currentChannelNames = allChannelNames;
 	lastChannelNames.clear();

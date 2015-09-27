@@ -25,7 +25,7 @@
 class AddOperator:public mup::OprtAdd
 {
 public:
-	virtual void Eval(mup::ptr_val_type& ret, const mup::ptr_val_type *arg, int argc);
+	void Eval(mup::ptr_val_type& ret, const mup::ptr_val_type *arg, int argc) override;
 	const mup::char_type* GetDesc() const;
-	virtual mup::IToken* Clone() const;
+	mup::IToken* Clone() const override;
 };

@@ -17,6 +17,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #include <string>
 #include <sstream>
 #define WIN32_LEAN_AND_MEAN
@@ -128,6 +129,24 @@ vector<wstring> StringHelper::split(const wstring& s, wchar_t splitChar, bool sk
 		result.push_back(part);
 
 	return result;
+}
+
+wstring StringHelper::join(const vector<wstring>& strings, const wstring& separator)
+{
+	wstringstream stream;
+
+	bool first = true;
+
+	for(vector<wstring>::const_iterator it = strings.cbegin(); it != strings.cend(); it++)
+	{
+		if(first)
+			first = false;
+		else
+			stream << separator;
+		stream << *it;
+	}
+
+	return stream.str();
 }
 
 wstring StringHelper::getSystemErrorString(long status)

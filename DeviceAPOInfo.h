@@ -60,7 +60,9 @@ public:
 	};
 
 	static std::vector<DeviceAPOInfo> loadAllInfos(bool input);
-	bool load(const std::wstring& deviceGuid);
+	static std::wstring getDefaultDevice(bool input, int role = 1);
+	static bool checkProtectedAudioDG(bool fix);
+	bool load(const std::wstring& deviceGuid, std::wstring defaultDeviceGuid = L"");
 	bool canBeUpgraded();
 	bool hasChanges();
 	bool isExperimental();
@@ -72,6 +74,11 @@ public:
 	std::wstring deviceName;
 	std::wstring connectionName;
 	std::wstring deviceGuid;
+	unsigned channelCount;
+	unsigned sampleRate;
+	unsigned long channelMask;
+	bool isDefaultDevice;
+	bool isEnhancementsDisabled;
 
 	// used for creating child APO
 	std::wstring preMixChildGuid;

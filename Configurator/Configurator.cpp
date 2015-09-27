@@ -17,10 +17,12 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "stdafx.h"
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <ObjBase.h>
 #include "helpers/StringHelper.h"
 #include "helpers/RegistryHelper.h"
 #include "Configurator.h"
@@ -55,6 +57,7 @@ void Configurator::onInitDialog(HWND hDlg)
 	useOriginalAPOPreMix = GetDlgItem(hDlg, IDC_USE_ORIGINAL_APO_PRE_MIX);
 	useOriginalAPOPostMix = GetDlgItem(hDlg, IDC_USE_ORIGINAL_APO_POST_MIX);
 	installModeComboBox = GetDlgItem(hDlg, IDC_INSTALL_MODE_COMBOBOX);
+	selectOneDeviceLabel = GetDlgItem(hDlg, IDC_SELECT_ONE_DEVICE);
 
 	expandTroubleShooting(false);
 
@@ -118,6 +121,9 @@ void Configurator::onInitDialog(HWND hDlg)
 	}
 	ComboBox_SetCurSel(installModeComboBox, 0);
 
+	LoadStringW(hInstance, IDS_SELECT_ONE_DEVICE, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+	SetWindowTextW(selectOneDeviceLabel, stringBuf);
+
 	for(int i=0; i<=1; i++)
 	{
 		HWND deviceList = deviceLists[i];
@@ -143,6 +149,7 @@ void Configurator::onInitDialog(HWND hDlg)
 		try
 		{
 			apoInfos[i] = DeviceAPOInfo::loadAllInfos(i==1);
+			wstring defaultDevice = StringHelper::toLowerCase(DeviceAPOInfo::getDefaultDevice(i==1));
 
 			int itemCount=0;
 			for(vector<DeviceAPOInfo>::iterator it = apoInfos[i].begin(); it != apoInfos[i].end(); it++)
@@ -158,19 +165,31 @@ void Configurator::onInitDialog(HWND hDlg)
 				{
 					ListView_SetCheckState(deviceList, itemCount, TRUE);
 					if(it->canBeUpgraded())
-						LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+						LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+					else if(it->isEnhancementsDisabled)
+						LoadStringW(hInstance, IDS_ENHANCEMENTS_WILL_BE_ENABLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 					else
 						LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-					ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
 				}
 				else if(it->isExperimental())
 				{
 					LoadStringW(hInstance, IDS_CAN_BE_INSTALLED_EXPERIMENTAL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
-					ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
 				}
 				else
 				{
 					LoadStringW(hInstance, IDS_CAN_BE_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+				}
+
+				if(it->isDefaultDevice)
+				{
+					wstring statusText = stringBuf;
+					LoadStringW(hInstance, IDS_DEFAULT_DEVICE, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+					statusText = wstring(stringBuf) + L", " + statusText;
+
+					ListView_SetItemText(deviceList, itemCount, 2, const_cast<wchar_t*>(statusText.c_str()));
+				}
+				else
+				{
 					ListView_SetItemText(deviceList, itemCount, 2, stringBuf);
 				}
 
@@ -185,6 +204,12 @@ void Configurator::onInitDialog(HWND hDlg)
 		ListView_SetColumnWidth(deviceList, 0, LVSCW_AUTOSIZE);
 		ListView_SetColumnWidth(deviceList, 1, LVSCW_AUTOSIZE);
 		ListView_SetColumnWidth(deviceList, 2, LVSCW_AUTOSIZE);
+	}
+
+	if (!DeviceAPOInfo::checkProtectedAudioDG(true))
+	{
+		LoadStringW(hInstance, IDS_REGISTRY_VALUE_FIXED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+		MessageBoxW(hDlg, stringBuf, L"Info", MB_ICONINFORMATION | MB_OK);
 	}
 }
 
@@ -221,7 +246,7 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 							info.install();
 						else if(!ListView_GetCheckState(deviceList, i) && info.isInstalled)
 							info.uninstall();
-						else if(ListView_GetCheckState(deviceList, i) && (info.canBeUpgraded() || info.hasChanges()))
+						else if(ListView_GetCheckState(deviceList, i) && (info.canBeUpgraded() || info.hasChanges() || info.isEnhancementsDisabled))
 						{
 							info.uninstall();
 							info.load(info.deviceGuid);
@@ -398,6 +423,33 @@ void Configurator::onTcnSelChange(unsigned sourceId)
 	updateButtons(index);
 }
 
+bool Configurator::isAnySelected()
+{
+	bool anySelected = false;
+
+	for(int index = 0; index <= 1; index++)
+	{
+		HWND deviceList = deviceLists[index];
+
+		for(int i = 0; i < ListView_GetItemCount(deviceList); i++)
+		{
+			LVITEM item;
+			item.iItem = i;
+			item.iSubItem = 0;
+			item.mask = LVIF_PARAM;
+			ListView_GetItem(deviceList, &item);
+			DeviceAPOInfo apoInfo = apoInfos[index][item.lParam];
+			if(ListView_GetCheckState(deviceList, i) != 0)
+			{
+				anySelected = true;
+				break;
+			}
+		}
+	}
+
+	return anySelected;
+}
+
 bool Configurator::isChanged()
 {
 	bool changed = false;
@@ -415,7 +467,7 @@ bool Configurator::isChanged()
 			ListView_GetItem(deviceList, &item);
 			DeviceAPOInfo apoInfo = apoInfos[index][item.lParam];
 			if((ListView_GetCheckState(deviceList, i) != 0) != apoInfo.isInstalled
-				|| ListView_GetCheckState(deviceList, i) && apoInfo.isInstalled && (apoInfo.canBeUpgraded() || apoInfo.hasChanges()))
+				|| ListView_GetCheckState(deviceList, i) && apoInfo.isInstalled && (apoInfo.canBeUpgraded() || apoInfo.hasChanges() || apoInfo.isEnhancementsDisabled))
 			{
 				changed = true;
 				break;
@@ -442,7 +494,7 @@ bool Configurator::hasUpgrades()
 			item.mask = LVIF_PARAM;
 			ListView_GetItem(deviceList, &item);
 			DeviceAPOInfo apoInfo = apoInfos[index][item.lParam];
-			if(ListView_GetCheckState(deviceList, i) && apoInfo.isInstalled && apoInfo.canBeUpgraded())
+			if(ListView_GetCheckState(deviceList, i) && apoInfo.isInstalled && (apoInfo.canBeUpgraded() || apoInfo.isEnhancementsDisabled))
 			{
 				hasUpgrades = true;
 				break;
@@ -457,6 +509,7 @@ void Configurator::expandTroubleShooting(bool expand)
 {
 	int showCmd = expand ? SW_SHOW : SW_HIDE;
 	ShowWindow(troubleShootingGroup, showCmd);
+	showCmd = expand && !IsWindowEnabled(selectOneDeviceLabel) ? SW_SHOW : SW_HIDE;
 	ShowWindow(preMixLabel, showCmd);
 	ShowWindow(postMixLabel, showCmd);
 	ShowWindow(postMixLabel, showCmd);
@@ -465,6 +518,8 @@ void Configurator::expandTroubleShooting(bool expand)
 	ShowWindow(useOriginalAPOPreMix, showCmd);
 	ShowWindow(useOriginalAPOPostMix, showCmd);
 	ShowWindow(installModeComboBox, showCmd);
+	showCmd = expand && IsWindowEnabled(selectOneDeviceLabel) ? SW_SHOW : SW_HIDE;
+	ShowWindow(selectOneDeviceLabel, showCmd);
 
 	int y = expand ? 229 : 188;
 
@@ -509,6 +564,8 @@ void Configurator::updateList(int listIndex, int itemIndex)
 			LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 		else if(apoInfo.isInstalled && apoInfo.hasChanges())
 			LoadStringW(hInstance, IDS_WILL_BE_CHANGED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+		else if(apoInfo.isInstalled && apoInfo.isEnhancementsDisabled)
+			LoadStringW(hInstance, IDS_ENHANCEMENTS_WILL_BE_ENABLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 		else if(apoInfo.isInstalled)
 			LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 		else if(apoInfo.isExperimental())
@@ -516,7 +573,18 @@ void Configurator::updateList(int listIndex, int itemIndex)
 		else
 			LoadStringW(hInstance, IDS_CAN_BE_INSTALLED, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 
-		ListView_SetItemText(deviceList, itemIndex, 2, stringBuf);
+		if(apoInfo.isDefaultDevice)
+		{
+			wstring statusText = stringBuf;
+			LoadStringW(hInstance, IDS_DEFAULT_DEVICE, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
+			statusText = wstring(stringBuf) + L", " + statusText;
+
+			ListView_SetItemText(deviceList, itemIndex, 2, const_cast<wchar_t*>(statusText.c_str()));
+		}
+		else
+		{
+			ListView_SetItemText(deviceList, itemIndex, 2, stringBuf);
+		}
 
 		ListView_SetColumnWidth(deviceList, 2, LVSCW_AUTOSIZE);
 	}
@@ -526,7 +594,21 @@ void Configurator::updateButtons(int listIndex)
 {
 	HWND deviceList = deviceLists[listIndex];
 
-	EnableWindow(okButton, isChanged());
+	wchar_t stringBuf[255];
+	bool changed = isChanged();
+	if(changed || !isAnySelected())
+	{
+		ShowWindow(okButton, SW_SHOW);
+		EnableWindow(okButton, changed);
+		LoadStringW(hInstance, IDS_CANCEL, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+		SetWindowText(cancelButton, stringBuf);
+	}
+	else
+	{
+		ShowWindow(okButton, SW_HIDE);
+		LoadStringW(hInstance, IDS_CLOSE, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+		SetWindowText(cancelButton, stringBuf);
+	}
 
 	unsigned selectedCount = ListView_GetSelectedCount(deviceList);
 	EnableWindow(copyDeviceCommandButton, selectedCount > 0);
@@ -558,6 +640,7 @@ void Configurator::updateButtons(int listIndex)
 	EnableWindow(useOriginalAPOPreMix, enable && hasOriginalAPOPreMix && installState.installPreMix);
 	EnableWindow(useOriginalAPOPostMix, enable && !isInput && hasOriginalAPOPostMix && installState.installPostMix);
 	EnableWindow(installModeComboBox, enable);
+	EnableWindow(selectOneDeviceLabel, !enable);
 
 	Button_SetCheck(installPreMix, installState.installPreMix);
 	Button_SetCheck(installPostMix, installState.installPostMix);
@@ -566,6 +649,8 @@ void Configurator::updateButtons(int listIndex)
 
 	if(RegistryHelper::isWindowsVersionAtLeast(6, 3)) // Windows 8.1
 		ComboBox_SetCurSel(installModeComboBox, installState.installMode);
+
+	expandTroubleShooting(Button_GetCheck(toggleTroubleShooting) != 0);
 }
 
 INT_PTR CALLBACK dlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
@@ -575,6 +660,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
                      LPWSTR    lpCmdLine,
                      int       nCmdShow)
 {
+	CoInitializeEx(NULL, COINIT_MULTITHREADED);
+
 	INITCOMMONCONTROLSEX InitCtrls;
 	InitCtrls.dwSize = sizeof(InitCtrls);
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
@@ -608,6 +695,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 		configurator = new Configurator(hInstance, lpCmdLine);
 		DialogBox(hInstance, MAKEINTRESOURCE(IDD_MAINWINDOW), GetDesktopWindow(), dlgProc);
 	}
+	
+	CoUninitialize();
 
 	return result;
 }

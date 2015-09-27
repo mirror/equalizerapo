@@ -20,7 +20,7 @@
 #pragma once
 
 #include <string>
-#include <hash_map>
+#include <unordered_map>
 
 #include "IFilterFactory.h"
 #include "IFilter.h"
@@ -30,11 +30,11 @@ class BiQuadFilterFactory : public IFilterFactory
 {
 public:
 	BiQuadFilterFactory();
-	virtual std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters);
+	std::vector<IFilter*> createFilter(const std::wstring& configPath, std::wstring& command, std::wstring& parameters) override;
 
 private:
 	double getFreq(const std::wstring& freqString);
 
-	stdext::hash_map<std::wstring, BiQuad::Type> filterNameToTypeMap;
-	stdext::hash_map<BiQuad::Type, std::wstring> filterTypeToDescriptionMap;
+	std::unordered_map<std::wstring, BiQuad::Type> filterNameToTypeMap;
+	std::unordered_map<BiQuad::Type, std::wstring> filterTypeToDescriptionMap;
 };

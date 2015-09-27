@@ -83,6 +83,28 @@
     <ClCompile Include="parser\StringOperators.cpp">
       <Filter>parser</Filter>
     </ClCompile>
+    <ClCompile Include="helpers\ChannelHelper.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="filters\GraphicEQFilter.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="filters\GraphicEQFilterFactory.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="helpers\GainIterator.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="libHybridConv-0.1.1\libHybridConv_eapo.cpp">
+      <Filter>libHybridConv-0.1.1</Filter>
+    </ClCompile>
+    <ClCompile Include="filters\ConvolutionFilter.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="filters\ConvolutionFilterFactory.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClassFactory.h" />
@@ -172,6 +194,28 @@
     <ClInclude Include="parser\StringOperators.h">
       <Filter>parser</Filter>
     </ClInclude>
+    <ClInclude Include="helpers\ChannelHelper.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="filters\GraphicEQFilterFactory.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="filters\GraphicEQFilter.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\GainIterator.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="libHybridConv-0.1.1\libHybridConv_eapo.h">
+      <Filter>libHybridConv-0.1.1</Filter>
+    </ClInclude>
+    <ClInclude Include="filters\ConvolutionFilter.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="filters\ConvolutionFilterFactory.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="EqualizerAPO.rc" />
@@ -189,6 +233,9 @@
     </Filter>
     <Filter Include="parser">
       <UniqueIdentifier>{df98049b-1ada-41ad-a5ab-0a175600a767}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libHybridConv-0.1.1">
+      <UniqueIdentifier>{f4e10c18-382a-4262-9d1b-308f65c34af3}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
