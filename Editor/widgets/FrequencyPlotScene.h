@@ -37,8 +37,9 @@ public:
 	double yToDb(double y);
 	double dbToY(double db);
 
-	double getZoom() const;
-	void setZoom(double value);
+	double getZoomX() const;
+	double getZoomY() const;
+	void setZoom(double zoomX, double zoomY);
 
 	int getBandCount() const;
 	virtual void setBandCount(int value);
@@ -54,6 +55,7 @@ protected:
 private:
 	void updateSceneRect();
 
-	double zoom = 1.0;
+	double zoomX = 1.0;
+	double zoomY = 1.0;
 	int bandCount = -1;
 };

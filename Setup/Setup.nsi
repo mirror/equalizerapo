@@ -165,7 +165,7 @@ Section "Install" SecInstall
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration editor.lnk" "$INSTDIR\Editor.exe"
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration Editor.lnk" "$INSTDIR\Editor.exe"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration tutorial (online).lnk" "$INSTDIR\Configuration tutorial (online).url"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration reference (online).lnk" "$INSTDIR\Configuration reference (online).url"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configurator.lnk" "$INSTDIR\Configurator.exe"

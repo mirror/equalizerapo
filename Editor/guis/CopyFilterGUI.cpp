@@ -17,6 +17,7 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "Editor/widgets/ResizeCorner.h"
 #include "helpers/ChannelHelper.h"
 #include "CopyFilterGUIForm.h"
 #include "CopyFilterGUI.h"
@@ -24,7 +25,7 @@
 
 using namespace std;
 
-CopyFilterGUI::CopyFilterGUI(CopyFilter* filter) :
+CopyFilterGUI::CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable) :
 	ui(new Ui::CopyFilterGUI)
 {
 	ui->setupUi(this);
@@ -34,6 +35,18 @@ CopyFilterGUI::CopyFilterGUI(CopyFilter* filter) :
 	ui->graphicsView->setBackgroundRole(QPalette::Window);
 
 	ui->form->load(filter->getAssignments());
+
+	ResizeCorner* cornerWidget = new ResizeCorner(filterTable,
+			QSize(0, 50), QSize(0, INT_MAX),
+	[this]() {
+		return QSize(0, ui->scrollArea->height());
+	},
+	[this](QSize size) {
+		ui->scrollArea->setMinimumHeight(size.height());
+	}, ui->scrollArea);
+	cornerWidget->setCursor(Qt::SizeVerCursor);
+	cornerWidget->setAutoFillBackground(true);
+	ui->scrollArea->setCornerWidget(cornerWidget);
 
 	connect(scene, SIGNAL(updateModel()), this, SIGNAL(updateModel()));
 	connect(scene, SIGNAL(updateChannels()), this, SIGNAL(updateChannels()));

@@ -40,9 +40,9 @@ public:
 
 	void setPreMix(bool preMix);
 	void setDeviceInfo(bool capture, bool postMixInstalled, const std::wstring& deviceName, const std::wstring& connectionName, const std::wstring& deviceGuid);
-	void initialize(float sampleRate, unsigned inputChannelCount, unsigned realChannelCount, unsigned outputChannelCount, unsigned channelMask, unsigned maxFrameCount);
-	void loadConfig();
-	void loadConfig(const std::wstring& path);
+	void initialize(float sampleRate, unsigned inputChannelCount, unsigned realChannelCount, unsigned outputChannelCount, unsigned channelMask, unsigned maxFrameCount, const std::wstring& customPath = L"");
+	void loadConfig(const std::wstring& customPath = L"");
+	void loadConfigFile(const std::wstring& path);
 	void watchRegistryKey(const std::wstring& key);
 	void process(float *output, float *input, unsigned frameCount);
 

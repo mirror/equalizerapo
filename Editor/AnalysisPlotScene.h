@@ -19,30 +19,23 @@
 
 #pragma once
 
-#include "filters/CopyFilter.h"
-#include "Editor/IFilterGUI.h"
-#include "CopyFilterGUIScene.h"
-#include "Editor/FilterTable.h"
+#include <vector>
+#include <fftw3.h>
 
-namespace Ui {
-class CopyFilterGUI;
-}
+#include "Editor/widgets/FrequencyPlotScene.h"
+#include "helpers/GainIterator.h"
 
-class CopyFilterGUI : public IFilterGUI
+class AnalysisPlotScene : public FrequencyPlotScene
 {
 	Q_OBJECT
 
 public:
-	explicit CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable);
-	~CopyFilterGUI();
+	AnalysisPlotScene(QObject* parent = 0);
 
-	void configureChannels(std::vector<std::wstring>& channelNames) override;
+	void setFreqData(fftwf_complex* freqData, int frameCount, unsigned sampleRate);
 
-	void store(QString& command, QString& parameters) override;
+	std::vector<FilterNode> getNodes() const;
 
 private:
-	Ui::CopyFilterGUI *ui;
-	CopyFilterGUIScene* scene;
-
-	std::vector<std::wstring> inputChannelNames;
+	std::vector<FilterNode> nodes;
 };

@@ -38,12 +38,19 @@ public:
 
 	void updateHRuler();
 
+	QPoint getLastMousePos() const;
+	void setLastMousePos(QPoint pos);
+	using QGraphicsView::viewportMargins;
+
+	void zoom(int deltaX, int deltaY, int mouseX, int mouseY);
+
 protected:
 	void wheelEvent(QWheelEvent* event) override;
 	void scrollContentsBy(int dx, int dy) override;
 	void resizeEvent(QResizeEvent* event) override;
 	void mousePressEvent(QMouseEvent* event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;
+	void leaveEvent(QEvent*) override;
 	void showEvent(QShowEvent* event) override;
 
 private:

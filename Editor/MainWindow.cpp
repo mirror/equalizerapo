@@ -29,9 +29,9 @@
 #include <QFileInfo>
 #include <QFileDialog>
 #include <QMessageBox>
+#include <QProcess>
 
 #define WIN32_LEAN_AND_MEAN
-#include <QProcess>
 #include <windows.h>
 
 #include "helpers/StringHelper.h"
@@ -62,6 +62,8 @@ MainWindow::MainWindow(QDir configDir, QWidget *parent) :
 	}
 
 	ui->setupUi(this);
+
+	LogHelper::set(stderr, true, false, false);
 
 	QString version = QString("%0.%1").arg(MAJOR).arg(MINOR);
 	if(REVISION != 0)
@@ -123,11 +125,20 @@ MainWindow::MainWindow(QDir configDir, QWidget *parent) :
 			deviceComboBox->addItem(QString::fromStdWString(apoInfo.connectionName) + " - " + QString::fromStdWString(apoInfo.deviceName), QVariant::fromValue(&apoInfo));
 
 	connect(channelConfigurationComboBox, SIGNAL(activated(int)), this, SLOT(channelConfigurationSelected(int)));
+
+	analysisPlotScene = new AnalysisPlotScene(ui->graphicsView);
+	ui->graphicsView->setScene(analysisPlotScene);
+
+	analysisThread = new AnalysisThread;
+	analysisThread->start();
+	connect(analysisThread, SIGNAL(analysisFinished()), this, SLOT(updateAnalysisPanel()));
 }
 
 MainWindow::~MainWindow()
 {
 	delete ui;
+
+	delete analysisThread;
 }
 
 void MainWindow::doChecks()
@@ -304,6 +315,8 @@ void MainWindow::save(FilterTable* filterTable, QString path)
 	CloseHandle(hFile);
 
 	qDebug("Saving took %.1f ms", timer.nsecsElapsed() / 1e6);
+
+	startAnalysis();
 }
 
 void MainWindow::closeEvent(QCloseEvent* event)
@@ -366,6 +379,29 @@ void MainWindow::channelConfigurationSelected(int index)
 		FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
 		filterTable->updateDeviceAndChannelMask(selectedDevice, channelMask);
 	}
+
+	ui->analysisChannelComboBox->clear();
+
+	if(selectedDevice != NULL)
+	{
+		unsigned channelCount = selectedDevice->channelCount;
+		if(channelMask != 0 && channelMask != selectedDevice->channelMask)
+		{
+			channelCount = 0;
+			for(int i = 0; i < 31; i++)
+			{
+				int channelPos = 1 << i;
+				if(channelMask & channelPos)
+					channelCount++;
+			}
+		}
+
+		vector<wstring> channelNames = ChannelHelper::getChannelNames(channelCount, channelMask);
+		for(wstring channelName : channelNames)
+		{
+			ui->analysisChannelComboBox->addItem(QString::fromStdWString(channelName));
+		}
+	}
 }
 
 void MainWindow::linesChanged()
@@ -397,22 +433,6 @@ void MainWindow::linesChanged()
 	{
 		tabText += '*';
 		ui->tabWidget->setTabText(tabIndex, tabText);
-	}
-}
-
-void MainWindow::getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* channelMask)
-{
-	*selectedDevice = deviceComboBox->currentData().value<DeviceAPOInfo*>();
-	if(*selectedDevice == NULL)
-		*selectedDevice = defaultOutputDevice;
-
-	*channelMask = channelConfigurationComboBox->currentData().toInt();
-	if(*channelMask == 0 && selectedDevice != NULL)
-	{
-		*channelMask = (*selectedDevice)->channelMask;
-
-		if(*channelMask == 0)
-			*channelMask = ChannelHelper::getDefaultChannelMask((*selectedDevice)->channelCount);
 	}
 }
 
@@ -549,27 +569,6 @@ void MainWindow::on_actionNew_triggered()
 	ui->tabWidget->setCurrentIndex(ui->tabWidget->count() - 1);
 }
 
-FilterTable* MainWindow::addTab(QString title, QString tooltip)
-{
-	QScrollArea* scrollArea = new QScrollArea(ui->tabWidget);
-	scrollArea->setWidgetResizable(true);
-	FilterTable* filterTable = new FilterTable(this);
-	scrollArea->setWidget(filterTable);
-	filterTable->setAcceptDrops(true);
-	filterTable->setFocusPolicy(Qt::WheelFocus);
-
-	int tabIndex = ui->tabWidget->addTab(scrollArea, title);
-	ui->tabWidget->setTabToolTip(tabIndex, tooltip);
-
-	DeviceAPOInfo* selectedDevice;
-	int channelMask;
-	getDeviceAndChannelMask(&selectedDevice, &channelMask);
-	filterTable->updateDeviceAndChannelMask(selectedDevice, channelMask);
-	filterTable->initialize(scrollArea, outputDevices, inputDevices);
-
-	return filterTable;
-}
-
 void MainWindow::on_actionCut_triggered()
 {
 	QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
@@ -628,5 +627,135 @@ void MainWindow::instantModeEnabled(bool enabled)
 					ui->tabWidget->setTabText(i, tabText.left(tabText.length() - 1));
 			}
 		}
+	}
+}
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+	startAnalysis();
+}
+
+void MainWindow::on_startFromComboBox_activated(int index)
+{
+	startAnalysis();
+}
+
+void MainWindow::on_analysisChannelComboBox_activated(int index)
+{
+	startAnalysis();
+}
+
+void MainWindow::on_resolutionSpinBox_valueChanged(int value)
+{
+	startAnalysis();
+}
+
+void MainWindow::updateAnalysisPanel()
+{
+	analysisThread->beginGetResult();
+	int sampleRate = analysisThread->getFreqDataSampleRate();
+	int latency = analysisThread->getLatency();
+	analysisPlotScene->setFreqData(analysisThread->getFreqData(), analysisThread->getFreqDataLength(), sampleRate);
+
+	double peakGain = analysisThread->getPeakGain();
+	ui->peakGainValueLabel->setText(tr("%0 dB").arg(peakGain, 0, 'f', 1));
+	ui->peakGainValueLabel->setForegroundRole(peakGain > 0 ? QPalette::Dark : QPalette::WindowText);
+
+	ui->latencyValueLabel->setText(tr("%0 ms (%1 samples)").arg(latency * 1000.0 / sampleRate).arg(latency));
+
+	ui->initTimeValueLabel->setText(tr("%0 ms").arg(analysisThread->getInitializationTime(), 0, 'f', 1));
+
+	double cpuUsage = analysisThread->getProcessingTime() * 100.0 / (analysisThread->getProcessedFrames() * 1000.0 / sampleRate);
+	ui->cpuUsageValueLabel->setText(tr("%0 % (one core)").arg(cpuUsage, 0, 'f', 1));
+	ui->cpuUsageValueLabel->setForegroundRole(cpuUsage >= 20 ? (cpuUsage >= 50 ? QPalette::Dark : QPalette::Midlight) : QPalette::WindowText);
+
+	analysisThread->endGetResult();
+}
+
+void MainWindow::on_mainToolBar_visibilityChanged(bool visible)
+{
+	ui->actionToolbar->setChecked(visible);
+}
+
+void MainWindow::on_analysisDockWidget_visibilityChanged(bool visible)
+{
+	ui->actionAnalysisPanel->setChecked(visible);
+}
+
+void MainWindow::on_actionToolbar_triggered(bool checked)
+{
+	ui->mainToolBar->setVisible(checked);
+}
+
+void MainWindow::on_actionAnalysisPanel_triggered(bool checked)
+{
+	ui->analysisDockWidget->setVisible(checked);
+}
+
+FilterTable* MainWindow::addTab(QString title, QString tooltip)
+{
+	QScrollArea* scrollArea = new QScrollArea(ui->tabWidget);
+	scrollArea->setWidgetResizable(true);
+	FilterTable* filterTable = new FilterTable(this);
+	scrollArea->setWidget(filterTable);
+	filterTable->setAcceptDrops(true);
+	filterTable->setFocusPolicy(Qt::WheelFocus);
+
+	int tabIndex = ui->tabWidget->addTab(scrollArea, title);
+	ui->tabWidget->setTabToolTip(tabIndex, tooltip);
+
+	DeviceAPOInfo* selectedDevice;
+	int channelMask;
+	getDeviceAndChannelMask(&selectedDevice, &channelMask);
+	filterTable->updateDeviceAndChannelMask(selectedDevice, channelMask);
+	filterTable->initialize(scrollArea, outputDevices, inputDevices);
+
+	return filterTable;
+}
+
+void MainWindow::getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* channelMask)
+{
+	*selectedDevice = deviceComboBox->currentData().value<DeviceAPOInfo*>();
+	if(*selectedDevice == NULL)
+		*selectedDevice = defaultOutputDevice;
+
+	*channelMask = channelConfigurationComboBox->currentData().toInt();
+	if(*channelMask == 0 && selectedDevice != NULL)
+	{
+		*channelMask = (*selectedDevice)->channelMask;
+
+		if(*channelMask == 0)
+			*channelMask = ChannelHelper::getDefaultChannelMask((*selectedDevice)->channelCount);
+	}
+}
+
+void MainWindow::startAnalysis()
+{
+	DeviceAPOInfo* selectedDevice;
+
+	int channelMask;
+	getDeviceAndChannelMask(&selectedDevice, &channelMask);
+
+	if(selectedDevice != NULL)
+	{
+		QString configPath;
+
+		if(ui->startFromComboBox->currentIndex() == 1)
+		{
+			QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
+			if(scrollArea != NULL)
+			{
+				FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
+
+				if(filterTable->getConfigPath().length() > 0)
+					configPath = filterTable->getConfigPath();
+			}
+		}
+
+		if(configPath.isEmpty())
+			configPath = configDir.absoluteFilePath("config.txt");
+		configPath = QDir::toNativeSeparators(configPath);
+
+		analysisThread->setParameters(selectedDevice, channelMask, ui->analysisChannelComboBox->currentIndex(), configPath, ui->resolutionSpinBox->value());
 	}
 }

@@ -23,6 +23,8 @@
 #include <QTextStream>
 
 #include "helpers/GainIterator.h"
+#include "Editor/widgets/ResizeCorner.h"
+#include "Editor/FilterTable.h"
 #include "GraphicEQFilterGUIView.h"
 #include "GraphicEQFilterGUI.h"
 #include "ui_GraphicEQFilterGUI.h"
@@ -31,19 +33,29 @@ using namespace std;
 
 QRegularExpression GraphicEQFilterGUI::numberRegEx("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
-GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPath) :
+GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPath, FilterTable* filterTable) :
 	ui(new Ui::GraphicEQFilterGUI), configPath(configPath)
 {
 	ui->setupUi(this);
 
-	setFixedHeight(150);
-
 	scene = new GraphicEQFilterGUIScene(ui->graphicsView);
 	ui->graphicsView->setScene(scene);
 
+	ResizeCorner* cornerWidget = new ResizeCorner(filterTable,
+			QSize(0, ui->graphicsView->minimumHeight()), QSize(10000 - ui->tableWidget->minimumWidth(), INT_MAX),
+	[this]() {
+		return QSize(10000 - ui->tableWidget->width(), ui->graphicsView->height());
+	},
+	[this](QSize size) {
+		ui->tableWidget->setFixedWidth(10000 - size.width());
+		ui->graphicsView->setFixedHeight(size.height());
+	}, ui->graphicsView);
+	ui->graphicsView->setCornerWidget(cornerWidget);
+	ui->graphicsView->setFixedHeight(150);
+
 	ui->toolBar->addAction(ui->actionImport);
 	ui->toolBar->addAction(ui->actionExport);
-	ui->toolBar->addAction(ui->actionMirrorResponse);
+	ui->toolBar->addAction(ui->actionInvertResponse);
 	ui->toolBar->addAction(ui->actionNormalizeResponse);
 	ui->toolBar->addAction(ui->actionResetResponse);
 
@@ -69,7 +81,7 @@ GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPa
 		ui->radioButtonVar->click();
 	}
 
-	ui->tableWidget->resizeColumnsToContents();
+	ui->tableWidget->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 }
 
 GraphicEQFilterGUI::~GraphicEQFilterGUI()
@@ -77,7 +89,7 @@ GraphicEQFilterGUI::~GraphicEQFilterGUI()
 	delete ui;
 }
 
-void GraphicEQFilterGUI::store(QString& command, QString& parameters)
+void GraphicEQFilterGUI::store(QString & command, QString & parameters)
 {
 	command = "GraphicEQ";
 
@@ -305,8 +317,6 @@ void GraphicEQFilterGUI::on_actionImport_triggered()
 		{
 			emit updateModel();
 		}
-
-		ui->tableWidget->resizeColumnsToContents();
 	}
 }
 
@@ -339,7 +349,7 @@ void GraphicEQFilterGUI::on_actionExport_triggered()
 	}
 }
 
-void GraphicEQFilterGUI::on_actionMirrorResponse_triggered()
+void GraphicEQFilterGUI::on_actionInvertResponse_triggered()
 {
 	vector<FilterNode> newNodes = scene->getNodes();
 	for(FilterNode& node : newNodes)

@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <QPainter>
+#include <QMouseEvent>
 
 #include "FrequencyPlotView.h"
 #include "FrequencyPlotHRuler.h"
@@ -33,6 +34,7 @@ FrequencyPlotHRuler::FrequencyPlotHRuler(QWidget* parent) :
 void FrequencyPlotHRuler::paintEvent(QPaintEvent*)
 {
 	QPainter painter(this);
+	painter.setRenderHint(QPainter::Antialiasing);
 	FrequencyPlotView* view = qobject_cast<FrequencyPlotView*>(parentWidget());
 	FrequencyPlotScene* s = view->scene();
 	QFontMetrics metrics = painter.fontMetrics();
@@ -40,6 +42,7 @@ void FrequencyPlotHRuler::paintEvent(QPaintEvent*)
 
 	QPointF topLeft = view->mapToScene(0, 0);
 	QPointF bottomRight = view->mapToScene(view->viewport()->width(), view->viewport()->height());
+	int offsetLeft = view->viewportMargins().left();
 	double fromHz = s->xToHz(topLeft.x());
 	double toHz = s->xToHz(bottomRight.x());
 	const vector<double>& bands = s->getBands();
@@ -61,7 +64,7 @@ void FrequencyPlotHRuler::paintEvent(QPaintEvent*)
 				else
 					text = QString("%0k").arg(hz / 1000);
 				if(metrics.width(text) + 2 < s->hzToX(hz + hzBase) - x)
-					painter.drawText(x - topLeft.x() + height() + 1, 0, 0, height(), Qt::TextDontClip | Qt::AlignCenter, text);
+					painter.drawText(x - topLeft.x() + offsetLeft + 1, 0, 0, height(), Qt::TextDontClip | Qt::AlignCenter, text);
 			}
 
 			hz += hzBase;
@@ -83,8 +86,50 @@ void FrequencyPlotHRuler::paintEvent(QPaintEvent*)
 					text = QString("%0").arg(hz);
 				else
 					text = QString("%0k").arg(hz / 1000);
-				painter.drawText(x - topLeft.x() + height() + 1, 0, 0, height(), Qt::TextDontClip | Qt::AlignCenter, text);
+				painter.drawText(x - topLeft.x() + offsetLeft + 1, 0, 0, height(), Qt::TextDontClip | Qt::AlignCenter, text);
 			}
 		}
 	}
+
+	QPoint mousePos = view->getLastMousePos();
+	if(!mousePos.isNull())
+	{
+		QPointF mouseScenePos = view->mapToScene(mousePos);
+
+		double hz = s->xToHz(mouseScenePos.x());
+		double x = s->hzToX(hz);
+		if(x != -1)
+		{
+			QString text = QString("%0").arg(hz, 0, 'f', 1);
+			QFontMetrics metrics = painter.fontMetrics();
+			QRectF rect = metrics.boundingRect(text);
+			float center = x - topLeft.x() + offsetLeft + 1;
+			rect = QRectF(center - ceil(rect.width() / 2) - 2 + 0.5, ceil(height() / 2) - ceil(rect.height() / 2) + 1.5, rect.width() + 3, rect.height());
+			QPainterPath path;
+			path.addRect(rect);
+			QPainterPath topTriangle;
+			topTriangle.moveTo(QPoint(center - 3, rect.top() + 1));
+			topTriangle.lineTo(QPoint(center + 3, rect.top() + 1));
+			topTriangle.lineTo(QPoint(center, rect.top() - 3));
+			path = path.united(topTriangle);
+
+			painter.setPen(Qt::black);
+			painter.setBrush(Qt::white);
+			painter.drawPath(path);
+			painter.setPen(Qt::blue);
+			painter.drawText(center, 0, 0, height(), Qt::TextDontClip | Qt::AlignCenter, text);
+		}
+	}
+}
+
+void FrequencyPlotHRuler::wheelEvent(QWheelEvent* event)
+{
+	FrequencyPlotView* view = qobject_cast<FrequencyPlotView*>(parentWidget());
+	view->zoom(event->angleDelta().y(), 0, event->x() - view->viewportMargins().left(), 0);
+}
+
+void FrequencyPlotHRuler::mouseMoveEvent(QMouseEvent* event)
+{
+	FrequencyPlotView* view = qobject_cast<FrequencyPlotView*>(parentWidget());
+	view->setLastMousePos(QPoint(event->x() - view->viewportMargins().left(), view->viewport()->height() - 1));
 }

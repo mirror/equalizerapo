@@ -79,6 +79,12 @@ public:
 
 	void openConfig(QString path);
 
+	int getPreferredWidth();
+	void updateSizeHints();
+
+	QSize minimumSizeHint() const override;
+	void setMinimumHeightHint(int height);
+
 signals:
 	void linesChanged();
 
@@ -123,6 +129,7 @@ private:
 	DeviceAPOInfo* selectedDevice;
 	int selectedChannelMask;
 	QString configPath;
+	int minimumHeightHint = 0;
 };
 
 template<typename T> inline uint qHash(QList<T> list)

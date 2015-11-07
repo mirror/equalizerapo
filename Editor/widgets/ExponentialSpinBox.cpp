@@ -17,32 +17,39 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
+#include <cmath>
+#include "ExponentialSpinBox.h"
 
-#include "filters/CopyFilter.h"
-#include "Editor/IFilterGUI.h"
-#include "CopyFilterGUIScene.h"
-#include "Editor/FilterTable.h"
+using namespace std;
 
-namespace Ui {
-class CopyFilterGUI;
+ExponentialSpinBox::ExponentialSpinBox(QWidget* parent)
+	: QSpinBox(parent)
+{
+
 }
 
-class CopyFilterGUI : public IFilterGUI
+void ExponentialSpinBox::stepBy(int steps)
 {
-	Q_OBJECT
+	qint64 v = value();
+	if(steps > 0)
+	{
+		v <<= steps;
+		if(v > maximum())
+			v = maximum();
+	}
+	else
+	{
+		v >>= -steps;
+		if(v < minimum())
+			v = minimum();
+	}
 
-public:
-	explicit CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable);
-	~CopyFilterGUI();
+	setValue((int)v);
+}
 
-	void configureChannels(std::vector<std::wstring>& channelNames) override;
-
-	void store(QString& command, QString& parameters) override;
-
-private:
-	Ui::CopyFilterGUI *ui;
-	CopyFilterGUIScene* scene;
-
-	std::vector<std::wstring> inputChannelNames;
-};
+int ExponentialSpinBox::valueFromText(const QString& text) const
+{
+	int value = QSpinBox::valueFromText(text);
+	value = exp2(round(log2(value)));
+	return value;
+}

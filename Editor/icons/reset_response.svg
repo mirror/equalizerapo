@@ -15,8 +15,8 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    viewBox="0 0 16 16"
-   sodipodi:docname="flat_response.svg"
-   inkscape:export-filename="C:\Eigene Dateien\Entwickl\EqualizerAPO\trunk\Editor\guis\mirror_response.png"
+   sodipodi:docname="reset_response.svg"
+   inkscape:export-filename="C:\Eigene Dateien\Entwickl\EqualizerAPO\trunk\Editor\icons\reset_response.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -128,7 +128,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="22.197802"
-     inkscape:cx="-7.2042081"
+     inkscape:cx="2.7742573"
      inkscape:cy="8"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -147,7 +147,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -157,7 +157,7 @@
      inkscape:groupmode="layer">
     <path
        style="fill:#ff0000;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
-       d="M -0.99108919,8 21.128211,8"
+       d="M -0.99108919,8.5 21.128211,8.5"
        id="path6738"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />

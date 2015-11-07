@@ -436,6 +436,38 @@ void FilterTable::openConfig(QString path)
 	mainWindow->load(path);
 }
 
+int FilterTable::getPreferredWidth()
+{
+	if(scrollArea == NULL)
+		return width();
+
+	return scrollArea->viewport()->width();
+}
+
+void FilterTable::updateSizeHints()
+{
+	for(int i = 0; i < items.size(); i++)
+	{
+		FilterTableRow* tableRow = qobject_cast<FilterTableRow*>(gridLayout->itemAtPosition(i, 0)->widget());
+		tableRow->updateGeometry();
+	}
+}
+
+QSize FilterTable::minimumSizeHint() const
+{
+	QSize size = QWidget::minimumSizeHint();
+	if(size.height() < minimumHeightHint)
+		size.setHeight(minimumHeightHint);
+
+	return size;
+}
+
+void FilterTable::setMinimumHeightHint(int height)
+{
+	minimumHeightHint = height;
+	updateGeometry();
+}
+
 void FilterTable::mousePressEvent(QMouseEvent* event)
 {
 	if(event->buttons() & Qt::LeftButton )
@@ -723,9 +755,9 @@ void FilterTable::wheelEvent(QWheelEvent * event)
 
 bool FilterTable::eventFilter(QObject* obj, QEvent* event)
 {
+	QEvent::Type type = event->type();
 	if(scrollingNow)
 	{
-		QEvent::Type type = event->type();
 		if(type == QEvent::Wheel)
 		{
 			QWidget* widget = qobject_cast<QWidget*>(obj);
@@ -745,6 +777,11 @@ bool FilterTable::eventFilter(QObject* obj, QEvent* event)
 			if((mouseEvent->globalPos() - scrollStartPoint).manhattanLength() > QApplication::startDragDistance())
 				scrollingNow = false;
 		}
+	}
+
+	if(obj == scrollArea && type == QEvent::Resize)
+	{
+		updateSizeHints();
 	}
 
 	return false;

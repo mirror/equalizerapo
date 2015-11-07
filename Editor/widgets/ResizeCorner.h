@@ -19,30 +19,30 @@
 
 #pragma once
 
-#include "filters/CopyFilter.h"
-#include "Editor/IFilterGUI.h"
-#include "CopyFilterGUIScene.h"
+#include <functional>
+#include <QLabel>
+
 #include "Editor/FilterTable.h"
 
-namespace Ui {
-class CopyFilterGUI;
-}
-
-class CopyFilterGUI : public IFilterGUI
+class ResizeCorner : public QLabel
 {
 	Q_OBJECT
 
 public:
-	explicit CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable);
-	~CopyFilterGUI();
+	explicit ResizeCorner(FilterTable* filterTable, QSize minimumSize, QSize maximumSize,
+						  std::function<QSize()> getFunc, std::function<void(QSize)> setFunc, QWidget *parent = 0);
 
-	void configureChannels(std::vector<std::wstring>& channelNames) override;
-
-	void store(QString& command, QString& parameters) override;
+protected:
+	void mousePressEvent(QMouseEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent*) override;
 
 private:
-	Ui::CopyFilterGUI *ui;
-	CopyFilterGUIScene* scene;
-
-	std::vector<std::wstring> inputChannelNames;
+	int offsetX;
+	int offsetY;
+	QSize minimumSize;
+	QSize maximumSize;
+	FilterTable* filterTable;
+	std::function<QSize()> getFunc;
+	std::function<void(QSize)> setFunc;
 };

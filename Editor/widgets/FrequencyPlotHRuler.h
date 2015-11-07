@@ -29,4 +29,6 @@ public:
 
 protected:
 	void paintEvent(QPaintEvent*) override;
+	void wheelEvent(QWheelEvent* event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
 };

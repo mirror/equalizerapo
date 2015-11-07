@@ -48,7 +48,7 @@ void FrequencyPlotScene::addItem(FrequencyPlotItem* item)
 
 double FrequencyPlotScene::xToHz(double x)
 {
-	return pow(maxHz / minHz, x / zoom / maxX) * minHz;
+	return pow(maxHz / minHz, x / zoomX / maxX) * minHz;
 }
 
 double FrequencyPlotScene::hzToX(double hz)
@@ -56,12 +56,12 @@ double FrequencyPlotScene::hzToX(double hz)
 	if(hz < minHz || hz > maxHz)
 		return -1;
 
-	return log(hz / minHz) / log(maxHz / minHz) * maxX * zoom;
+	return log(hz / minHz) / log(maxHz / minHz) * maxX * zoomX;
 }
 
 double FrequencyPlotScene::yToDb(double y)
 {
-	return (minDb + (1 - y / zoom / maxY) * (maxDb - minDb));
+	return (minDb + (1 - y / zoomY / maxY) * (maxDb - minDb));
 }
 
 double FrequencyPlotScene::dbToY(double db)
@@ -69,17 +69,23 @@ double FrequencyPlotScene::dbToY(double db)
 	if(db < minDb || db > maxDb)
 		return -1;
 
-	return (1 - (db - minDb) / (maxDb - minDb)) * maxY * zoom;
+	return (1 - (db - minDb) / (maxDb - minDb)) * maxY * zoomY;
 }
 
-double FrequencyPlotScene::getZoom() const
+double FrequencyPlotScene::getZoomX() const
 {
-	return zoom;
+	return zoomX;
 }
 
-void FrequencyPlotScene::setZoom(double value)
+double FrequencyPlotScene::getZoomY() const
 {
-	zoom = value;
+	return zoomY;
+}
+
+void FrequencyPlotScene::setZoom(double zoomX, double zoomY)
+{
+	this->zoomX = zoomX;
+	this->zoomY = zoomY;
 	updateSceneRect();
 
 	for(QGraphicsItem* item : items())
@@ -91,7 +97,7 @@ void FrequencyPlotScene::setZoom(double value)
 
 void FrequencyPlotScene::updateSceneRect()
 {
-	setSceneRect(0, 0, maxX * zoom, maxY * zoom);
+	setSceneRect(0, 0, maxX * zoomX, maxY * zoomY);
 }
 
 int FrequencyPlotScene::getBandCount() const

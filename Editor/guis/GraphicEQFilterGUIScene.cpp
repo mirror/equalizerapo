@@ -191,7 +191,7 @@ void GraphicEQFilterGUIScene::itemMoved(int index)
 			hz = round(hz * 10) / 10;
 		item->setHz(hz);
 	}
-	if(getZoom() < 4)
+	if(getZoomY() < 4)
 		db = round(db * 10) / 10;
 	else
 		db = round(db * 100) / 100;

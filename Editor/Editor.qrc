@@ -12,7 +12,7 @@
         <file>icons/16x16/accessories-text-editor.png</file>
         <file>icons/16x16/list-add-green.png</file>
         <file>icons/16x16/list-remove-red.png</file>
-        <file>icons/mirror_response.png</file>
+        <file>icons/invert_response.png</file>
         <file>icons/normalize_response.png</file>
         <file>icons/power_off.png</file>
         <file>icons/power_on.png</file>
@@ -22,5 +22,6 @@
         <file>translations/qtbase_de.qm</file>
         <file>icons/16x16/go-up.png</file>
         <file>icons/reset_response.png</file>
+        <file>icons/resize_corner.png</file>
     </qresource>
 </RCC>

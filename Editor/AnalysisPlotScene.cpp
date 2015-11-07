@@ -17,32 +17,35 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
+#include <cmath>
+#include "AnalysisPlotScene.h"
 
-#include "filters/CopyFilter.h"
-#include "Editor/IFilterGUI.h"
-#include "CopyFilterGUIScene.h"
-#include "Editor/FilterTable.h"
+using namespace std;
 
-namespace Ui {
-class CopyFilterGUI;
+AnalysisPlotScene::AnalysisPlotScene(QObject* parent)
+	: FrequencyPlotScene(parent)
+{
+
 }
 
-class CopyFilterGUI : public IFilterGUI
+void AnalysisPlotScene::setFreqData(fftwf_complex* freqData, int frameCount, unsigned sampleRate)
 {
-	Q_OBJECT
+	nodes.clear();
+	for(int i = 0; i < frameCount / 2; i++)
+	{
+		float freq = (i * 1.0f / frameCount) * sampleRate;
+		// GainIterator can't handle 0 Hz node
+		if(freq == 0.0f)
+			freq = 0.001f;
+		float gain = sqrt(freqData[i][0] * freqData[i][0] + freqData[i][1] * freqData[i][1]);
+		float dbGain = log10(gain) * 20;
+		nodes.push_back(FilterNode(freq, dbGain));
+	}
 
-public:
-	explicit CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable);
-	~CopyFilterGUI();
+	update();
+}
 
-	void configureChannels(std::vector<std::wstring>& channelNames) override;
-
-	void store(QString& command, QString& parameters) override;
-
-private:
-	Ui::CopyFilterGUI *ui;
-	CopyFilterGUIScene* scene;
-
-	std::vector<std::wstring> inputChannelNames;
-};
+vector<FilterNode> AnalysisPlotScene::getNodes() const
+{
+	return nodes;
+}

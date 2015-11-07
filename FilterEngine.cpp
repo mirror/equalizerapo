@@ -127,7 +127,7 @@ void FilterEngine::setDeviceInfo(bool capture, bool postMixInstalled, const wstr
 	this->deviceGuid = deviceGuid;
 }
 
-void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsigned realChannelCount, unsigned outputChannelCount, unsigned channelMask, unsigned maxFrameCount)
+void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsigned realChannelCount, unsigned outputChannelCount, unsigned channelMask, unsigned maxFrameCount, const wstring& customPath)
 {
 	EnterCriticalSection(&loadSection);
 
@@ -184,9 +184,9 @@ void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsi
 
 	if(configPath != L"")
 	{
-		loadConfig();
+		loadConfig(customPath);
 
-		if(threadHandle == NULL)
+		if(threadHandle == NULL && customPath.empty())
 		{
 			shutdownEvent = CreateEventW(NULL, true, false, NULL);
 			threadHandle = CreateThread(NULL, 0, notificationThread, this, 0, NULL);
@@ -199,7 +199,7 @@ void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsi
 	LeaveCriticalSection(&loadSection);
 }
 
-void FilterEngine::loadConfig()
+void FilterEngine::loadConfig(const wstring& customPath)
 {
 	EnterCriticalSection(&loadSection);
 	timer.start();
@@ -226,7 +226,10 @@ void FilterEngine::loadConfig()
 			addFilters(newFilters);
 	}
 
-	loadConfig(configPath + L"\\config.txt");
+	if(customPath.empty())
+		loadConfigFile(configPath + L"\\config.txt");
+	else
+		loadConfigFile(customPath);
 
 	for(vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
 	{
@@ -252,7 +255,7 @@ void FilterEngine::loadConfig()
 	LeaveCriticalSection(&loadSection);
 }
 
-void FilterEngine::loadConfig(const wstring& path)
+void FilterEngine::loadConfigFile(const wstring& path)
 {
 	TraceF(L"Loading configuration from %s", path.c_str());
 

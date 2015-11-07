@@ -26,6 +26,11 @@ CopyFilterGUIFactory::CopyFilterGUIFactory()
 {
 }
 
+void CopyFilterGUIFactory::initialize(FilterTable* filterTable)
+{
+	this->filterTable = filterTable;
+}
+
 QList<FilterTemplate> CopyFilterGUIFactory::createFilterTemplates()
 {
 	QList<FilterTemplate> list;
@@ -44,7 +49,7 @@ IFilterGUI* CopyFilterGUIFactory::createFilterGUI(QString& command, QString& par
 		if(!filters.empty())
 		{
 			CopyFilter* filter = (CopyFilter*)filters[0];
-			result = new CopyFilterGUI(filter);
+			result = new CopyFilterGUI(filter, filterTable);
 		}
 
 		for(IFilter* f : filters)

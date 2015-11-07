@@ -28,6 +28,8 @@ class GraphicEQFilterGUIFactory : public IFilterGUIFactory
 public:
 	GraphicEQFilterGUIFactory();
 
+	void initialize(FilterTable* filterTable) override;
+
 	QList<FilterTemplate> createFilterTemplates() override;
 
 	void startOfFile(const QString& configPath) override;
@@ -35,4 +37,5 @@ public:
 
 private:
 	QString configPath;
+	FilterTable* filterTable;
 };

@@ -25,6 +25,8 @@
 #include "filters/GraphicEQFilter.h"
 #include "GraphicEQFilterGUIScene.h"
 
+class FilterTable;
+
 namespace Ui {
 class GraphicEQFilterGUI;
 }
@@ -34,7 +36,7 @@ class GraphicEQFilterGUI : public IFilterGUI
 	Q_OBJECT
 
 public:
-	explicit GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPath);
+	explicit GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPath, FilterTable* filterTable);
 	~GraphicEQFilterGUI();
 
 	void store(QString& command, QString& parameters) override;
@@ -54,13 +56,9 @@ private slots:
 	void on_radioButtonVar_toggled(bool checked);
 
 	void on_actionImport_triggered();
-
 	void on_actionExport_triggered();
-
-	void on_actionMirrorResponse_triggered();
-
+	void on_actionInvertResponse_triggered();
 	void on_actionNormalizeResponse_triggered();
-
 	void on_actionResetResponse_triggered();
 
 private:

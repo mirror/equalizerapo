@@ -26,6 +26,11 @@ GraphicEQFilterGUIFactory::GraphicEQFilterGUIFactory()
 {
 }
 
+void GraphicEQFilterGUIFactory::initialize(FilterTable* filterTable)
+{
+	this->filterTable = filterTable;
+}
+
 QList<FilterTemplate> GraphicEQFilterGUIFactory::createFilterTemplates()
 {
 	QList<FilterTemplate> list;
@@ -51,7 +56,7 @@ IFilterGUI* GraphicEQFilterGUIFactory::createFilterGUI(QString& command, QString
 		if(!filters.empty())
 		{
 			GraphicEQFilter* filter = (GraphicEQFilter*)filters[0];
-			result = new GraphicEQFilterGUI(filter, configPath);
+			result = new GraphicEQFilterGUI(filter, configPath, filterTable);
 		}
 
 		for(IFilter* f : filters)

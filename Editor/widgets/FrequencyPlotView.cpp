@@ -29,9 +29,11 @@ using namespace std;
 FrequencyPlotView::FrequencyPlotView(QWidget *parent) :
 	QGraphicsView(parent)
 {
-	setViewportMargins(20, 0, 0, 20);
+	setViewportMargins(32, 0, 0, 20);
 	hRuler = new FrequencyPlotHRuler(this);
 	vRuler = new FrequencyPlotVRuler(this);
+	hRuler->setMouseTracking(true);
+	vRuler->setMouseTracking(true);
 }
 
 FrequencyPlotScene* FrequencyPlotView::scene() const
@@ -58,8 +60,7 @@ void FrequencyPlotView::drawBackground(QPainter* painter, const QRectF& drawRect
 	FrequencyPlotScene* s = scene();
 	QPointF topLeft = mapToScene(0, 0);
 	QPointF bottomRight = mapToScene(viewport()->width(), viewport()->height());
-	double dbHeight = abs(s->yToDb(topLeft.y()) - s->yToDb(bottomRight.y()));
-	double dbStep = dbHeight / 4;
+	double dbStep = abs(s->yToDb(0) - s->yToDb(30));
 
 	double dbBase = pow(10, floor(log10(dbStep)));
 	if(dbStep >= 5 * dbBase)
@@ -120,27 +121,57 @@ void FrequencyPlotView::updateHRuler()
 	hRuler->update();
 }
 
-void FrequencyPlotView::wheelEvent(QWheelEvent* event)
+QPoint FrequencyPlotView::getLastMousePos() const
+{
+	return lastMousePos;
+}
+
+void FrequencyPlotView::setLastMousePos(QPoint pos)
+{
+	lastMousePos = pos;
+	hRuler->update();
+	vRuler->update();
+}
+
+void FrequencyPlotView::zoom(int deltaX, int deltaY, int mouseX, int mouseY)
 {
 	FrequencyPlotScene* s = scene();
-	QPointF scenePos = mapToScene(event->pos());
+	QPointF scenePos = mapToScene(mouseX, mouseY);
 	double hz = s->xToHz(scenePos.x());
 	double db = s->yToDb(scenePos.y());
 
-	qreal zoomFactor = pow(1.001, event->angleDelta().y());
-	s->setZoom(max(0.5, min(30, s->getZoom() * zoomFactor)));
+	qreal zoomFactorX = pow(1.001, deltaX);
+	qreal zoomFactorY = pow(1.001, deltaY);
+	double zoomX = max(0.5, min(30.0, s->getZoomX() * zoomFactorX));
+	double zoomY = max(0.5, min(30.0, s->getZoomY() * zoomFactorY));
+	s->setZoom(zoomX, zoomY);
 
-	double x = s->hzToX(hz);
-	if(x != -1)
-		horizontalScrollBar()->setValue(horizontalScrollBar()->value() + round(x - scenePos.x()));
-	double y = s->dbToY(db);
-	if(y != -1)
-		verticalScrollBar()->setValue(verticalScrollBar()->value() + round(y - scenePos.y()));
+	if(deltaX != 0)
+	{
+		double x = s->hzToX(hz);
+		if(x != -1)
+			horizontalScrollBar()->setValue(horizontalScrollBar()->value() + round(x - scenePos.x()));
+	}
+
+	if(deltaY != 0)
+	{
+		double y = s->dbToY(db);
+		if(y != -1)
+			verticalScrollBar()->setValue(verticalScrollBar()->value() + round(y - scenePos.y()));
+	}
 
 	resetCachedContent();
 	viewport()->update();
-	hRuler->update();
-	vRuler->update();
+	if(deltaX != 0)
+		hRuler->update();
+	if(deltaY != 0)
+		vRuler->update();
+}
+
+void FrequencyPlotView::wheelEvent(QWheelEvent* event)
+{
+	int delta = event->angleDelta().y();
+	zoom(delta, delta, event->x(), event->y());
 }
 
 void FrequencyPlotView::scrollContentsBy(int dx, int dy)
@@ -158,15 +189,16 @@ void FrequencyPlotView::resizeEvent(QResizeEvent* event)
 	QGraphicsView::resizeEvent(event);
 
 	const QRect rect = viewport()->geometry();
-	hRuler->setGeometry(rect.x() - 20, rect.y() + rect.height(), rect.width() + 20, 20);
-	vRuler->setGeometry(rect.x() - 20, rect.y(), 20, rect.height() + 20);
+	QMargins margins = viewportMargins();
+	hRuler->setGeometry(rect.x() - margins.left(), rect.y() + rect.height(), rect.width() + margins.left(), margins.bottom());
+	vRuler->setGeometry(rect.x() - margins.left(), rect.y(), margins.left(), rect.height() + margins.bottom());
 }
 
 void FrequencyPlotView::mousePressEvent(QMouseEvent* event)
 {
 	QGraphicsView::mousePressEvent(event);
 
-	lastMousePos = event->pos();
+	setLastMousePos(event->pos());
 }
 
 void FrequencyPlotView::mouseMoveEvent(QMouseEvent* event)
@@ -180,7 +212,12 @@ void FrequencyPlotView::mouseMoveEvent(QMouseEvent* event)
 	{
 		QGraphicsView::mouseMoveEvent(event);
 	}
-	lastMousePos = event->pos();
+	setLastMousePos(event->pos());
+}
+
+void FrequencyPlotView::leaveEvent(QEvent*)
+{
+	setLastMousePos(QPoint());
 }
 
 void FrequencyPlotView::showEvent(QShowEvent* event)

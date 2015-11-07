@@ -19,30 +19,15 @@
 
 #pragma once
 
-#include "filters/CopyFilter.h"
-#include "Editor/IFilterGUI.h"
-#include "CopyFilterGUIScene.h"
-#include "Editor/FilterTable.h"
+#include "Editor/widgets/FrequencyPlotView.h"
 
-namespace Ui {
-class CopyFilterGUI;
-}
-
-class CopyFilterGUI : public IFilterGUI
+class AnalysisPlotView : public FrequencyPlotView
 {
 	Q_OBJECT
 
 public:
-	explicit CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable);
-	~CopyFilterGUI();
+	AnalysisPlotView(QWidget* parent = NULL);
 
-	void configureChannels(std::vector<std::wstring>& channelNames) override;
-
-	void store(QString& command, QString& parameters) override;
-
-private:
-	Ui::CopyFilterGUI *ui;
-	CopyFilterGUIScene* scene;
-
-	std::vector<std::wstring> inputChannelNames;
+protected:
+	void drawBackground(QPainter* painter, const QRectF& rect) override;
 };

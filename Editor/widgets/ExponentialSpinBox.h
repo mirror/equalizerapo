@@ -17,32 +17,16 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
+#include <QSpinBox>
 
-#include "filters/CopyFilter.h"
-#include "Editor/IFilterGUI.h"
-#include "CopyFilterGUIScene.h"
-#include "Editor/FilterTable.h"
-
-namespace Ui {
-class CopyFilterGUI;
-}
-
-class CopyFilterGUI : public IFilterGUI
+class ExponentialSpinBox : public QSpinBox
 {
-	Q_OBJECT
+public:
+	ExponentialSpinBox(QWidget* parent = 0);
 
 public:
-	explicit CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable);
-	~CopyFilterGUI();
+	void stepBy(int steps) override;
 
-	void configureChannels(std::vector<std::wstring>& channelNames) override;
-
-	void store(QString& command, QString& parameters) override;
-
-private:
-	Ui::CopyFilterGUI *ui;
-	CopyFilterGUIScene* scene;
-
-	std::vector<std::wstring> inputChannelNames;
+protected:
+	int valueFromText(const QString& text) const override;
 };

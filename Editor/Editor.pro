@@ -13,8 +13,9 @@ TEMPLATE = app
 
 PRECOMPILED_HEADER = stable.h
 QMAKE_CXXFLAGS_WARN_ON -= -w34100
+QMAKE_LFLAGS += /STACK:32000000
 
-DEFINES += NO_FILTERENGINE
+DEFINES += _UNICODE
 
 SOURCES += main.cpp\
 	../helpers/LogHelper.cpp \
@@ -88,9 +89,29 @@ SOURCES += main.cpp\
 	helpers/DisableWheelFilter.cpp \
 	widgets/EscapableLineEdit.cpp \
 	MainWindow.cpp \
-    guis/StageFilterGUI.cpp \
-    guis/StageFilterGUIFactory.cpp \
-    guis/ExpressionFilterGUIFactory.cpp
+	guis/StageFilterGUI.cpp \
+	guis/StageFilterGUIFactory.cpp \
+	guis/ExpressionFilterGUIFactory.cpp \
+	widgets/ResizeCorner.cpp \
+	AnalysisPlotView.cpp \
+	AnalysisPlotScene.cpp \
+	../FilterEngine.cpp \
+	../FilterConfiguration.cpp \
+	../filters/ChannelFilterFactory.cpp \
+	../filters/ExpressionFilterFactory.cpp \
+	../filters/IfFilterFactory.cpp \
+	../filters/StageFilterFactory.cpp \
+	../filters/ConvolutionFilterFactory.cpp \
+	../filters/IIRFilter.cpp \
+	../filters/IIRFilterFactory.cpp \
+	../filters/IncludeFilterFactory.cpp \
+	../filters/ChannelFilter.cpp \
+	../filters/ConvolutionFilter.cpp \
+	../parser/RegexFunctions.cpp \
+	../parser/RegistryFunctions.cpp \
+	../parser/StringOperators.cpp \
+	AnalysisThread.cpp \
+    widgets/ExponentialSpinBox.cpp
 
 HEADERS  += \
 	../helpers/LogHelper.h \
@@ -168,9 +189,29 @@ HEADERS  += \
 	../version.h \
 	../stdafx.h \
 	MainWindow.h \
-    guis/StageFilterGUI.h \
-    guis/StageFilterGUIFactory.h \
-    guis/ExpressionFilterGUIFactory.h
+	guis/StageFilterGUI.h \
+	guis/StageFilterGUIFactory.h \
+	guis/ExpressionFilterGUIFactory.h \
+	widgets/ResizeCorner.h \
+	AnalysisPlotView.h \
+	AnalysisPlotScene.h \
+	../FilterEngine.h \
+	../FilterConfiguration.h \
+	../filters/ChannelFilterFactory.h \
+	../filters/ExpressionFilterFactory.h \
+	../filters/IfFilterFactory.h \
+	../filters/StageFilterFactory.h \
+	../filters/ConvolutionFilterFactory.h \
+	../filters/IIRFilter.h \
+	../filters/IIRFilterFactory.h \
+	../filters/IncludeFilterFactory.h \
+	../filters/ChannelFilter.h \
+	../filters/ConvolutionFilter.h \
+	../parser/RegexFunctions.h \
+	../parser/RegistryFunctions.h \
+	../parser/StringOperators.h \
+	AnalysisThread.h \
+    widgets/ExponentialSpinBox.h
 
 FORMS    += \
 	guis/PreampFilterGUI.ui \
@@ -188,14 +229,21 @@ FORMS    += \
 	guis/GraphicEQFilterGUI.ui \
 	guis/ConvolutionFilterGUI.ui \
 	MainWindow.ui \
-    guis/StageFilterGUI.ui
+	guis/StageFilterGUI.ui
 
-INCLUDEPATH += $$PWD/.. "C:/Program Files/libsndfile/include" "C:/Program Files/fftw3"
-LIBS += advapi32.lib version.lib ole32.lib libsndfile-1.lib libfftw3f-3.lib
-contains(QT_ARCH, x86_64) {
-	QMAKE_LIBDIR += "C:/Program Files/libsndfile/lib" "C:/Program Files/fftw3"
+INCLUDEPATH += $$PWD/.. "C:/Program Files/libsndfile/include" "C:/Program Files/fftw3" "C:/Program Files/muparserx_v3_0_1/parser"
+LIBS += advapi32.lib version.lib ole32.lib Shlwapi.lib libsndfile-1.lib libfftw3f-3.lib
+
+build_pass:CONFIG(debug, debug|release) {
+	LIBS += muparserxd.lib
 } else {
-	QMAKE_LIBDIR += "C:/Program Files (x86)/libsndfile/lib" "C:/Program Files (x86)/fftw3"
+	LIBS += muparserx.lib
+}
+
+contains(QT_ARCH, x86_64) {
+	QMAKE_LIBDIR += "C:/Program Files/libsndfile/lib" "C:/Program Files/fftw3" "C:/Program Files/muparserx_v3_0_1/lib64"
+} else {
+	QMAKE_LIBDIR += "C:/Program Files (x86)/libsndfile/lib" "C:/Program Files (x86)/fftw3" "C:/Program Files/muparserx_v3_0_1/lib"
 }
 
 RESOURCES += \

@@ -56,7 +56,7 @@ vector<IFilter*> IncludeFilterFactory::createFilter(const wstring& configPath, w
 		else
 			includePath = value;
 
-		engine->loadConfig(includePath);
+		engine->loadConfigFile(includePath);
 		command = L"";
 	}
 

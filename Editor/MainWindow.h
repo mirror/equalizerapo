@@ -28,6 +28,8 @@
 
 #include "FilterTable.h"
 #include "DeviceAPOInfo.h"
+#include "Editor/AnalysisPlotScene.h"
+#include "Editor/AnalysisThread.h"
 
 namespace Ui {
 class MainWindow;
@@ -64,10 +66,21 @@ private slots:
 	void on_actionCopy_triggered();
 
 	void instantModeEnabled(bool enabled);
+	void on_tabWidget_currentChanged(int index);
+	void on_startFromComboBox_activated(int index);
+	void on_analysisChannelComboBox_activated(int index);
+	void on_resolutionSpinBox_valueChanged(int value);
+	void updateAnalysisPanel();
+
+	void on_mainToolBar_visibilityChanged(bool visible);
+	void on_analysisDockWidget_visibilityChanged(bool visible);
+	void on_actionToolbar_triggered(bool checked);
+	void on_actionAnalysisPanel_triggered(bool checked);
 
 private:
 	FilterTable* addTab(QString title, QString tooltip);
 	void getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* channelMask);
+	void startAnalysis();
 
 	Ui::MainWindow *ui;
 
@@ -78,6 +91,8 @@ private:
 	QList<DeviceAPOInfo> outputDevices;
 	QList<DeviceAPOInfo> inputDevices;
 	DeviceAPOInfo* defaultOutputDevice;
+	AnalysisPlotScene* analysisPlotScene;
+	AnalysisThread* analysisThread;
 };
 
 Q_DECLARE_METATYPE(DeviceAPOInfo*)

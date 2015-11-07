@@ -57,6 +57,8 @@ EqualizerAPO::EqualizerAPO(IUnknown* pUnkOuter)
 EqualizerAPO::~EqualizerAPO()
 {
 	InterlockedDecrement(&instCount);
+
+	resetChild();
 }
 
 HRESULT EqualizerAPO::QueryInterface(const IID& iid, void** ppv)
@@ -156,7 +158,7 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 		if(FAILED(hr))
 		{
 			LogF(L"Can't convert child apo guid string to guid");
-			return hr;
+			return S_OK;
 		}
 
 		hr = CoCreateInstance(childGuid, NULL, CLSCTX_INPROC_SERVER, __uuidof(IAudioProcessingObject), (void**)&childAPO);
@@ -164,7 +166,7 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 		{
 			LogF(L"Error in CoCreateInstance for child apo");
 			resetChild();
-			return hr;
+			return S_OK;
 		}
 
 		hr = childAPO->QueryInterface(__uuidof(IAudioProcessingObjectRT), (void**)&childRT);
@@ -172,7 +174,7 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 		{
 			LogF(L"Error in QueryInterface for child apo RT");
 			resetChild();
-			return hr;
+			return S_OK;
 		}
 
 		hr = childAPO->QueryInterface(__uuidof(IAudioProcessingObjectConfiguration), (void**)&childCfg);
@@ -180,7 +182,7 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 		{
 			LogF(L"Error in QueryInterface for child apo configuration");
 			resetChild();
-			return hr;
+			return S_OK;
 		}
 
 		hr = childAPO->Initialize(cbDataSize, pbyData);
@@ -188,13 +190,13 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 		{
 			LogF(L"Error in Initialize of child apo");
 			resetChild();
-			return hr;
+			return S_OK;
 		}
 
 		TraceF(L"Successfully created and initialized child APO");
 	}
 
-    return hr;
+	return S_OK;
 }
 
 HRESULT EqualizerAPO::IsInputFormatSupported(IAudioMediaType* pOutputFormat,

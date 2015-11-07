@@ -28,6 +28,11 @@ class CopyFilterGUIFactory : public IFilterGUIFactory
 public:
 	CopyFilterGUIFactory();
 
+	void initialize(FilterTable* filterTable) override;
+
 	QList<FilterTemplate> createFilterTemplates() override;
 	IFilterGUI* createFilterGUI(QString& command, QString& parameters) override;
+
+private:
+	FilterTable* filterTable;
 };

@@ -74,6 +74,15 @@ void FilterTableRow::editText()
 		ui->actionEditText->trigger();
 }
 
+QSize FilterTableRow::sizeHint() const
+{
+	QSize size = QWidget::minimumSizeHint();
+	int preferredWidth = table->getPreferredWidth();
+	if(size.width() < preferredWidth)
+		size = QSize(preferredWidth, size.height());
+	return size;
+}
+
 void FilterTableRow::mouseDoubleClickEvent(QMouseEvent*)
 {
 	if(gui == NULL && ui->stackedWidget->currentIndex() == 1)
