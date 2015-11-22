@@ -62,6 +62,7 @@ public:
 	static std::vector<DeviceAPOInfo> loadAllInfos(bool input);
 	static std::wstring getDefaultDevice(bool input, int role = 1);
 	static bool checkProtectedAudioDG(bool fix);
+	static bool checkAPORegistration(bool fix);
 	bool load(const std::wstring& deviceGuid, std::wstring defaultDeviceGuid = L"");
 	bool canBeUpgraded();
 	bool hasChanges();

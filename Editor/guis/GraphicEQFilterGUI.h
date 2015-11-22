@@ -41,6 +41,9 @@ public:
 
 	void store(QString& command, QString& parameters) override;
 
+	void loadPreferences(const QVariantMap& prefs) override;
+	void storePreferences(QVariantMap& prefs) override;
+
 private slots:
 	void insertRow(int index, double hz, double db);
 	void removeRow(int index);

@@ -66,7 +66,7 @@ wstring RegistryHelper::readValue(wstring key, wstring valuename)
 	//Remove zero-termination
 	if(buf[bufSize / sizeof(wchar_t) - 1] == L'\0')
 		bufSize -= sizeof(wchar_t);
-	result = wstring((wchar_t*)buf, (wstring::size_type)bufSize/sizeof(wchar_t));
+	result = wstring((wchar_t*)buf, (wstring::size_type)bufSize / sizeof(wchar_t));
 	delete buf;
 
 	return result;
@@ -111,6 +111,62 @@ unsigned long RegistryHelper::readDWORDValue(wstring key, wstring valuename)
 	return result;
 }
 
+vector<wstring> RegistryHelper::readMultiValue(wstring key, wstring valuename)
+{
+	vector<wstring> result;
+
+	HKEY keyHandle = openKey(key, KEY_QUERY_VALUE | KEY_WOW64_64KEY);
+
+	LSTATUS status;
+	DWORD type;
+	DWORD bufSize;
+	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
+	if(status != ERROR_SUCCESS)
+	{
+		RegCloseKey(keyHandle);
+		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
+	}
+
+	if(type != REG_MULTI_SZ)
+	{
+		RegCloseKey(keyHandle);
+		throw RegistryException(L"Registry value " + key + L"\\" + valuename + L" has wrong type");
+	}
+
+	wchar_t* buf = new wchar_t[bufSize / sizeof(wchar_t) + 1];
+	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, NULL, (LPBYTE)buf, &bufSize);
+
+	RegCloseKey(keyHandle);
+
+	if(status != ERROR_SUCCESS)
+	{
+		delete buf;
+		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
+	}
+
+	size_t length = bufSize / sizeof(wchar_t);
+	//Remove zero-termination
+	while(length > 0 && buf[length - 1] == L'\0')
+		length--;
+
+	size_t start = 0;
+	for(size_t i = 0; i < length; i++)
+	{
+		if(buf[i] == L'\0')
+		{
+			result.push_back(wstring(buf + start, i - start));
+			start = i + 1;
+		}
+	}
+
+	if(length > start)
+		result.push_back(wstring(buf + start, length - start));
+
+	delete buf;
+
+	return result;
+}
+
 vector<unsigned char> RegistryHelper::readBinaryValue(wstring key, wstring valuename)
 {
 	HKEY keyHandle = openKey(key, KEY_QUERY_VALUE | KEY_WOW64_64KEY);
@@ -148,7 +204,7 @@ void RegistryHelper::writeValue(wstring key, wstring valuename, wstring value)
 {
 	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
 
-	LSTATUS status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_SZ, (const BYTE*)value.c_str(), (DWORD)((value.size()+1)*sizeof(wchar_t)));
+	LSTATUS status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_SZ, (const BYTE*)value.c_str(), (DWORD)((value.size() + 1) * sizeof(wchar_t)));
 
 	RegCloseKey(keyHandle);
 
@@ -173,11 +229,39 @@ void RegistryHelper::writeMultiValue(wstring key, wstring valuename, wstring val
 	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
 
 	wchar_t* data = new wchar_t[value.size() + 2];
-	value._Copy_s(data, (value.size()+2)*sizeof(wchar_t), value.size());
+	value._Copy_s(data, (value.size() + 2)*sizeof(wchar_t), value.size());
 	data[value.size()] = L'\0';
-	data[value.size()+1] = L'\0';
+	data[value.size() + 1] = L'\0';
 
-	LSTATUS status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_MULTI_SZ, (const BYTE*)data, (DWORD)((value.size()+2)*sizeof(wchar_t)));
+	LSTATUS status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_MULTI_SZ, (const BYTE*)data, (DWORD)((value.size() + 2) * sizeof(wchar_t)));
+
+	delete data;
+
+	RegCloseKey(keyHandle);
+
+	if(status != ERROR_SUCCESS)
+		throw RegistryException(L"Error while writing to registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
+}
+
+void RegistryHelper::writeMultiValue(wstring key, wstring valuename, vector<wstring> values)
+{
+	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
+
+	size_t size = 1;
+	for(wstring value : values)
+		size += value.size() + 1;
+
+	wchar_t* data = new wchar_t[size];
+	size_t offset = 0;
+	for(wstring value : values)
+	{
+		value._Copy_s(data + offset, size * sizeof(wchar_t), value.size());
+		offset += value.size();
+		data[offset++] = L'\0';
+	}
+	data[offset] = L'\0';
+
+	LSTATUS status = RegSetValueExW(keyHandle, valuename.c_str(), 0, REG_MULTI_SZ, (const BYTE*)data, (DWORD)(size * sizeof(wchar_t)));
 
 	delete data;
 
@@ -242,13 +326,13 @@ void RegistryHelper::makeWritable(wstring key)
 	PSID sid = NULL;
 	SID_IDENTIFIER_AUTHORITY authority = SECURITY_NT_AUTHORITY;
 	if(!AllocateAndInitializeSid(&authority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
-		0, 0, 0, 0, 0, 0, &sid))
+								 0, 0, 0, 0, 0, 0, &sid))
 		throw RegistryException(L"Error in AllocateAndInitializeSid while ensuring writability");
 
 	EXPLICIT_ACCESS ea;
 	ea.grfAccessPermissions = KEY_ALL_ACCESS;
 	ea.grfAccessMode = SET_ACCESS;
-	ea.grfInheritance= SUB_CONTAINERS_AND_OBJECTS_INHERIT;
+	ea.grfInheritance = SUB_CONTAINERS_AND_OBJECTS_INHERIT;
 	ea.Trustee.TrusteeForm = TRUSTEE_IS_SID;
 	ea.Trustee.TrusteeType = TRUSTEE_IS_GROUP;
 	ea.Trustee.ptstrName = (LPWSTR)sid;
@@ -307,7 +391,7 @@ void RegistryHelper::takeOwnership(wstring key)
 	PSID sid = NULL;
 	SID_IDENTIFIER_AUTHORITY authority = SECURITY_NT_AUTHORITY;
 	if(!AllocateAndInitializeSid(&authority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
-		0, 0, 0, 0, 0, 0, &sid))
+								 0, 0, 0, 0, 0, 0, &sid))
 		throw RegistryException(L"Error in AllocateAndInitializeSid while taking ownership");
 
 	if(!SetSecurityDescriptorOwner(sd, sid, FALSE))
@@ -361,7 +445,7 @@ vector<wstring> RegistryHelper::enumSubKeys(wstring key)
 
 	wchar_t keyName[256];
 	DWORD keyLength = sizeof(keyName) / sizeof(wchar_t);
-	int i=0;
+	int i = 0;
 
 	LSTATUS status;
 	while((status = RegEnumKeyExW(keyHandle, i++, keyName, &keyLength, NULL, NULL, NULL, NULL)) == ERROR_SUCCESS)
@@ -472,7 +556,7 @@ wstring RegistryHelper::splitKey(const wstring& key, HKEY* rootKey)
 		throw RegistryException(L"Key " + key + L" has invalid format");
 
 	wstring rootPart = key.substr(0, pos);
-	wstring pathPart = key.substr(pos+1);
+	wstring pathPart = key.substr(pos + 1);
 
 	wstring p = StringHelper::toUpperCase(rootPart);
 	if(p == L"HKEY_CLASSES_ROOT")

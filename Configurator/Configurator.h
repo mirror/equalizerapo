@@ -63,4 +63,5 @@ private:
 	void updateButtons(int listIndex);
 
 	std::vector<DeviceAPOInfo> apoInfos[2];
+	bool askForReboot = false;
 };

@@ -21,6 +21,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QCommandLineParser>
+#include <QSettings>
 #include "MainWindow.h"
 #include "helpers/RegistryHelper.h"
 
@@ -34,17 +35,26 @@ int main(int argc, char *argv[])
 	//_CrtSetBreakAlloc(3318);
 #endif
 
-	{
-		QCoreApplication::addLibraryPath("qt");
+	QCoreApplication::addLibraryPath("qt");
 
+	bool restart;
+	do
+	{
 		QApplication application(argc, argv);
 
+		QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
+		QVariant languageValue = settings.value("language");
+		if(languageValue.isValid())
+			QLocale::setDefault(languageValue.toString());
+		else
+			QLocale::setDefault(QLocale::system());
+
 		QTranslator qtTranslator;
-		qtTranslator.load(QLocale::system(), ":/translations/qtbase", "_");
+		qtTranslator.load(QLocale(), ":/translations/qtbase", "_");
 		application.installTranslator(&qtTranslator);
 
 		QTranslator editorTranslator;
-		editorTranslator.load(QLocale::system(), ":/translations/Editor", "_");
+		editorTranslator.load(QLocale(), ":/translations/Editor", "_");
 		application.installTranslator(&editorTranslator);
 
 		QString configPath = QDir::currentPath();
@@ -52,13 +62,22 @@ int main(int argc, char *argv[])
 			configPath = QString::fromStdWString(RegistryHelper::readValue(APP_REGPATH, L"ConfigPath"));
 		QDir configDir(configPath);
 
+		if(!RegistryHelper::keyExists(USER_REGPATH))
+			RegistryHelper::createKey(USER_REGPATH);
+
+		if(!RegistryHelper::keyExists(EDITOR_REGPATH))
+			RegistryHelper::createKey(EDITOR_REGPATH);
+
+		if(!RegistryHelper::keyExists(EDITOR_PER_FILE_REGPATH))
+			RegistryHelper::createKey(EDITOR_PER_FILE_REGPATH);
+
 		MainWindow w(configDir);
 		w.show();
 
 		QCommandLineParser parser;
 		parser.process(application);
 		QStringList args = parser.positionalArguments();
-		if(args.isEmpty())
+		if(args.isEmpty() && w.isEmpty())
 			args = QStringList("config.txt");
 
 		for(QString arg : args)
@@ -67,7 +86,10 @@ int main(int argc, char *argv[])
 		w.doChecks();
 
 		result = application.exec();
+
+		restart = w.shouldRestart();
 	}
+	while(restart);
 
 	return result;
 }

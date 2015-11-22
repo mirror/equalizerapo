@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 #include <QWidget>
+#include <QVariantMap>
 
 class IFilterGUI : public QWidget
 {
@@ -34,6 +35,9 @@ public:
 	virtual void configureChannels(std::vector<std::wstring>& channelNames) {}
 
 	virtual void store(QString& command, QString& parameters) = 0;
+
+	virtual void loadPreferences(const QVariantMap& prefs) {}
+	virtual void storePreferences(QVariantMap& prefs) {}
 
 signals:
 	void updateModel();

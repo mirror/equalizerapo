@@ -69,6 +69,16 @@ void CommentFilterGUI::store(QString& command, QString& parameters)
 		command = "# " + command;
 }
 
+void CommentFilterGUI::loadPreferences(const QVariantMap& prefs)
+{
+	child->loadPreferences(prefs);
+}
+
+void CommentFilterGUI::storePreferences(QVariantMap& prefs)
+{
+	child->storePreferences(prefs);
+}
+
 void CommentFilterGUI::on_actionPowerOn_toggled(bool checked)
 {
 	child->setEnabled(checked);

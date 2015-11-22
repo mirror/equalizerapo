@@ -43,6 +43,7 @@ public:
 	using QGraphicsView::viewportMargins;
 
 	void zoom(int deltaX, int deltaY, int mouseX, int mouseY);
+	void setScrollOffsets(int x, int y);
 
 protected:
 	void wheelEvent(QWheelEvent* event) override;
@@ -57,4 +58,6 @@ private:
 	FrequencyPlotHRuler* hRuler;
 	FrequencyPlotVRuler* vRuler;
 	QPoint lastMousePos;
+	int presetScrollX = -1;
+	int presetScrollY = -1;
 };

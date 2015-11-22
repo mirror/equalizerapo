@@ -365,33 +365,6 @@ void FilterEngine::watchRegistryKey(const std::wstring& key)
 #pragma AVRT_CODE_BEGIN
 void FilterEngine::process(float *output, float *input, unsigned frameCount)
 {
-	bool inputSilent = true;
-
-	for (unsigned i = 0; i < frameCount * realChannelCount; i++)
-	{
-		if(input[i] != 0)
-		{
-			inputSilent = false;
-			break;
-		}
-	}
-
-	if(inputSilent)
-	{
-		if(lastInputWasSilent)
-		{
-			//Avoid processing cost if silence would be output anyway
-			if(input != output)
-				memset(output, 0, frameCount * outputChannelCount * sizeof(float));
-
-			return;
-		}
-		else
-			lastInputWasSilent = true;
-	}
-	else
-		lastInputWasSilent = false;
-
 	if(currentConfig->isEmpty() && nextConfig == NULL)
 	{
 		// avoid (de-)interleaving cost if no processing will happen anyway

@@ -23,6 +23,8 @@
 #include "CopyFilterGUI.h"
 #include "ui_CopyFilterGUI.h"
 
+static const int DEFAULT_HEIGHT = 88;
+
 using namespace std;
 
 CopyFilterGUI::CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable) :
@@ -42,7 +44,7 @@ CopyFilterGUI::CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable) :
 		return QSize(0, ui->scrollArea->height());
 	},
 	[this](QSize size) {
-		ui->scrollArea->setMinimumHeight(size.height());
+		ui->scrollArea->setFixedHeight(size.height());
 	}, ui->scrollArea);
 	cornerWidget->setCursor(Qt::SizeVerCursor);
 	cornerWidget->setAutoFillBackground(true);
@@ -161,4 +163,18 @@ void CopyFilterGUI::store(QString& command, QString& parameters)
 		else
 			scene->load(inputChannelNames, assignments);
 	}
+}
+
+void CopyFilterGUI::loadPreferences(const QVariantMap& prefs)
+{
+	ui->scrollArea->setFixedHeight(prefs.value("height", DEFAULT_HEIGHT).toInt());
+	ui->tabWidget->setCurrentIndex(prefs.value("tabIndex", 0).toInt());
+}
+
+void CopyFilterGUI::storePreferences(QVariantMap& prefs)
+{
+	if(ui->scrollArea->height() != DEFAULT_HEIGHT)
+		prefs.insert("height", ui->scrollArea->height());
+	if(ui->tabWidget->currentIndex() != 0)
+		prefs.insert("tabIndex", ui->tabWidget->currentIndex());
 }

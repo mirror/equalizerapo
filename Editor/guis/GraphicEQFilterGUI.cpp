@@ -29,6 +29,9 @@
 #include "GraphicEQFilterGUI.h"
 #include "ui_GraphicEQFilterGUI.h"
 
+static const int DEFAULT_TABLE_WIDTH = 119;
+static const int DEFAULT_VIEW_HEIGHT = 150;
+
 using namespace std;
 
 QRegularExpression GraphicEQFilterGUI::numberRegEx("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
@@ -51,7 +54,6 @@ GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPa
 		ui->graphicsView->setFixedHeight(size.height());
 	}, ui->graphicsView);
 	ui->graphicsView->setCornerWidget(cornerWidget);
-	ui->graphicsView->setFixedHeight(150);
 
 	ui->toolBar->addAction(ui->actionImport);
 	ui->toolBar->addAction(ui->actionExport);
@@ -103,6 +105,39 @@ void GraphicEQFilterGUI::store(QString & command, QString & parameters)
 
 		parameters += QString("%0 %1").arg(node.freq).arg(node.dbGain);
 	}
+}
+
+void GraphicEQFilterGUI::loadPreferences(const QVariantMap& prefs)
+{
+	ui->tableWidget->setFixedWidth(prefs.value("tableWidth", DEFAULT_TABLE_WIDTH).toInt());
+	ui->graphicsView->setFixedHeight(prefs.value("viewHeight", DEFAULT_VIEW_HEIGHT).toInt());
+	double zoomX = prefs.value("zoomX", 1.0).toDouble();
+	double zoomY = prefs.value("zoomY", 1.0).toDouble();
+	if(zoomX != 1.0 || zoomY != 1.0)
+		scene->setZoom(zoomX, zoomY);
+	int scrollX = prefs.value("scrollX", round(scene->hzToX(20))).toInt();
+	int scrollY = prefs.value("scrollY", round(scene->dbToY(22))).toInt();
+	ui->graphicsView->setScrollOffsets(scrollX, scrollY);
+}
+
+void GraphicEQFilterGUI::storePreferences(QVariantMap& prefs)
+{
+	if(ui->tableWidget->width() != DEFAULT_TABLE_WIDTH)
+		prefs.insert("tableWidth", ui->tableWidget->width());
+	if(ui->graphicsView->height() != DEFAULT_VIEW_HEIGHT)
+		prefs.insert("viewHeight", ui->graphicsView->height());
+	if(scene->getZoomX() != 1.0)
+		prefs.insert("zoomX", scene->getZoomX());
+	if(scene->getZoomY() != 1.0)
+		prefs.insert("zoomY", scene->getZoomY());
+	QScrollBar* hScrollBar = ui->graphicsView->horizontalScrollBar();
+	int value = hScrollBar->value();
+	if(value != round(scene->hzToX(20)))
+		prefs.insert("scrollX", value);
+	QScrollBar* vScrollBar = ui->graphicsView->verticalScrollBar();
+	value = vScrollBar->value();
+	if(value != round(scene->dbToY(22)))
+		prefs.insert("scrollY", value);
 }
 
 void GraphicEQFilterGUI::insertRow(int index, double hz, double db)

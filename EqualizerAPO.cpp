@@ -404,9 +404,13 @@ void EqualizerAPO::APOProcess(UINT32 u32NumInputConnections,
     switch( ppInputConnections[0]->u32BufferFlags )
     {
         case BUFFER_VALID:
+		case BUFFER_SILENT:
         {
             float* inputFrames = reinterpret_cast<float*>(ppInputConnections[0]->pBuffer);
             float* outputFrames = reinterpret_cast<float*>(ppOutputConnections[0]->pBuffer);
+
+			if(ppInputConnections[0]->u32BufferFlags == BUFFER_SILENT)
+				memset(inputFrames, 0, ppInputConnections[0]->u32ValidFrameCount * engine.getInputChannelCount() * sizeof(float));
 
             if(childRT)
             {
@@ -418,14 +422,7 @@ void EqualizerAPO::APOProcess(UINT32 u32NumInputConnections,
                 engine.process(outputFrames, inputFrames, ppInputConnections[0]->u32ValidFrameCount);
 
             ppOutputConnections[0]->u32ValidFrameCount = ppInputConnections[0]->u32ValidFrameCount;
-            ppOutputConnections[0]->u32BufferFlags = ppInputConnections[0]->u32BufferFlags;
-
-            break;
-        }
-        case BUFFER_SILENT:
-        {
-            ppOutputConnections[0]->u32ValidFrameCount = ppInputConnections[0]->u32ValidFrameCount;
-            ppOutputConnections[0]->u32BufferFlags = ppInputConnections[0]->u32BufferFlags;
+			ppOutputConnections[0]->u32BufferFlags = BUFFER_VALID;
 
             break;
         }

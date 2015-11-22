@@ -30,9 +30,12 @@
 #include <QComboBox>
 #include <QAbstractSpinBox>
 #include <QDial>
+#include <QJsonDocument>
+#include <QSettings>
 
 #include "MainWindow.h"
 #include "FilterTableRow.h"
+#include "FilterTableMimeData.h"
 #include "guis/ExpressionFilterGUIFactory.h"
 #include "guis/CommentFilterGUIFactory.h"
 #include "guis/DeviceFilterGUIFactory.h"
@@ -48,6 +51,7 @@
 #include "helpers/StringHelper.h"
 #include "helpers/LogHelper.h"
 #include "helpers/ChannelHelper.h"
+#include "helpers/RegistryHelper.h"
 #include "FilterTable.h"
 
 using namespace std;
@@ -102,7 +106,15 @@ void FilterTable::updateGuis()
 	QElapsedTimer timer;
 	timer.start();
 
-	guis.clear();
+	for(Item* item : items)
+	{
+		if(item->gui != NULL)
+		{
+			item->prefs.clear();
+			item->gui->storePreferences(item->prefs);
+		}
+	}
+
 	delete layout();
 
 	for(QObject* object : children())
@@ -133,7 +145,7 @@ void FilterTable::updateGuis()
 	{
 		QString line = item->text;
 		IFilterGUI* gui = NULL;
-		int pos = line.indexOf(L':');
+		int pos = line.indexOf(':');
 		if(pos != -1)
 		{
 			QString key = line.mid(0, pos);
@@ -164,9 +176,12 @@ void FilterTable::updateGuis()
 		FilterTableRow* rowWidget = new FilterTableRow(this, row + 1, item, gui);
 		gridLayout->addWidget(rowWidget, row, 0);
 
+		item->gui = gui;
+
 		if(gui != NULL)
 		{
-			guis.append(gui);
+			gui->loadPreferences(item->prefs);
+
 			connect(gui, SIGNAL(updateModel()), this, SLOT(updateModel()));
 			connect(gui, SIGNAL(updateChannels()), this, SLOT(updateChannels()));
 		}
@@ -208,9 +223,10 @@ void FilterTable::propagateChannels()
 {
 	vector<wstring> channelNames = ChannelHelper::getChannelNames(selectedDevice->channelCount, selectedChannelMask);
 
-	for(IFilterGUI* gui : guis)
+	for(Item* item : items)
 	{
-		gui->configureChannels(channelNames);
+		if(item->gui != NULL)
+			item->gui->configureChannels(channelNames);
 	}
 }
 
@@ -231,7 +247,50 @@ void FilterTable::setLines(const QString& configPath, const QList<QString>& line
 	items.clear();
 
 	for(QString line : lines)
+	{
 		items.append(new Item(line));
+	}
+
+	QSettings settings(QString::fromWCharArray(EDITOR_PER_FILE_REGPATH), QSettings::NativeFormat);
+	settings.beginGroup(QString(configPath).replace('\\', '|'));
+	QVariant prefsValue = settings.value("rowPrefs");
+	QStringList prefLines;
+	if(prefsValue.isValid())
+		prefLines = prefsValue.toStringList();
+	for(QString prefLine : prefLines)
+	{
+		int index = prefLine.indexOf(':');
+		int lineNumber;
+		if(index != -1)
+			lineNumber = prefLine.left(index).toInt();
+
+		QString prefCommand;
+		QString prefString;
+		if(lineNumber > 0)
+		{
+			int index2 = prefLine.indexOf(':', index + 1);
+			if(index2 != -1)
+			{
+				prefCommand = prefLine.mid(index + 1, index2 - index - 1);
+				prefString = prefLine.mid(index2 + 1);
+
+				if(lineNumber <= items.size())
+				{
+					Item* item = items[lineNumber - 1];
+
+					QString command;
+					int index = item->text.indexOf(':');
+					if(index != -1)
+						command = item->text.left(index).trimmed();
+
+					if(command == prefCommand)
+						item->prefs = QJsonDocument::fromJson(prefString.toUtf8()).toVariant().toMap();
+				}
+			}
+		}
+	}
+	setScrollOffsets(settings.value("scrollX", 0).toInt(), settings.value("scrollY", 0).toInt());
+	settings.endGroup();
 
 	if(!items.isEmpty())
 	{
@@ -319,6 +378,7 @@ void FilterTable::cut()
 void FilterTable::copy()
 {
 	QString text;
+	QList<QVariantMap> prefsList;
 	bool first = true;
 	for(Item* item : items)
 	{
@@ -329,13 +389,15 @@ void FilterTable::copy()
 			else
 				text += "\n";
 			text += item->text;
+			prefsList.append(item->prefs);
 		}
 	}
 
 	if(selected.size() > 0)
 	{
-		QMimeData* mimeData = new QMimeData;
+		FilterTableMimeData* mimeData = new FilterTableMimeData;
 		mimeData->setText(text);
+		mimeData->setPrefsList(prefsList);
 		QClipboard* clipboard = QApplication::clipboard();
 		clipboard->setMimeData(mimeData);
 	}
@@ -359,12 +421,20 @@ void FilterTable::paste()
 
 		QString text = mimeData->text();
 		QStringList textLines = text.split("\n");
+		QList<QVariantMap> prefsList;
+		const FilterTableMimeData* filterTableMimeData = qobject_cast<const FilterTableMimeData*>(mimeData);
+		if(filterTableMimeData != NULL)
+			prefsList = filterTableMimeData->getPrefsList();
+
 		selected.clear();
 		focused = NULL;
 		selectionStart = NULL;
-		for(QString line : textLines)
+		for(int i = 0; i < textLines.size(); i++)
 		{
+			QString line = textLines[i];
 			Item* item = new Item(line);
+			if(!prefsList.isEmpty())
+				item->prefs = prefsList[i];
 			selected.insert(item);
 			items.insert(dropRow++, item);
 			if(focused == NULL)
@@ -468,6 +538,50 @@ void FilterTable::setMinimumHeightHint(int height)
 	updateGeometry();
 }
 
+void FilterTable::savePreferences()
+{
+	if(!configPath.isEmpty())
+	{
+		QStringList prefLines;
+
+		for(int i = 0; i < items.size(); i++)
+		{
+			Item* item = items[i];
+
+			if(item->gui != NULL)
+			{
+				item->prefs.clear();
+				item->gui->storePreferences(item->prefs);
+			}
+
+			if(!item->prefs.isEmpty())
+			{
+				QString command;
+				int index = item->text.indexOf(':');
+				if(index != -1)
+					command = item->text.left(index).trimmed();
+
+				QByteArray byteArray = QJsonDocument::fromVariant(item->prefs).toJson(QJsonDocument::Compact);
+				QString string = QString("%0:%1:%2").arg(i + 1).arg(command).arg(QString::fromUtf8(byteArray));
+				prefLines.append(string);
+			}
+		}
+
+		QSettings settings(QString::fromWCharArray(EDITOR_PER_FILE_REGPATH), QSettings::NativeFormat);
+		settings.beginGroup(QString(configPath).replace('\\', '|'));
+		settings.setValue("rowPrefs", prefLines);
+		settings.setValue("scrollX", scrollArea->horizontalScrollBar()->value());
+		settings.setValue("scrollY", scrollArea->verticalScrollBar()->value());
+		settings.endGroup();
+	}
+}
+
+void FilterTable::setScrollOffsets(int x, int y)
+{
+	presetScrollX = x;
+	presetScrollY = y;
+}
+
 void FilterTable::mousePressEvent(QMouseEvent* event)
 {
 	if(event->buttons() & Qt::LeftButton )
@@ -525,6 +639,7 @@ void FilterTable::mouseMoveEvent(QMouseEvent* event)
 		if((event->pos() - dragStartPos).manhattanLength() >= QApplication::startDragDistance())
 		{
 			QString text;
+			QList<QVariantMap> prefsList;
 			bool first = true;
 			int i = 0;
 			bool dragPosInside = false;
@@ -537,6 +652,9 @@ void FilterTable::mouseMoveEvent(QMouseEvent* event)
 					else
 						text += "\n";
 					text += item->text;
+					if(item->gui != NULL)
+						item->gui->storePreferences(item->prefs);
+					prefsList.append(item->prefs);
 
 					if(!dragPosInside)
 					{
@@ -551,8 +669,9 @@ void FilterTable::mouseMoveEvent(QMouseEvent* event)
 
 			if(selected.size() > 0 && dragPosInside)
 			{
-				QMimeData* mimeData = new QMimeData;
+				FilterTableMimeData* mimeData = new FilterTableMimeData;
 				mimeData->setText(text);
+				mimeData->setPrefsList(prefsList);
 
 				QDrag* drag = new QDrag(this);
 				drag->setMimeData(mimeData);
@@ -628,15 +747,21 @@ void FilterTable::dragLeaveEvent(QDragLeaveEvent* event)
 
 void FilterTable::dropEvent(QDropEvent* event)
 {
-	if(event->mimeData()->hasText())
+	const QMimeData* mimeData = event->mimeData();
+	if(mimeData->hasText())
 	{
 		if(event->keyboardModifiers() & Qt::ControlModifier)
 			event->setDropAction(Qt::CopyAction);
 		else
 			event->setDropAction(Qt::MoveAction);
 
-		QString text = event->mimeData()->text();
+		QString text = mimeData->text();
 		QStringList textLines = text.split("\n");
+		QList<QVariantMap> prefsList;
+		const FilterTableMimeData* filterTableMimeData = qobject_cast<const FilterTableMimeData*>(mimeData);
+		if(filterTableMimeData != NULL)
+			prefsList = filterTableMimeData->getPrefsList();
+
 		int dropRow = rowForPos(event->pos(), true);
 		if(dropRow == -1)
 			dropRow = items.size();
@@ -644,9 +769,12 @@ void FilterTable::dropEvent(QDropEvent* event)
 		selected.clear();
 		focused = NULL;
 		selectionStart = NULL;
-		for(QString line : textLines)
+		for(int i = 0; i < textLines.size(); i++)
 		{
+			QString line = textLines[i];
 			Item* item = new Item(line);
+			if(!prefsList.isEmpty())
+				item->prefs = prefsList[i];
 			selected.insert(item);
 			items.insert(dropRow++, item);
 			if(focused == NULL)
@@ -785,6 +913,21 @@ bool FilterTable::eventFilter(QObject* obj, QEvent* event)
 	}
 
 	return false;
+}
+
+void FilterTable::showEvent(QShowEvent*)
+{
+	if(presetScrollX != -1)
+	{
+		scrollArea->horizontalScrollBar()->setValue(presetScrollX);
+		presetScrollX = -1;
+	}
+
+	if(presetScrollY != -1)
+	{
+		scrollArea->verticalScrollBar()->setValue(presetScrollY);
+		presetScrollY = -1;
+	}
 }
 
 void FilterTable::ensureRowVisible(int row)

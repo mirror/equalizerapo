@@ -48,7 +48,7 @@ void CopyFilterGUIScene::load(const vector<wstring>& channelNames, vector<Assign
 		addItem(inputItem);
 
 		inputChannelMap.insert(c, inputItem);
-		inputChannelMap.insert(QString().setNum(i), inputItem);
+		inputChannelMap.insert(QString().setNum(i + 1), inputItem);
 		lastInputItem = inputItem;
 
 		CopyFilterGUIChannelItem* outputItem = new CopyFilterGUIChannelItem(c, true);
@@ -56,7 +56,7 @@ void CopyFilterGUIScene::load(const vector<wstring>& channelNames, vector<Assign
 		addItem(outputItem);
 
 		outputChannelMap.insert(c, outputItem);
-		outputChannelMap.insert(QString().setNum(i), outputItem);
+		outputChannelMap.insert(QString().setNum(i + 1), outputItem);
 		lastOutputItem = outputItem;
 	}
 
@@ -212,6 +212,8 @@ void CopyFilterGUIScene::keyPressEvent(QKeyEvent* event)
 		emit updateModel();
 		emit updateChannels();
 	}
-
-	QGraphicsScene::keyPressEvent(event);
+	else
+	{
+		QGraphicsScene::keyPressEvent(event);
+	}
 }

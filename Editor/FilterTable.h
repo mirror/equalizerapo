@@ -26,6 +26,7 @@
 #include <QGridLayout>
 #include <QScrollArea>
 #include <QMenu>
+#include <QJsonObject>
 
 #include "Editor/helpers/DisableWheelFilter.h"
 #include "DeviceAPOInfo.h"
@@ -49,6 +50,8 @@ public:
 		}
 
 		QString text;
+		QVariantMap prefs;
+		IFilterGUI* gui = NULL;
 	};
 
 	explicit FilterTable(MainWindow* mainWindow, QWidget *parent = 0);
@@ -85,6 +88,9 @@ public:
 	QSize minimumSizeHint() const override;
 	void setMinimumHeightHint(int height);
 
+	void savePreferences();
+	void setScrollOffsets(int x, int y);
+
 signals:
 	void linesChanged();
 
@@ -103,6 +109,7 @@ protected:
 	void keyPressEvent(QKeyEvent* event) override;
 	void wheelEvent(QWheelEvent* event) override;
 	bool eventFilter(QObject* obj, QEvent* event) override;
+	void showEvent(QShowEvent*) override;
 
 private:
 	void ensureRowVisible(int row);
@@ -121,7 +128,6 @@ private:
 	Item* focused = NULL;
 	Item* selectionStart = NULL;
 	QList<IFilterGUIFactory*> factories;
-	QList<IFilterGUI*> guis;
 	bool scrollingNow = false;
 	QPoint scrollStartPoint;
 	QList<DeviceAPOInfo> outputDevices;
@@ -130,6 +136,8 @@ private:
 	int selectedChannelMask;
 	QString configPath;
 	int minimumHeightHint = 0;
+	int presetScrollX = -1;
+	int presetScrollY = -1;
 };
 
 template<typename T> inline uint qHash(QList<T> list)

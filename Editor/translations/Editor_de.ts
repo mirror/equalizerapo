@@ -381,12 +381,12 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
         <translation>Graph</translation>
     </message>
     <message>
-        <location filename="../guis/CopyFilterGUI.ui" line="107"/>
+        <location filename="../guis/CopyFilterGUI.ui" line="110"/>
         <source>Assignments</source>
         <translation>Zuweisungen</translation>
     </message>
     <message>
-        <location filename="../guis/CopyFilterGUI.ui" line="152"/>
+        <location filename="../guis/CopyFilterGUI.ui" line="161"/>
         <source>Selected channels:</source>
         <translation>Gewählte Kanäle:</translation>
     </message>
@@ -402,12 +402,12 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
         <translation type="vanished">Steuerung</translation>
     </message>
     <message>
-        <location filename="../guis/CopyFilterGUIFactory.cpp" line="32"/>
+        <location filename="../guis/CopyFilterGUIFactory.cpp" line="37"/>
         <source>Copy (Copy between channels)</source>
         <translation>Copy (Kopieren zwischen Kanälen)</translation>
     </message>
     <message>
-        <location filename="../guis/CopyFilterGUIFactory.cpp" line="32"/>
+        <location filename="../guis/CopyFilterGUIFactory.cpp" line="37"/>
         <source>Basic filters</source>
         <translation>Einfache Filter</translation>
     </message>
@@ -647,7 +647,7 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
 <context>
     <name>FilterTable</name>
     <message>
-        <location filename="../FilterTable.cpp" line="189"/>
+        <location filename="../FilterTable.cpp" line="203"/>
         <source>Add filter</source>
         <translation>Filter hinzufügen</translation>
     </message>
@@ -659,17 +659,17 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
         <translation type="obsolete">99</translation>
     </message>
     <message>
-        <location filename="../FilterTableRow.ui" line="147"/>
+        <location filename="../FilterTableRow.ui" line="153"/>
         <source>Add</source>
         <translation>Hinzufügen</translation>
     </message>
     <message>
-        <location filename="../FilterTableRow.ui" line="156"/>
+        <location filename="../FilterTableRow.ui" line="162"/>
         <source>Remove</source>
         <translation>Entfernen</translation>
     </message>
     <message>
-        <location filename="../FilterTableRow.ui" line="168"/>
+        <location filename="../FilterTableRow.ui" line="174"/>
         <source>Edit text</source>
         <translation>Text bearbeiten</translation>
     </message>
@@ -715,79 +715,83 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
 <context>
     <name>GraphicEQFilterGUI</name>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="44"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="46"/>
         <source>Graphic EQ:</source>
         <translation>Grafischer EQ:</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="122"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="189"/>
         <source>Freq.</source>
         <translation>Freq.</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="127"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="194"/>
         <source>Gain</source>
         <translation>Verst.</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="160"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="53"/>
         <source>15-band</source>
         <translation>15-Band</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="167"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="60"/>
         <source>31-band</source>
         <translation>31-Band</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="174"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="67"/>
         <source>variable</source>
         <translation>variabel</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="190"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="218"/>
         <source>Import</source>
         <translation>Importieren</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="199"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="227"/>
         <source>Export</source>
         <translation>Exportieren</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="208"/>
-        <source>Mirror response</source>
-        <translation>Frequenzgang spiegeln</translation>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="236"/>
+        <source>Invert response</source>
+        <translation>Frequenzgang invertieren</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="217"/>
+        <source>Mirror response</source>
+        <translation type="vanished">Frequenzgang spiegeln</translation>
+    </message>
+    <message>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="245"/>
         <source>Normalize response</source>
         <translation>Frequenzgang normalisieren</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="226"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="254"/>
         <source>Reset response</source>
         <translation>Frequenzgang zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="248"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="295"/>
         <source>Import frequency response</source>
         <translation>Frequenzgang importieren</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="251"/>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="320"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="298"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="365"/>
         <source>Frequency response (*.csv)</source>
         <translation>Frequenzgang (*.csv)</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="252"/>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="321"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="299"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="366"/>
         <source>All files (*.*)</source>
         <translation>Alle Dateien (*.*)</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="316"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="361"/>
         <source>Export frequency response</source>
         <translation>Frequenzgang exportieren</translation>
     </message>
@@ -795,24 +799,24 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
 <context>
     <name>GraphicEQFilterGUIFactory</name>
     <message>
-        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="32"/>
+        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="37"/>
         <source>15-band graphic equalizer</source>
         <translation>Grafischer Equalizer mit 15 Bändern</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="32"/>
-        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="33"/>
-        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="34"/>
+        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="37"/>
+        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="38"/>
+        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="39"/>
         <source>Graphic equalizers</source>
         <translation>Grafische Equalizer</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="33"/>
+        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="38"/>
         <source>31-band graphic equalizer</source>
         <translation>Grafischer Equalizer mit 31 Bändern</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="34"/>
+        <location filename="../guis/GraphicEQFilterGUIFactory.cpp" line="39"/>
         <source>Graphic equalizer with variable bands</source>
         <translation>Grafischer Equalizer mit variablen Bändern</translation>
     </message>
@@ -874,120 +878,207 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
         <translation>Datei</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="67"/>
+        <location filename="../MainWindow.ui" line="68"/>
         <source>Edit</source>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="95"/>
+        <location filename="../MainWindow.ui" line="77"/>
+        <source>View</source>
+        <translation>Ansicht</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="84"/>
+        <location filename="../MainWindow.ui" line="146"/>
+        <source>Settings</source>
+        <translation>Einstellungen</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="88"/>
+        <source>Language</source>
+        <translation>Sprache</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="104"/>
+        <location filename="../MainWindow.ui" line="674"/>
+        <source>Toolbar</source>
+        <translation>Werkzeugleiste</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="118"/>
+        <location filename="../MainWindow.ui" line="682"/>
+        <source>Analysis panel</source>
+        <translation>Analysepanel</translation>
+    </message>
+    <message>
+        <source>FFT resolution:</source>
+        <translation type="vanished">FFT-Auflösung:</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="161"/>
+        <source>Resolution:</source>
+        <translation>Auflösung:</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="168"/>
+        <source>Channel:</source>
+        <translation>Kanal:</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="197"/>
+        <source>Start from:</source>
+        <translation>Beginne bei:</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="210"/>
+        <source>Current file</source>
+        <translation>Aktuelle Datei</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="221"/>
+        <source>Estimated properties</source>
+        <translation>Geschätzte Eigenschaften</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="237"/>
+        <source>CPU usage:</source>
+        <translation>CPU-Last:</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="244"/>
+        <source>Init. time:</source>
+        <translation>Init.-Zeit:</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="410"/>
+        <source>Latency: </source>
+        <translation>Latenz:</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="417"/>
+        <source>Peak gain:</source>
+        <translation>Maximum:</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="568"/>
         <source>New</source>
         <translation>Neu</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="98"/>
+        <location filename="../MainWindow.ui" line="571"/>
         <source>Ctrl+N</source>
         <translation>Ctrl+N</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="107"/>
-        <location filename="../MainWindow.ui" line="110"/>
+        <location filename="../MainWindow.ui" line="580"/>
+        <location filename="../MainWindow.ui" line="583"/>
         <source>Open</source>
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="113"/>
+        <location filename="../MainWindow.ui" line="586"/>
         <source>Ctrl+O</source>
         <translation>Ctrl+O</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="122"/>
-        <location filename="../MainWindow.ui" line="125"/>
+        <location filename="../MainWindow.ui" line="595"/>
+        <location filename="../MainWindow.ui" line="598"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="128"/>
+        <location filename="../MainWindow.ui" line="601"/>
         <source>Ctrl+S</source>
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="137"/>
-        <location filename="../MainWindow.ui" line="140"/>
+        <location filename="../MainWindow.ui" line="610"/>
+        <location filename="../MainWindow.ui" line="613"/>
         <source>Save as...</source>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="145"/>
+        <location filename="../MainWindow.ui" line="618"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="148"/>
+        <location filename="../MainWindow.ui" line="621"/>
         <source>Alt+F4</source>
         <translation>Alt+F4</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="157"/>
+        <location filename="../MainWindow.ui" line="630"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="160"/>
+        <location filename="../MainWindow.ui" line="633"/>
         <source>Ctrl+X</source>
         <translation>Ctrl+X</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="169"/>
+        <location filename="../MainWindow.ui" line="642"/>
         <source>Copy</source>
         <translation>Kopieren</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="172"/>
+        <location filename="../MainWindow.ui" line="645"/>
         <source>Ctrl+C</source>
         <translation>Ctrl+C</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="181"/>
+        <location filename="../MainWindow.ui" line="654"/>
         <source>Paste</source>
         <translation>Einfügen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="184"/>
+        <location filename="../MainWindow.ui" line="657"/>
         <source>Ctrl+V</source>
         <translation>Ctrl+V</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="193"/>
+        <location filename="../MainWindow.ui" line="666"/>
         <source>Delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="69"/>
+        <location filename="../MainWindow.ui" line="687"/>
+        <source>Reset all global preferences</source>
+        <translation>Alle globalen Einstellungen zurücksetzen</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="692"/>
+        <source>Reset all file-specific preferences</source>
+        <translation>Alle dateispezifischen Einstellungen zurücksetzen</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="73"/>
         <source>Equalizer APO %0 Configuration Editor</source>
         <translation>Equalizer APO %0 Konfigurationseditor</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="75"/>
+        <location filename="../MainWindow.cpp" line="79"/>
         <source>Instant mode</source>
         <translation>Sofort-Modus</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="77"/>
+        <location filename="../MainWindow.cpp" line="81"/>
         <source>Changes are saved immediately</source>
         <translation>Änderungen werden sofort gespeichert</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="85"/>
+        <location filename="../MainWindow.cpp" line="89"/>
         <source>Device: </source>
         <translation>Gerät: </translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="95"/>
+        <location filename="../MainWindow.cpp" line="99"/>
         <source>Channel configuration: </source>
         <translation>Kanalkonfiguration: </translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="103"/>
+        <location filename="../MainWindow.cpp" line="107"/>
         <source>Default</source>
         <translation>Standard</translation>
     </message>
@@ -1000,17 +1091,17 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
         <translation type="vanished">Eingabegeräte:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="105"/>
+        <location filename="../MainWindow.cpp" line="109"/>
         <source>Playback devices:</source>
         <translation>Wiedergabegeräte:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="116"/>
+        <location filename="../MainWindow.cpp" line="120"/>
         <source>Capture devices:</source>
         <translation>Aufnahmegeräte:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="137"/>
+        <location filename="../MainWindow.cpp" line="177"/>
         <source>Registry problem</source>
         <translation>Registry-Problem</translation>
     </message>
@@ -1019,31 +1110,31 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
         <translation type="vanished">Ein Registrywert, der für den Betrieb von Equalizer APO erforderlich ist, ist nicht korrekt gesetzt. Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="137"/>
+        <location filename="../MainWindow.cpp" line="177"/>
         <source>A registry value that is required for the operation of Equalizer APO is not set correctly.
 Do you want to run the Configurator application to fix the problem?</source>
         <translation>Ein Registrywert, der für den Betrieb von Equalizer APO erforderlich ist, ist nicht korrekt gesetzt.
 Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="146"/>
+        <location filename="../MainWindow.cpp" line="186"/>
         <source>APO not installed to device</source>
         <translation>APO nicht für das Gerät installiert</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="146"/>
+        <location filename="../MainWindow.cpp" line="186"/>
         <source>Equalizer APO has not been installed to the selected device.
 Do you want to run the Configurator application to fix the problem?</source>
         <translation>Equalizer APO wurde nicht für das gewählte Gerät installiert.
 Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="177"/>
+        <location filename="../MainWindow.cpp" line="217"/>
         <source>Audio enhancements disabled</source>
         <translation>Signalverbesserungen deaktiviert</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="177"/>
+        <location filename="../MainWindow.cpp" line="217"/>
         <source>Audio enhancements are not enabled for the device
 %0 %1.
 Do you want to run the Configurator application to fix the problem?</source>
@@ -1052,66 +1143,113 @@ Do you want to run the Configurator application to fix the problem?</source>
 Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="211"/>
-        <location filename="../MainWindow.cpp" line="287"/>
-        <location filename="../MainWindow.cpp" line="301"/>
+        <location filename="../MainWindow.cpp" line="262"/>
+        <location filename="../MainWindow.cpp" line="344"/>
+        <location filename="../MainWindow.cpp" line="358"/>
         <source>Error</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="211"/>
+        <location filename="../MainWindow.cpp" line="262"/>
         <source>Error while reading configuration file: %0</source>
         <translation>Fehler beim Lesen der Konfigurationsdatei: %0</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="287"/>
+        <location filename="../MainWindow.cpp" line="344"/>
         <source>Error while writing configuration file: %0</source>
         <translation>Fehler beim Schreiben der Konfigurationsdatei: %0</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="301"/>
+        <location filename="../MainWindow.cpp" line="358"/>
         <source>Only %0/%1 bytes have been written!</source>
         <translation>Nur %0/%1 Bytes wurden geschrieben!</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="346"/>
-        <location filename="../MainWindow.cpp" line="348"/>
+        <location filename="../MainWindow.cpp" line="426"/>
+        <location filename="../MainWindow.cpp" line="428"/>
         <source>From device</source>
         <translation>Von Gerät</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="426"/>
+        <location filename="../MainWindow.cpp" line="705"/>
+        <source>%0 dB</source>
+        <translation>%0 dB</translation>
+    </message>
+    <message>
+        <source>%0 ms (%1 samp.)</source>
+        <translation type="vanished">%0 ms (%1 Samp.)</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="708"/>
+        <source>%0 ms (%1 s.)</source>
+        <translation>%0 ms (%1 S.)</translation>
+    </message>
+    <message>
+        <source>%0 ms (%1 samples)</source>
+        <translation type="vanished">%0 ms (%1 Samples)</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="710"/>
+        <source>%0 ms</source>
+        <translation>%0 ms</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="713"/>
+        <source>%0 % (one core)</source>
+        <translation>%0 % (ein Kern)</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="751"/>
+        <location filename="../MainWindow.cpp" line="778"/>
+        <location filename="../MainWindow.cpp" line="797"/>
+        <source>Restart required</source>
+        <translation>Neustart erforderlich</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="751"/>
+        <location filename="../MainWindow.cpp" line="778"/>
+        <location filename="../MainWindow.cpp" line="797"/>
+        <source>Configuration Editor will be restarted to apply the changed settings. Proceed?</source>
+        <translation>Konfigurationseditor wird neugestartet, um die geänderten Einstellungen zu übernehmen. Fortsetzen?</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="856"/>
         <source>Unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="427"/>
+        <location filename="../MainWindow.cpp" line="857"/>
         <source>The configuration file %0 has unsaved changes.</source>
         <translation>Die Konfigurationsdatei %0 hat ungespeicherte Änderungen.</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="428"/>
+        <location filename="../MainWindow.cpp" line="858"/>
         <source>Do you want to save the changes before closing the file?</source>
         <translation>Möchten Sie die Änderungen speichern, bevor die Datei geschlossen wird?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="471"/>
+        <location filename="../MainWindow.cpp" line="529"/>
         <source>Open file</source>
         <translation>Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="473"/>
-        <location filename="../MainWindow.cpp" line="526"/>
+        <location filename="../MainWindow.cpp" line="154"/>
+        <source>Automatic (%0)</source>
+        <translation>Automatisch (%0)</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="531"/>
+        <location filename="../MainWindow.cpp" line="584"/>
         <source>E-APO configurations (*.txt)</source>
         <translation>E-APO-Konfigurationen (*.txt)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="523"/>
+        <location filename="../MainWindow.cpp" line="581"/>
         <source>Save file as</source>
         <translation>Datei speichern unter</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="545"/>
+        <location filename="../MainWindow.cpp" line="603"/>
         <source>Unsaved</source>
         <translation>Ungespeichert</translation>
     </message>

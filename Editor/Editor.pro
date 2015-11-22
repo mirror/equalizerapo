@@ -111,7 +111,8 @@ SOURCES += main.cpp\
 	../parser/RegistryFunctions.cpp \
 	../parser/StringOperators.cpp \
 	AnalysisThread.cpp \
-    widgets/ExponentialSpinBox.cpp
+    widgets/ExponentialSpinBox.cpp \
+    FilterTableMimeData.cpp
 
 HEADERS  += \
 	../helpers/LogHelper.h \
@@ -211,7 +212,8 @@ HEADERS  += \
 	../parser/RegistryFunctions.h \
 	../parser/StringOperators.h \
 	AnalysisThread.h \
-    widgets/ExponentialSpinBox.h
+    widgets/ExponentialSpinBox.h \
+    FilterTableMimeData.h
 
 FORMS    += \
 	guis/PreampFilterGUI.ui \

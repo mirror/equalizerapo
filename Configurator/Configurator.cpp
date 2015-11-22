@@ -61,7 +61,7 @@ void Configurator::onInitDialog(HWND hDlg)
 
 	expandTroubleShooting(false);
 
-	wchar_t stringBuf[255];
+	wchar_t stringBuf[512];
 
 	TCITEM tci;
 	tci.pszText = stringBuf;
@@ -206,10 +206,13 @@ void Configurator::onInitDialog(HWND hDlg)
 		ListView_SetColumnWidth(deviceList, 2, LVSCW_AUTOSIZE);
 	}
 
-	if (!DeviceAPOInfo::checkProtectedAudioDG(true))
+	bool fixedAudioDG = !DeviceAPOInfo::checkProtectedAudioDG(true);
+	bool fixedRegistration = !DeviceAPOInfo::checkAPORegistration(true);
+	if (fixedAudioDG || fixedRegistration)
 	{
 		LoadStringW(hInstance, IDS_REGISTRY_VALUE_FIXED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 		MessageBoxW(hDlg, stringBuf, L"Info", MB_ICONINFORMATION | MB_OK);
+		askForReboot = true;
 	}
 }
 
@@ -377,7 +380,8 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 			LoadStringW(hInstance, IDS_AFTERINSTALL, stringBuf, sizeof(stringBuf)/sizeof(wchar_t));
 			MessageBoxW(hDlg, stringBuf, L"Info", MB_ICONINFORMATION | MB_OK);
 		}
-		else if(sourceId == IDOK && RegistryHelper::isWindowsVersionAtLeast(6, 3)) // Windows 8.1
+		else if(sourceId == IDOK && RegistryHelper::isWindowsVersionAtLeast(6, 3) // Windows 8.1
+			|| askForReboot)
 		{
 			wchar_t captionBuf[255];
 			LoadStringW(hInstance, IDS_SHOULD_REBOOT_CAPTION, captionBuf, sizeof(captionBuf)/sizeof(wchar_t));

@@ -1,6 +1,6 @@
 /*
 	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2014  Jonas Thedering
+	Copyright (C) 2015  Jonas Thedering
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -17,32 +17,19 @@
 	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
+#include "FilterTableMimeData.h"
 
-#include "Editor/IFilterGUI.h"
-
-namespace Ui
+FilterTableMimeData::FilterTableMimeData()
 {
-class CommentFilterGUI;
+
 }
 
-class CommentFilterGUI : public IFilterGUI
+QList<QVariantMap> FilterTableMimeData::getPrefsList() const
 {
-	Q_OBJECT
+	return prefsList;
+}
 
-public:
-	explicit CommentFilterGUI(IFilterGUI* child, bool isComment);
-	~CommentFilterGUI();
-	void configureChannels(std::vector<std::wstring>& channelNames) override;
-	void store(QString& command, QString& parameters) override;
-
-	void loadPreferences(const QVariantMap& prefs) override;
-	void storePreferences(QVariantMap& prefs) override;
-
-private slots:
-	void on_actionPowerOn_toggled(bool checked);
-
-private:
-	Ui::CommentFilterGUI* ui;
-	IFilterGUI* child;
-};
+void FilterTableMimeData::setPrefsList(const QList<QVariantMap>& value)
+{
+	prefsList = value;
+}

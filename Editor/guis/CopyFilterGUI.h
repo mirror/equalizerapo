@@ -40,6 +40,9 @@ public:
 
 	void store(QString& command, QString& parameters) override;
 
+	void loadPreferences(const QVariantMap& prefs) override;
+	void storePreferences(QVariantMap& prefs) override;
+
 private:
 	Ui::CopyFilterGUI *ui;
 	CopyFilterGUIScene* scene;

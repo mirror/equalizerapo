@@ -168,6 +168,12 @@ void FrequencyPlotView::zoom(int deltaX, int deltaY, int mouseX, int mouseY)
 		vRuler->update();
 }
 
+void FrequencyPlotView::setScrollOffsets(int x, int y)
+{
+	presetScrollX = x;
+	presetScrollY = y;
+}
+
 void FrequencyPlotView::wheelEvent(QWheelEvent* event)
 {
 	int delta = event->angleDelta().y();
@@ -224,5 +230,15 @@ void FrequencyPlotView::showEvent(QShowEvent* event)
 {
 	QGraphicsView::showEvent(event);
 
-	horizontalScrollBar()->setValue(scene()->hzToX(20));
+	if(presetScrollX != -1)
+	{
+		horizontalScrollBar()->setValue(presetScrollX);
+		presetScrollX = -1;
+	}
+
+	if(presetScrollY != -1)
+	{
+		verticalScrollBar()->setValue(presetScrollY);
+		presetScrollY = -1;
+	}
 }

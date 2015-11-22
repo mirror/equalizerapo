@@ -20,6 +20,7 @@
 #include "stdafx.h"
 #include <mmdeviceapi.h>
 #include <mmreg.h>
+#include <shellapi.h>
 
 #include "DeviceAPOInfo.h"
 
@@ -30,6 +31,8 @@ using namespace std;
 
 #define protectedDGKeyPath L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Audio"
 #define protectedDGValueName L"DisableProtectedAudioDG"
+#define apoRegistrationKeyPath L"HKEY_CLASSES_ROOT\\AudioEngine\\AudioProcessingObjects"
+#define clsidKeyPath L"HKEY_CLASSES_ROOT\\CLSID"
 #define commonKeyPath L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\MMDevices\\Audio"
 #define renderKeyPath commonKeyPath L"\\Render"
 #define captureKeyPath commonKeyPath L"\\Capture"
@@ -129,6 +132,32 @@ bool DeviceAPOInfo::checkProtectedAudioDG(bool fix)
 
 		if (fix)
 			RegistryHelper::writeDWORDValue(protectedDGKeyPath, protectedDGValueName, 1);
+	}
+
+	return result;
+}
+
+bool DeviceAPOInfo::checkAPORegistration(bool fix)
+{
+	bool result = true;
+
+	if (!RegistryHelper::keyExists(apoRegistrationKeyPath L"\\" + RegistryHelper::getGuidString(EQUALIZERAPO_PRE_MIX_GUID))
+			|| !RegistryHelper::keyExists(apoRegistrationKeyPath L"\\" + RegistryHelper::getGuidString(EQUALIZERAPO_POST_MIX_GUID))
+			|| !RegistryHelper::keyExists(clsidKeyPath L"\\" + RegistryHelper::getGuidString(EQUALIZERAPO_PRE_MIX_GUID))
+			|| !RegistryHelper::keyExists(clsidKeyPath L"\\" + RegistryHelper::getGuidString(EQUALIZERAPO_POST_MIX_GUID)))
+	{
+		result = false;
+
+		if (fix)
+		{
+			wchar_t path[MAX_PATH];
+			if(GetModuleFileNameW(NULL, path, MAX_PATH) != 0)
+			{
+				PathRemoveFileSpecW(path);
+				wstring params = wstring(L"/s \"") + path + L"\\EqualizerAPO.dll\"";
+				ShellExecuteW(NULL, L"open", L"regsvr32.exe", params.c_str(), NULL, SW_SHOWNORMAL);
+			}
+		}
 	}
 
 	return result;

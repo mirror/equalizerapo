@@ -30,6 +30,10 @@
 #include "DeviceAPOInfo.h"
 #include "Editor/AnalysisPlotScene.h"
 #include "Editor/AnalysisThread.h"
+#include "helpers/RegistryHelper.h"
+
+#define EDITOR_REGPATH USER_REGPATH L"\\Configuration Editor"
+#define EDITOR_PER_FILE_REGPATH EDITOR_REGPATH L"\\file-specific"
 
 namespace Ui {
 class MainWindow;
@@ -43,8 +47,11 @@ public:
 	explicit MainWindow(QDir configDir, QWidget *parent = 0);
 	~MainWindow();
 	void doChecks();
+	void runConfigurator();
 	void load(QString path);
 	void save(FilterTable* filterTable, QString path);
+	bool isEmpty();
+	bool shouldRestart();
 
 protected:
 	void closeEvent(QCloseEvent* event) override;
@@ -59,6 +66,7 @@ private slots:
 	void on_actionSave_triggered();
 	void on_actionSaveAs_triggered();
 	void on_actionNew_triggered();
+	void recentFileSelected();
 
 	void on_actionCut_triggered();
 	void on_actionDelete_triggered();
@@ -77,10 +85,18 @@ private slots:
 	void on_actionToolbar_triggered(bool checked);
 	void on_actionAnalysisPanel_triggered(bool checked);
 
+	void languageSelected(bool selected);
+	void on_actionResetAllGlobalPreferences_triggered();
+	void on_actionResetAllFileSpecificPreferences_triggered();
+
 private:
 	FilterTable* addTab(QString title, QString tooltip);
 	void getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* channelMask);
+	bool askForClose(int tabIndex);
 	void startAnalysis();
+	void loadPreferences();
+	void savePreferences();
+	void updateRecentFiles();
 
 	Ui::MainWindow *ui;
 
@@ -93,6 +109,10 @@ private:
 	DeviceAPOInfo* defaultOutputDevice;
 	AnalysisPlotScene* analysisPlotScene;
 	AnalysisThread* analysisThread;
+	bool restart = false;
+	bool noSavePreferences = false;
+	bool noSaveFilePreferences = false;
+	QStringList recentFiles;
 };
 
 Q_DECLARE_METATYPE(DeviceAPOInfo*)

@@ -30,9 +30,11 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QProcess>
+#include <QSettings>
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#include <shellapi.h>
 
 #include "helpers/StringHelper.h"
 #include "helpers/LogHelper.h"
@@ -132,6 +134,33 @@ MainWindow::MainWindow(QDir configDir, QWidget *parent) :
 	analysisThread = new AnalysisThread;
 	analysisThread->start();
 	connect(analysisThread, SIGNAL(analysisFinished()), this, SLOT(updateAnalysisPanel()));
+
+	QLocale autoLocale = QLocale::system();
+	if(autoLocale.language() != QLocale::German)
+		autoLocale = QLocale("en");
+	QLocale::Language languages[] = {QLocale::AnyLanguage, QLocale::English, QLocale::German};
+	for(int i = 0; i < sizeof(languages) / sizeof(QLocale::Language); i++)
+	{
+		QLocale::Language language = languages[i];
+		QString languageName;
+		if(language == QLocale::AnyLanguage)
+			languageName = autoLocale.nativeLanguageName();
+		else
+			languageName = QLocale(language).nativeLanguageName();
+		if(languageName == "American English")
+			languageName = "English";
+		QString text;
+		if(language == QLocale::AnyLanguage)
+			text = tr("Automatic (%0)").arg(languageName);
+		else
+			text = languageName;
+		QAction* action = ui->menuLanguage->addAction(text);
+		action->setData(language);
+		action->setCheckable(true);
+		connect(action, SIGNAL(triggered(bool)), this, SLOT(languageSelected(bool)));
+	}
+
+	loadPreferences();
 }
 
 MainWindow::~MainWindow()
@@ -143,11 +172,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::doChecks()
 {
-	if(!DeviceAPOInfo::checkProtectedAudioDG(false))
+	if(!DeviceAPOInfo::checkProtectedAudioDG(false) || !DeviceAPOInfo::checkAPORegistration(false))
 	{
 		if(QMessageBox::warning(this, tr("Registry problem"), tr("A registry value that is required for the operation of Equalizer APO is not set correctly.\nDo you want to run the Configurator application to fix the problem?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 		{
-			QProcess::startDetached(QCoreApplication::applicationDirPath() + "/Configurator.exe", QStringList());
+			runConfigurator();
 			return;
 		}
 	}
@@ -156,7 +185,7 @@ void MainWindow::doChecks()
 	{
 		if(QMessageBox::warning(this, tr("APO not installed to device"), tr("Equalizer APO has not been installed to the selected device.\nDo you want to run the Configurator application to fix the problem?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 		{
-			QProcess::startDetached(QCoreApplication::applicationDirPath() + "/Configurator.exe", QStringList());
+			runConfigurator();
 			return;
 		}
 	}
@@ -187,14 +216,25 @@ void MainWindow::doChecks()
 	{
 		if(QMessageBox::warning(this, tr("Audio enhancements disabled"), tr("Audio enhancements are not enabled for the device\n%0 %1.\nDo you want to run the Configurator application to fix the problem?").arg(QString::fromStdWString(disabledApoInfo->connectionName)).arg(QString::fromStdWString(disabledApoInfo->deviceName)), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 		{
-			QProcess::startDetached(QCoreApplication::applicationDirPath() + "/Configurator.exe", QStringList());
+			runConfigurator();
 			return;
 		}
 	}
 }
 
+void MainWindow::runConfigurator()
+{
+	// cannot use QProcess::startDetached because of UAC
+	wstring file = (QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/Configurator.exe")).toStdWString();
+	int result = (int)ShellExecuteW(NULL, L"open", file.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	if(result == SE_ERR_ACCESSDENIED)
+		ShellExecuteW(NULL, L"runas", file.c_str(), NULL, NULL, SW_SHOWNORMAL);
+}
+
 void MainWindow::load(QString path)
 {
+	path = QDir::toNativeSeparators(path);
+
 	for(int i = 0; i < ui->tabWidget->count(); i++)
 	{
 		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(i));
@@ -266,6 +306,12 @@ void MainWindow::load(QString path)
 	qDebug("Loading took %.1f ms", timer.nsecsElapsed() / 1e6);
 
 	ui->tabWidget->setCurrentIndex(ui->tabWidget->count() - 1);
+
+	recentFiles.removeAll(path);
+	recentFiles.prepend(path);
+	if(recentFiles.size() > 10)
+		recentFiles.removeLast();
+	updateRecentFiles();
 }
 
 void MainWindow::save(FilterTable* filterTable, QString path)
@@ -319,17 +365,38 @@ void MainWindow::save(FilterTable* filterTable, QString path)
 	startAnalysis();
 }
 
+bool MainWindow::isEmpty()
+{
+	return ui->tabWidget->count() == 0;
+}
+
+bool MainWindow::shouldRestart()
+{
+	return restart;
+}
+
 void MainWindow::closeEvent(QCloseEvent* event)
 {
-	while(ui->tabWidget->count() > 0)
+	bool canceled = false;
+	for(int i = 0; i < ui->tabWidget->count(); i++)
 	{
-		ui->tabWidget->setCurrentIndex(0);
-
-		if(!on_tabWidget_tabCloseRequested(0))
+		if(!askForClose(i))
 		{
-			event->ignore();
+			canceled = true;
 			break;
 		}
+	}
+
+	if(canceled)
+	{
+		event->ignore();
+		restart = false;
+		noSavePreferences = false;
+		noSaveFilePreferences = false;
+	}
+	else
+	{
+		savePreferences();
 	}
 }
 
@@ -438,37 +505,8 @@ void MainWindow::linesChanged()
 
 bool MainWindow::on_tabWidget_tabCloseRequested(int index)
 {
-	if(ui->tabWidget->tabText(index).endsWith('*'))
-	{
-		ui->tabWidget->setCurrentIndex(index);
-		QString configPath = ui->tabWidget->tabToolTip(index);
-		QMessageBox messageBox;
-		messageBox.setWindowTitle(tr("Unsaved changes"));
-		messageBox.setText(tr("The configuration file %0 has unsaved changes.").arg(configPath));
-		messageBox.setInformativeText(tr("Do you want to save the changes before closing the file?"));
-		messageBox.setIcon(QMessageBox::Question);
-		messageBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-		messageBox.setDefaultButton(QMessageBox::Save);
-		messageBox.setEscapeButton(QMessageBox::Cancel);
-		messageBox.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
-		int result = messageBox.exec();
-
-		switch(result)
-		{
-		case QMessageBox::Save:
-			ui->actionSave->trigger();
-			if(ui->tabWidget->tabText(index).endsWith('*'))
-				// saving was canceled
-				return false;
-			break;
-		case QMessageBox::Discard:
-			break;
-		case QMessageBox::Cancel:
-			return false;
-		}
-	}
-
-	ui->tabWidget->removeTab(index);
+	if(askForClose(index))
+		ui->tabWidget->removeTab(index);
 	return true;
 }
 
@@ -552,7 +590,7 @@ void MainWindow::on_actionSaveAs_triggered()
 	{
 		QString savePath = dialog.selectedFiles().first();
 		save(filterTable, savePath);
-		filterTable->setConfigPath(savePath);
+		filterTable->setConfigPath(QDir::toNativeSeparators(savePath));
 
 		QFileInfo fileInfo(savePath);
 		ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), fileInfo.fileName());
@@ -567,6 +605,12 @@ void MainWindow::on_actionNew_triggered()
 
 	connect(filterTable, SIGNAL(linesChanged()), this, SLOT(linesChanged()));
 	ui->tabWidget->setCurrentIndex(ui->tabWidget->count() - 1);
+}
+
+void MainWindow::recentFileSelected()
+{
+	QAction* action = qobject_cast<QAction*>(sender());
+	load(action->text());
 }
 
 void MainWindow::on_actionCut_triggered()
@@ -661,7 +705,7 @@ void MainWindow::updateAnalysisPanel()
 	ui->peakGainValueLabel->setText(tr("%0 dB").arg(peakGain, 0, 'f', 1));
 	ui->peakGainValueLabel->setForegroundRole(peakGain > 0 ? QPalette::Dark : QPalette::WindowText);
 
-	ui->latencyValueLabel->setText(tr("%0 ms (%1 samples)").arg(latency * 1000.0 / sampleRate).arg(latency));
+	ui->latencyValueLabel->setText(tr("%0 ms (%1 s.)").arg(latency * 1000.0 / sampleRate, 0, 'f', 1).arg(latency));
 
 	ui->initTimeValueLabel->setText(tr("%0 ms").arg(analysisThread->getInitializationTime(), 0, 'f', 1));
 
@@ -690,6 +734,78 @@ void MainWindow::on_actionToolbar_triggered(bool checked)
 void MainWindow::on_actionAnalysisPanel_triggered(bool checked)
 {
 	ui->analysisDockWidget->setVisible(checked);
+}
+
+void MainWindow::languageSelected(bool selected)
+{
+	QAction* action = qobject_cast<QAction*>(sender());
+
+	if(!selected)
+	{
+		action->setChecked(true);
+		return;
+	}
+
+	QLocale::Language language = (QLocale::Language)action->data().toInt();
+
+	if(QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
+	{
+		QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
+		if(language == QLocale::AnyLanguage)
+		{
+			settings.remove("language");
+		}
+		else
+		{
+			QString name = QLocale(language).name();
+			int index = name.indexOf('_');
+			if(index != -1)
+				name = name.left(index);
+			settings.setValue("language", name);
+		}
+
+		restart = true;
+		close();
+	}
+	else
+	{
+		action->setChecked(false);
+	}
+}
+
+void MainWindow::on_actionResetAllGlobalPreferences_triggered()
+{
+	if(QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
+	{
+		QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
+		for(QString key : settings.childGroups())
+		{
+			if(key != "file-specific")
+				settings.remove(key);
+		}
+		for(QString key : settings.childKeys())
+			settings.remove(key);
+
+		restart = true;
+		noSavePreferences = true;
+		close();
+	}
+}
+
+void MainWindow::on_actionResetAllFileSpecificPreferences_triggered()
+{
+	if(QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
+	{
+		QSettings settings(QString::fromWCharArray(EDITOR_PER_FILE_REGPATH), QSettings::NativeFormat);
+		for(QString key : settings.childGroups())
+			settings.remove(key);
+		for(QString key : settings.childKeys())
+			settings.remove(key);
+
+		restart = true;
+		noSaveFilePreferences = true;
+		close();
+	}
 }
 
 FilterTable* MainWindow::addTab(QString title, QString tooltip)
@@ -729,6 +845,53 @@ void MainWindow::getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* ch
 	}
 }
 
+bool MainWindow::askForClose(int tabIndex)
+{
+	bool discarded = false;
+	if(ui->tabWidget->tabText(tabIndex).endsWith('*'))
+	{
+		ui->tabWidget->setCurrentIndex(tabIndex);
+		QString configPath = ui->tabWidget->tabToolTip(tabIndex);
+		QMessageBox messageBox;
+		messageBox.setWindowTitle(tr("Unsaved changes"));
+		messageBox.setText(tr("The configuration file %0 has unsaved changes.").arg(configPath));
+		messageBox.setInformativeText(tr("Do you want to save the changes before closing the file?"));
+		messageBox.setIcon(QMessageBox::Question);
+		messageBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+		messageBox.setDefaultButton(QMessageBox::Save);
+		messageBox.setEscapeButton(QMessageBox::Cancel);
+		messageBox.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
+		int result = messageBox.exec();
+
+		switch(result)
+		{
+		case QMessageBox::Save:
+			ui->actionSave->trigger();
+			if(ui->tabWidget->tabText(tabIndex).endsWith('*'))
+				// saving was canceled
+				return false;
+			break;
+		case QMessageBox::Discard:
+			discarded = true;
+			break;
+		case QMessageBox::Cancel:
+			return false;
+		}
+	}
+
+	if(!discarded && !noSaveFilePreferences)
+	{
+		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(tabIndex));
+		if(scrollArea != NULL)
+		{
+			FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
+			filterTable->savePreferences();
+		}
+	}
+
+	return true;
+}
+
 void MainWindow::startAnalysis()
 {
 	DeviceAPOInfo* selectedDevice;
@@ -757,5 +920,129 @@ void MainWindow::startAnalysis()
 		configPath = QDir::toNativeSeparators(configPath);
 
 		analysisThread->setParameters(selectedDevice, channelMask, ui->analysisChannelComboBox->currentIndex(), configPath, ui->resolutionSpinBox->value());
+	}
+}
+
+void MainWindow::loadPreferences()
+{
+	QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
+	QVariant geometryValue = settings.value("geometry");
+	if(geometryValue.isValid())
+		restoreGeometry(geometryValue.toByteArray());
+	QVariant stateValue = settings.value("windowState");
+	if(stateValue.isValid())
+		restoreState(stateValue.toByteArray());
+	instantModeCheckBox->setChecked(settings.value("instantMode", true).toBool());
+
+	ui->startFromComboBox->setCurrentIndex(settings.value("analysis/startFrom").toInt());
+	ui->analysisChannelComboBox->setCurrentText(settings.value("analysis/channel").toString());
+	ui->resolutionSpinBox->setValue(settings.value("analysis/resolution", 65536).toInt());
+	double zoomX = settings.value("analysis/zoomX", 1.0).toDouble();
+	double zoomY = settings.value("analysis/zoomY", 1.0).toDouble();
+	if(zoomX != 1.0 || zoomY != 1.0)
+		analysisPlotScene->setZoom(zoomX, zoomY);
+	int scrollX = settings.value("analysis/scrollX", round(analysisPlotScene->hzToX(20))).toInt();
+	int scrollY = settings.value("analysis/scrollY", round(analysisPlotScene->dbToY(22))).toInt();
+	ui->graphicsView->setScrollOffsets(scrollX, scrollY);
+
+	QVariant openFilesValue = settings.value("openFiles");
+	int tabIndex = settings.value("tabIndex").toInt();
+	if(openFilesValue.isValid())
+	{
+		QStringList fileList = openFilesValue.toStringList();
+		for(int i = 0; i < fileList.size(); i++)
+		{
+			load(fileList[i]);
+			if(i == tabIndex)
+				tabIndex = ui->tabWidget->currentIndex();
+		}
+	}
+	ui->tabWidget->setCurrentIndex(tabIndex);
+	recentFiles = settings.value("recentFiles").toStringList();
+	updateRecentFiles();
+
+	QVariant languageValue = settings.value("language");
+	QLocale::Language language;
+	if(languageValue.isValid())
+		language = QLocale(languageValue.toString()).language();
+	else
+		language = QLocale::AnyLanguage;
+
+	for(QAction* action : ui->menuLanguage->actions())
+		action->setChecked(action->data().toInt() == language);
+}
+
+void MainWindow::savePreferences()
+{
+	if(noSavePreferences)
+		return;
+
+	QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
+	settings.setValue("geometry", saveGeometry());
+	settings.setValue("windowState", saveState());
+	settings.setValue("instantMode", instantModeCheckBox->isChecked());
+
+	settings.setValue("analysis/startFrom", ui->startFromComboBox->currentIndex());
+	settings.setValue("analysis/channel", ui->analysisChannelComboBox->currentText());
+	settings.setValue("analysis/resolution", ui->resolutionSpinBox->value());
+	settings.setValue("analysis/zoomX", analysisPlotScene->getZoomX());
+	settings.setValue("analysis/zoomY", analysisPlotScene->getZoomY());
+	QScrollBar* hScrollBar = ui->graphicsView->horizontalScrollBar();
+	int value = hScrollBar->value();
+	settings.setValue("analysis/scrollX", value);
+	QScrollBar* vScrollBar = ui->graphicsView->verticalScrollBar();
+	value = vScrollBar->value();
+	settings.setValue("analysis/scrollY", value);
+
+	QStringList fileList;
+	for(int i = 0; i < ui->tabWidget->count(); i++)
+	{
+		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(i));
+		if(scrollArea == NULL)
+			continue;
+		FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
+		if(filterTable->getConfigPath().length() > 0)
+		{
+			fileList.append(filterTable->getConfigPath());
+		}
+	}
+	settings.setValue("openFiles", fileList);
+	settings.setValue("tabIndex", ui->tabWidget->currentIndex());
+	settings.setValue("recentFiles", recentFiles);
+
+	settings.sync();
+}
+
+void MainWindow::updateRecentFiles()
+{
+	QList<QAction*> actions = ui->menuFile->actions();
+	int separatorsFound = 0;
+	for(int i = actions.size() - 1; i >= 0; i--)
+	{
+		QAction* action = actions[i];
+		if(action->isSeparator())
+		{
+			separatorsFound++;
+
+			if(separatorsFound == 1)
+			{
+				QList<QAction*> newActions;
+				for(QString recentFile : recentFiles)
+				{
+					QAction* newAction = new QAction(recentFile, ui->menuFile);
+					connect(newAction, SIGNAL(triggered(bool)), this, SLOT(recentFileSelected()));
+					newActions.append(newAction);
+				}
+				ui->menuFile->insertActions(action, newActions);
+			}
+			else
+			{
+				break;
+			}
+		}
+		else if(separatorsFound >= 1)
+		{
+			ui->menuFile->removeAction(action);
+		}
 	}
 }

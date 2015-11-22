@@ -197,6 +197,7 @@ Section /o un.$(SecRemoveName)
   
   Delete "$INSTDIR\*.reg"
   RMDir /REBOOTOK /r "$INSTDIR\config"
+  DeleteRegKey HKCU ${REGPATH}
   
 SectionEnd
 
