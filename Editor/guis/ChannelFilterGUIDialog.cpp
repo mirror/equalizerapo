@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <algorithm>
@@ -30,8 +30,8 @@
 
 using namespace std;
 
-ChannelFilterGUIDialog::ChannelFilterGUIDialog(QWidget *parent, QStringList selectedChannels, int selectedChannelMask, const vector<wstring>& channelNames) :
-	QDialog(parent),
+ChannelFilterGUIDialog::ChannelFilterGUIDialog(QWidget* parent, QStringList selectedChannels, int selectedChannelMask, const vector<wstring>& channelNames)
+	: QDialog(parent),
 	ui(new Ui::ChannelFilterGUIDialog)
 {
 	ui->setupUi(this);
@@ -68,26 +68,26 @@ ChannelFilterGUIDialog::ChannelFilterGUIDialog(QWidget *parent, QStringList sele
 
 	vector<wstring> remainingChannelNames = channelNames;
 	QStringList remainingSelectedChannels = selectedChannels;
-	if(selectedChannels.contains("ALL"))
+	if (selectedChannels.contains("ALL"))
 	{
 		ui->allChannelsCheckBox->setChecked(true);
 		remainingSelectedChannels.clear();
 	}
 	int channelIndex = 0;
-	for(QCheckBox* checkBox : checkBoxes)
+	for (QCheckBox* checkBox : checkBoxes)
 	{
 		int channelPos = checkBox->property(PROPERTY_POSITION).toInt();
 		QString channelName = checkBox->property(PROPERTY_NAME).toString();
 		bool exists = selectedChannelMask & channelPos;
 		checkBox->setVisible(exists);
-		if(exists)
+		if (exists)
 		{
 			channelIndex++;
 			bool checked = false;
 			remainingChannelNames.erase(remove(remainingChannelNames.begin(), remainingChannelNames.end(), channelName.toStdWString()), remainingChannelNames.end());
-			if(remainingSelectedChannels.removeOne(channelName))
+			if (remainingSelectedChannels.removeOne(channelName))
 				checked = true;
-			if(remainingSelectedChannels.removeOne(QString(channelIndex)))
+			if (remainingSelectedChannels.removeOne(QString(channelIndex)))
 				checked = true;
 			checkBox->setChecked(checked);
 		}
@@ -98,18 +98,18 @@ ChannelFilterGUIDialog::ChannelFilterGUIDialog(QWidget *parent, QStringList sele
 	}
 
 	ui->listWidget->clear();
-	for(wstring channelName : remainingChannelNames)
+	for (wstring channelName : remainingChannelNames)
 	{
 		QListWidgetItem* item = new QListWidgetItem(QString::fromStdWString(channelName));
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
-		if(remainingSelectedChannels.removeOne(QString::fromStdWString(channelName)))
+		if (remainingSelectedChannels.removeOne(QString::fromStdWString(channelName)))
 			item->setCheckState(Qt::Checked);
 		else
 			item->setCheckState(Qt::Unchecked);
 		ui->listWidget->addItem(item);
 	}
 
-	for(QString c : remainingSelectedChannels)
+	for (QString c : remainingSelectedChannels)
 	{
 		QListWidgetItem* item = new QListWidgetItem(c);
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled | Qt::ItemIsUserCheckable);
@@ -143,28 +143,28 @@ QStringList ChannelFilterGUIDialog::getSelectedChannels() const
 {
 	QStringList selectedChannels;
 
-	if(ui->allChannelsCheckBox->isChecked())
+	if (ui->allChannelsCheckBox->isChecked())
 	{
 		selectedChannels.append("ALL");
 	}
 	else
 	{
-		for(QCheckBox* checkBox : checkBoxes)
+		for (QCheckBox* checkBox : checkBoxes)
 		{
-			if(checkBox->isChecked())
+			if (checkBox->isChecked())
 			{
 				QString channelName = checkBox->property(PROPERTY_NAME).toString();
 				selectedChannels.append(channelName);
 			}
 		}
 
-		for(int i = 0; i < ui->listWidget->count(); i++)
+		for (int i = 0; i < ui->listWidget->count(); i++)
 		{
 			QListWidgetItem* item = ui->listWidget->item(i);
-			if(item->checkState() == Qt::Checked)
+			if (item->checkState() == Qt::Checked)
 			{
 				QString text = item->text().trimmed();
-				if(text.length() > 0)
+				if (text.length() > 0)
 					selectedChannels.append(text.toUpper());
 			}
 		}

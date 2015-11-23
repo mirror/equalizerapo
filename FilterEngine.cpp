@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2014  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2014  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -58,7 +58,7 @@ using namespace std;
 using namespace mup;
 
 FilterEngine::FilterEngine()
-	:parser(0)
+	: parser(0)
 {
 	preMix = false;
 	capture = false;
@@ -92,10 +92,10 @@ FilterEngine::FilterEngine()
 FilterEngine::~FilterEngine()
 {
 	// Make sure notification thread is terminated before cleaning up, otherwise deleted memory might be accessed in loadConfig
-	if(threadHandle != NULL)
+	if (threadHandle != NULL)
 	{
 		SetEvent(shutdownEvent);
-		if(WaitForSingleObject(threadHandle, INFINITE) == WAIT_OBJECT_0)
+		if (WaitForSingleObject(threadHandle, INFINITE) == WAIT_OBJECT_0)
 		{
 			TraceF(L"Successfully terminated directory change notification thread");
 		}
@@ -106,8 +106,8 @@ FilterEngine::~FilterEngine()
 
 	cleanupConfigurations();
 
-	for(vector<IFilterFactory*>::iterator it = factories.begin(); it != factories.end(); it++)
-		delete *it;
+	for (vector<IFilterFactory*>::iterator it = factories.begin(); it != factories.end(); it++)
+		delete*it;
 
 	CloseHandle(loadSemaphore);
 	DeleteCriticalSection(&loadSection);
@@ -142,12 +142,12 @@ void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsi
 	this->transitionLength = (unsigned)(sampleRate / 100);
 
 	unsigned deviceChannelCount;
-	if(capture)
+	if (capture)
 		deviceChannelCount = inputChannelCount;
 	else
 		deviceChannelCount = outputChannelCount;
 
-	if(channelMask == 0)
+	if (channelMask == 0)
 		channelMask = ChannelHelper::getDefaultChannelMask(deviceChannelCount);
 
 	this->channelMask = channelMask;
@@ -159,7 +159,7 @@ void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsi
 	{
 		configPath = RegistryHelper::readValue(APP_REGPATH, L"ConfigPath");
 	}
-	catch(RegistryException e)
+	catch (RegistryException e)
 	{
 		LogF(L"Can't read config path because of: %s", e.getMessage().c_str());
 		LeaveCriticalSection(&loadSection);
@@ -176,21 +176,21 @@ void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsi
 	parser.AddPackage(PackageStr::Instance());
 	parser.AddPackage(PackageMatrix::Instance());
 
-	for(vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
+	for (vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
 	{
 		IFilterFactory* factory = *it;
 		factory->initialize(this);
 	}
 
-	if(configPath != L"")
+	if (configPath != L"")
 	{
 		loadConfig(customPath);
 
-		if(threadHandle == NULL && customPath.empty())
+		if (threadHandle == NULL && customPath.empty())
 		{
 			shutdownEvent = CreateEventW(NULL, true, false, NULL);
 			threadHandle = CreateThread(NULL, 0, notificationThread, this, 0, NULL);
-			if(threadHandle == INVALID_HANDLE_VALUE)
+			if (threadHandle == INVALID_HANDLE_VALUE)
 				threadHandle = NULL;
 			else
 				TraceF(L"Successfully created directory change notification thread %d for %s and its subtree", GetThreadId(threadHandle), configPath.c_str());
@@ -203,7 +203,7 @@ void FilterEngine::loadConfig(const wstring& customPath)
 {
 	EnterCriticalSection(&loadSection);
 	timer.start();
-	if(previousConfig != NULL)
+	if (previousConfig != NULL)
 	{
 		previousConfig->~FilterConfiguration();
 		MemoryHelper::free(previousConfig);
@@ -218,36 +218,36 @@ void FilterEngine::loadConfig(const wstring& customPath)
 	watchRegistryKeys.clear();
 	parser.ClearVar();
 
-	for(vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
+	for (vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
 	{
 		IFilterFactory* factory = *it;
 		vector<IFilter*> newFilters = factory->startOfConfiguration();
-		if(!newFilters.empty())
+		if (!newFilters.empty())
 			addFilters(newFilters);
 	}
 
-	if(customPath.empty())
+	if (customPath.empty())
 		loadConfigFile(configPath + L"\\config.txt");
 	else
 		loadConfigFile(customPath);
 
-	for(vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
+	for (vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
 	{
 		IFilterFactory* factory = *it;
 		vector<IFilter*> newFilters = factory->endOfConfiguration();
-		if(!newFilters.empty())
+		if (!newFilters.empty())
 			addFilters(newFilters);
 	}
 
 	void* mem = MemoryHelper::alloc(sizeof(FilterConfiguration));
-	FilterConfiguration* config = new (mem) FilterConfiguration(this, filterInfos, (unsigned)allChannelNames.size());
+	FilterConfiguration* config = new(mem) FilterConfiguration(this, filterInfos, (unsigned)allChannelNames.size());
 
 	filterInfos.clear();
 
 	double loadTime = timer.stop();
 	TraceF(L"Finished loading configuration after %lf milliseconds", loadTime * 1000.0);
 
-	if(currentConfig == NULL)
+	if (currentConfig == NULL)
 		currentConfig = config;
 	else
 		nextConfig = config;
@@ -260,13 +260,13 @@ void FilterEngine::loadConfigFile(const wstring& path)
 	TraceF(L"Loading configuration from %s", path.c_str());
 
 	HANDLE hFile = INVALID_HANDLE_VALUE;
-	while(hFile == INVALID_HANDLE_VALUE)
+	while (hFile == INVALID_HANDLE_VALUE)
 	{
 		hFile = CreateFile(path.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		if(hFile == INVALID_HANDLE_VALUE)
+		if (hFile == INVALID_HANDLE_VALUE)
 		{
 			DWORD error = GetLastError();
-			if(error != ERROR_SHARING_VIOLATION)
+			if (error != ERROR_SHARING_VIOLATION)
 			{
 				LogF(L"Error while reading configuration file: %s", StringHelper::getSystemErrorString(error).c_str());
 				return;
@@ -281,7 +281,7 @@ void FilterEngine::loadConfigFile(const wstring& path)
 
 	char buf[8192];
 	unsigned long bytesRead = -1;
-	while(ReadFile(hFile, buf, sizeof(buf), &bytesRead, NULL) && bytesRead != 0)
+	while (ReadFile(hFile, buf, sizeof(buf), &bytesRead, NULL) && bytesRead != 0)
 	{
 		inputStream.write(buf, bytesRead);
 	}
@@ -292,27 +292,27 @@ void FilterEngine::loadConfigFile(const wstring& path)
 
 	vector<wstring> savedChannelNames = currentChannelNames;
 
-	for(vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
+	for (vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
 	{
 		IFilterFactory* factory = *it;
 		vector<IFilter*> newFilters = factory->startOfFile(path);
-		if(!newFilters.empty())
+		if (!newFilters.empty())
 			addFilters(newFilters);
 	}
 
-	while(inputStream.good())
+	while (inputStream.good())
 	{
 		string encodedLine;
 		getline(inputStream, encodedLine);
-		if(encodedLine.size() > 0 && encodedLine[encodedLine.size()-1] == '\r')
-			encodedLine.resize(encodedLine.size()-1);
+		if (encodedLine.size() > 0 && encodedLine[encodedLine.size() - 1] == '\r')
+			encodedLine.resize(encodedLine.size() - 1);
 
 		wstring line = StringHelper::toWString(encodedLine, CP_UTF8);
-		if(line.find(L'\uFFFD') != -1)
+		if (line.find(L'\uFFFD') != -1)
 			line = StringHelper::toWString(encodedLine, CP_ACP);
 
 		size_t pos = line.find(L':');
-		if(pos != -1)
+		if (pos != -1)
 		{
 			wstring key = line.substr(0, pos);
 			wstring value = line.substr(pos + 1);
@@ -320,7 +320,7 @@ void FilterEngine::loadConfigFile(const wstring& path)
 			// allow to use indentation
 			key = StringHelper::trim(key);
 
-			for(vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
+			for (vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
 			{
 				IFilterFactory* factory = *it;
 
@@ -329,14 +329,14 @@ void FilterEngine::loadConfigFile(const wstring& path)
 				{
 					newFilters = factory->createFilter(path, key, value);
 				}
-				catch(exception e)
+				catch (exception e)
 				{
 					LogF(L"%S", e.what());
 				}
 
-				if(key == L"")
+				if (key == L"")
 					break;
-				if(!newFilters.empty())
+				if (!newFilters.empty())
 				{
 					addFilters(newFilters);
 					break;
@@ -345,11 +345,11 @@ void FilterEngine::loadConfigFile(const wstring& path)
 		}
 	}
 
-	for(vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
+	for (vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
 	{
 		IFilterFactory* factory = *it;
 		vector<IFilter*> newFilters = factory->endOfFile(path);
-		if(!newFilters.empty())
+		if (!newFilters.empty())
 			addFilters(newFilters);
 	}
 
@@ -363,14 +363,14 @@ void FilterEngine::watchRegistryKey(const std::wstring& key)
 }
 
 #pragma AVRT_CODE_BEGIN
-void FilterEngine::process(float *output, float *input, unsigned frameCount)
+void FilterEngine::process(float* output, float* input, unsigned frameCount)
 {
-	if(currentConfig->isEmpty() && nextConfig == NULL)
+	if (currentConfig->isEmpty() && nextConfig == NULL)
 	{
 		// avoid (de-)interleaving cost if no processing will happen anyway
-		if(realChannelCount == outputChannelCount)
+		if (realChannelCount == outputChannelCount)
 		{
-			if(input != output)
+			if (input != output)
 				memcpy(output, input, outputChannelCount * frameCount * sizeof(float));
 
 			return;
@@ -379,20 +379,20 @@ void FilterEngine::process(float *output, float *input, unsigned frameCount)
 
 	currentConfig->process(input, frameCount);
 
-	if(nextConfig != NULL)
+	if (nextConfig != NULL)
 	{
 		nextConfig->process(input, frameCount);
 		float** currentSamples = currentConfig->getOutputSamples();
 		float** nextSamples = nextConfig->getOutputSamples();
 
-		for(unsigned f=0; f<frameCount; f++)
+		for (unsigned f = 0; f < frameCount; f++)
 		{
 			float factor = 0.5f * (1.0f - cos(transitionCounter * (float)M_PI / transitionLength));
-			if(transitionCounter >= transitionLength)
+			if (transitionCounter >= transitionLength)
 				factor = 1.0f;
 
-			for(unsigned c=0; c<outputChannelCount; c++)
-				currentSamples[c][f] = currentSamples[c][f] * (1-factor) + nextSamples[c][f] * factor;
+			for (unsigned c = 0; c < outputChannelCount; c++)
+				currentSamples[c][f] = currentSamples[c][f] * (1 - factor) + nextSamples[c][f] * factor;
 
 			transitionCounter++;
 		}
@@ -400,7 +400,7 @@ void FilterEngine::process(float *output, float *input, unsigned frameCount)
 
 	currentConfig->write(output, frameCount);
 
-	if(nextConfig != NULL && transitionCounter >= transitionLength)
+	if (nextConfig != NULL && transitionCounter >= transitionLength)
 	{
 		previousConfig = currentConfig;
 		currentConfig = nextConfig;
@@ -413,7 +413,7 @@ void FilterEngine::process(float *output, float *input, unsigned frameCount)
 
 void FilterEngine::addFilters(vector<IFilter*> filters)
 {
-	for(vector<IFilter*>::iterator it = filters.begin(); it != filters.end(); it++)
+	for (vector<IFilter*>::iterator it = filters.begin(); it != filters.end(); it++)
 	{
 		IFilter* filter = *it;
 		FilterInfo* filterInfo = (FilterInfo*)MemoryHelper::alloc(sizeof(FilterInfo));
@@ -421,10 +421,10 @@ void FilterEngine::addFilters(vector<IFilter*> filters)
 		filterInfo->inPlace = filter->getInPlace();
 		vector<wstring> savedChannelNames = currentChannelNames;
 		bool allChannels = filter->getAllChannels();
-		if(allChannels)
+		if (allChannels)
 			currentChannelNames = allChannelNames;
 
-		if(lastChannelNames == currentChannelNames)
+		if (lastChannelNames == currentChannelNames)
 		{
 			filterInfo->inChannelCount = 0;
 			filterInfo->inChannels = NULL;
@@ -435,7 +435,7 @@ void FilterEngine::addFilters(vector<IFilter*> filters)
 			filterInfo->inChannels = (size_t*)MemoryHelper::alloc(filterInfo->inChannelCount * sizeof(size_t));
 
 			size_t c = 0;
-			for(vector<wstring>::iterator it2 = currentChannelNames.begin(); it2 != currentChannelNames.end(); it2++)
+			for (vector<wstring>::iterator it2 = currentChannelNames.begin(); it2 != currentChannelNames.end(); it2++)
 			{
 				vector<wstring>::iterator pos = find(allChannelNames.begin(), allChannelNames.end(), *it2);
 				filterInfo->inChannels[c++] = pos - allChannelNames.begin();
@@ -446,7 +446,7 @@ void FilterEngine::addFilters(vector<IFilter*> filters)
 
 		vector<wstring> newChannelNames = filter->initialize(sampleRate, maxFrameCount, currentChannelNames);
 
-		if(filterInfo->inPlace && lastInPlace && lastNewChannelNames == newChannelNames)
+		if (filterInfo->inPlace && lastInPlace && lastNewChannelNames == newChannelNames)
 		{
 			filterInfo->outChannelCount = 0;
 			filterInfo->outChannels = NULL;
@@ -457,10 +457,10 @@ void FilterEngine::addFilters(vector<IFilter*> filters)
 			filterInfo->outChannels = (size_t*)MemoryHelper::alloc(filterInfo->outChannelCount * sizeof(size_t));
 
 			size_t c = 0;
-			for(vector<wstring>::iterator it2 = newChannelNames.begin(); it2 != newChannelNames.end(); it2++)
+			for (vector<wstring>::iterator it2 = newChannelNames.begin(); it2 != newChannelNames.end(); it2++)
 			{
 				vector<wstring>::iterator pos = find(allChannelNames.begin(), allChannelNames.end(), *it2);
-				if(pos == allChannelNames.end())
+				if (pos == allChannelNames.end())
 				{
 					filterInfo->outChannels[c++] = allChannelNames.size();
 					allChannelNames.push_back(*it2);
@@ -474,12 +474,12 @@ void FilterEngine::addFilters(vector<IFilter*> filters)
 
 		lastNewChannelNames = newChannelNames;
 		lastInPlace = filterInfo->inPlace;
-		if(!lastInPlace)
+		if (!lastInPlace)
 			swap(lastChannelNames, lastNewChannelNames);
 
 		filterInfos.push_back(filterInfo);
 
-		if(filter->getSelectChannels())
+		if (filter->getSelectChannels())
 			currentChannelNames = newChannelNames;
 		else
 			currentChannelNames = savedChannelNames;
@@ -488,21 +488,21 @@ void FilterEngine::addFilters(vector<IFilter*> filters)
 
 void FilterEngine::cleanupConfigurations()
 {
-	if(currentConfig != NULL)
+	if (currentConfig != NULL)
 	{
 		currentConfig->~FilterConfiguration();
 		MemoryHelper::free(currentConfig);
 		currentConfig = NULL;
 	}
 
-	if(nextConfig != NULL)
+	if (nextConfig != NULL)
 	{
 		nextConfig->~FilterConfiguration();
 		MemoryHelper::free(nextConfig);
 		nextConfig = NULL;
 	}
 
-	if(previousConfig != NULL)
+	if (previousConfig != NULL)
 	{
 		previousConfig->~FilterConfiguration();
 		MemoryHelper::free(previousConfig);
@@ -515,16 +515,16 @@ unsigned long __stdcall FilterEngine::notificationThread(void* parameter)
 	FilterEngine* engine = (FilterEngine*)parameter;
 
 	HANDLE notificationHandle = FindFirstChangeNotificationW(engine->configPath.c_str(), true, FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_WRITE);
-	if(notificationHandle == INVALID_HANDLE_VALUE)
+	if (notificationHandle == INVALID_HANDLE_VALUE)
 		notificationHandle = NULL;
 
 	HANDLE registryEvent = CreateEventW(NULL, true, false, NULL);
 
 	HANDLE handles[3] = {engine->shutdownEvent, notificationHandle, registryEvent};
-	while(true)
+	while (true)
 	{
 		vector<HKEY> keyHandles;
-		for(auto it = engine->watchRegistryKeys.begin(); it != engine->watchRegistryKeys.end(); it++)
+		for (auto it = engine->watchRegistryKeys.begin(); it != engine->watchRegistryKeys.end(); it++)
 		{
 			try
 			{
@@ -532,7 +532,7 @@ unsigned long __stdcall FilterEngine::notificationThread(void* parameter)
 				keyHandles.push_back(keyHandle);
 				RegNotifyChangeKeyValue(keyHandle, false, REG_NOTIFY_CHANGE_LAST_SET, registryEvent, true);
 			}
-			catch(RegistryException e)
+			catch (RegistryException e)
 			{
 				LogFStatic(L"%s", e.getMessage().c_str());
 			}
@@ -540,30 +540,30 @@ unsigned long __stdcall FilterEngine::notificationThread(void* parameter)
 
 		DWORD which = WaitForMultipleObjects(3, handles, false, INFINITE);
 
-		for(auto it = keyHandles.begin(); it != keyHandles.end(); it++)
+		for (auto it = keyHandles.begin(); it != keyHandles.end(); it++)
 		{
 			RegCloseKey(*it);
 		}
 
-		if(which == WAIT_OBJECT_0)
+		if (which == WAIT_OBJECT_0)
 		{
-			//Shutdown
+			// Shutdown
 			break;
 		}
 		else
 		{
-			if(which == WAIT_OBJECT_0 + 1)
+			if (which == WAIT_OBJECT_0 + 1)
 			{
 				FindNextChangeNotification(notificationHandle);
-				//Wait for second event within 10 milliseconds to avoid loading twice
+				// Wait for second event within 10 milliseconds to avoid loading twice
 				WaitForMultipleObjects(1, &notificationHandle, false, 10);
 			}
 
 			HANDLE handles[2] = {engine->shutdownEvent, engine->loadSemaphore};
 			DWORD which = WaitForMultipleObjects(2, handles, false, INFINITE);
-			if(which == WAIT_OBJECT_0)
+			if (which == WAIT_OBJECT_0)
 			{
-				//Shutdown
+				// Shutdown
 				break;
 			}
 

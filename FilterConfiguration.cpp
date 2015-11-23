@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2014  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2014  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -34,17 +34,17 @@ FilterConfiguration::FilterConfiguration(FilterEngine* engine, const vector<Filt
 	unsigned maxFrameCount = engine->getMaxFrameCount();
 
 	allSamples = (float**)MemoryHelper::alloc(allChannelCount * sizeof(float*));
-	for(size_t i=0; i<allChannelCount; i++)
+	for (size_t i = 0; i < allChannelCount; i++)
 		allSamples[i] = (float*)MemoryHelper::alloc(maxFrameCount * sizeof(float));
 	allSamples2 = (float**)MemoryHelper::alloc(allChannelCount * sizeof(float*));
-	for(size_t i=0; i<allChannelCount; i++)
+	for (size_t i = 0; i < allChannelCount; i++)
 		allSamples2[i] = (float*)MemoryHelper::alloc(maxFrameCount * sizeof(float));
 	currentSamples = (float**)MemoryHelper::alloc(allChannelCount * sizeof(float*));
 	currentSamples2 = (float**)MemoryHelper::alloc(allChannelCount * sizeof(float*));
 
 	filterCount = (unsigned)filterInfos.size();
 	this->filterInfos = (FilterInfo**)MemoryHelper::alloc(filterCount * sizeof(FilterInfo*));
-	for(size_t i=0; i<filterCount; i++)
+	for (size_t i = 0; i < filterCount; i++)
 		this->filterInfos[i] = filterInfos[i];
 }
 
@@ -53,21 +53,21 @@ FilterConfiguration::~FilterConfiguration()
 	MemoryHelper::free(currentSamples2);
 	MemoryHelper::free(currentSamples);
 
-	for(size_t i=0; i<allChannelCount; i++)
+	for (size_t i = 0; i < allChannelCount; i++)
 		MemoryHelper::free(allSamples2[i]);
 	MemoryHelper::free(allSamples2);
 
-	for(size_t i=0; i<allChannelCount; i++)
+	for (size_t i = 0; i < allChannelCount; i++)
 		MemoryHelper::free(allSamples[i]);
 	MemoryHelper::free(allSamples);
 
-	for(size_t i=0; i<filterCount; i++)
+	for (size_t i = 0; i < filterCount; i++)
 	{
 		filterInfos[i]->filter->~IFilter();
 		MemoryHelper::free(filterInfos[i]->filter);
-		if(filterInfos[i]->inChannels != NULL)
+		if (filterInfos[i]->inChannels != NULL)
 			MemoryHelper::free(filterInfos[i]->inChannels);
-		if(filterInfos[i]->outChannels != NULL)
+		if (filterInfos[i]->outChannels != NULL)
 			MemoryHelper::free(filterInfos[i]->outChannels);
 		MemoryHelper::free(filterInfos[i]);
 	}
@@ -77,20 +77,20 @@ FilterConfiguration::~FilterConfiguration()
 #pragma AVRT_CODE_BEGIN
 void FilterConfiguration::process(float* input, unsigned frameCount)
 {
-#define DEINTERLEAVE_MACRO(ccount) \
+#define DEINTERLEAVE_MACRO(ccount)\
 	{\
-		for (size_t c=0; c<ccount; c++)\
+		for (size_t c = 0; c < ccount; c++)\
 		{\
 			float* sampleChannel = allSamples[c];\
 			float* i2 = input + c;\
 			for (size_t i = 0; i < frameCount; i++)\
 			{\
-				sampleChannel[i] = i2[i*ccount];\
+				sampleChannel[i] = i2[i * ccount];\
 			}\
 		}\
 	}
 
-	switch(realChannelCount)
+	switch (realChannelCount)
 	{
 	case 1:
 		DEINTERLEAVE_MACRO(1)
@@ -108,34 +108,34 @@ void FilterConfiguration::process(float* input, unsigned frameCount)
 		DEINTERLEAVE_MACRO(realChannelCount)
 	}
 
-	for(unsigned c=realChannelCount; c<allChannelCount; c++)
+	for (unsigned c = realChannelCount; c < allChannelCount; c++)
 		memset(allSamples[c], 0, frameCount * sizeof(float));
 
 	// for real mono input and >= stereo output, upmix to stereo as the Windows audio system would do automatically if no APO was present
-	if(realChannelCount == 1 && outputChannelCount >= 2)
+	if (realChannelCount == 1 && outputChannelCount >= 2)
 		memcpy(allSamples[1], allSamples[0], frameCount * sizeof(float));
 
-	for(size_t i=0; i<filterCount; i++)
+	for (size_t i = 0; i < filterCount; i++)
 	{
 		FilterInfo* filterInfo = filterInfos[i];
-		for(size_t j=0; j<filterInfo->inChannelCount; j++)
+		for (size_t j = 0; j < filterInfo->inChannelCount; j++)
 			currentSamples[j] = allSamples[filterInfo->inChannels[j]];
-		if(filterInfo->inPlace)
+		if (filterInfo->inPlace)
 		{
-			for(size_t j=0; j<filterInfo->outChannelCount; j++)
+			for (size_t j = 0; j < filterInfo->outChannelCount; j++)
 				currentSamples2[j] = allSamples[filterInfo->outChannels[j]];
 		}
 		else
 		{
-			for(size_t j=0; j<filterInfo->outChannelCount; j++)
+			for (size_t j = 0; j < filterInfo->outChannelCount; j++)
 				currentSamples2[j] = allSamples2[filterInfo->outChannels[j]];
 		}
 
 		filterInfo->filter->process(currentSamples2, currentSamples, frameCount);
 
-		if(!filterInfo->inPlace)
+		if (!filterInfo->inPlace)
 		{
-			for(size_t j=0; j<filterInfo->outChannelCount; j++)
+			for (size_t j = 0; j < filterInfo->outChannelCount; j++)
 				swap(allSamples[filterInfo->outChannels[j]], allSamples2[filterInfo->outChannels[j]]);
 			swap(currentSamples, currentSamples2);
 		}
@@ -144,18 +144,18 @@ void FilterConfiguration::process(float* input, unsigned frameCount)
 
 void FilterConfiguration::write(float* output, unsigned frameCount)
 {
-#define INTERLEAVE_MACRO(ccount) \
-		for (size_t c=0; c<ccount; c++)\
+#define INTERLEAVE_MACRO(ccount)\
+	for (size_t c = 0; c < ccount; c++)\
+	{\
+		float* sampleChannel = allSamples[c];\
+		float* o2 = output + c;\
+		for (unsigned i = 0; i < frameCount; i++)\
 		{\
-			float* sampleChannel = allSamples[c];\
-			float* o2 = output + c;\
-			for (unsigned i = 0; i < frameCount; i++)\
-			{\
-				o2[i*ccount] = sampleChannel[i];\
-			}\
-		}
+			o2[i * ccount] = sampleChannel[i];\
+		}\
+	}
 
-	switch(outputChannelCount)
+	switch (outputChannelCount)
 	{
 	case 1:
 		INTERLEAVE_MACRO(1)

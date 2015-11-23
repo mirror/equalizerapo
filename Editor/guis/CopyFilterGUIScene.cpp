@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <algorithm>
@@ -39,7 +39,7 @@ void CopyFilterGUIScene::load(const vector<wstring>& channelNames, vector<Assign
 	QGraphicsItem* lastInputItem = NULL;
 	lastOutputItem = NULL;
 
-	for(unsigned i = 0; i < channelNames.size(); i++)
+	for (unsigned i = 0; i < channelNames.size(); i++)
 	{
 		QString c = QString::fromStdWString(channelNames[i]);
 
@@ -65,13 +65,13 @@ void CopyFilterGUIScene::load(const vector<wstring>& channelNames, vector<Assign
 	addItem(noChannelItem);
 	inputChannelMap.insert("", noChannelItem);
 
-	for(Assignment assignment : assignments)
+	for (Assignment assignment : assignments)
 	{
 		QString oc = QString::fromStdWString(assignment.targetChannel);
-		if(oc == "")
+		if (oc == "")
 			continue;
 		CopyFilterGUIChannelItem* outputItem = outputChannelMap.value(oc.toUpper());
-		if(outputItem == NULL)
+		if (outputItem == NULL)
 		{
 			outputItem = new CopyFilterGUIChannelItem(oc, true);
 			outputItem->setPos(getNextChannelPoint(lastOutputItem, true));
@@ -80,13 +80,13 @@ void CopyFilterGUIScene::load(const vector<wstring>& channelNames, vector<Assign
 			outputChannelMap.insert(oc, outputItem);
 			lastOutputItem = outputItem;
 		}
-		for(Assignment::Summand summand : assignment.sourceSum)
+		for (Assignment::Summand summand : assignment.sourceSum)
 		{
 			QString ic = QString::fromStdWString(summand.channel);
-			if(ic == " ")
+			if (ic == " ")
 				continue;
 			CopyFilterGUIChannelItem* inputItem = inputChannelMap.value(ic.toUpper());
-			if(inputItem == NULL)
+			if (inputItem == NULL)
 			{
 				inputItem = new CopyFilterGUIChannelItem(ic, false);
 				inputItem->setPos(getNextChannelPoint(lastInputItem, false));
@@ -114,19 +114,19 @@ std::vector<Assignment> CopyFilterGUIScene::buildAssignments()
 {
 	std::vector<CopyFilterGUIConnectionItem*> connItems;
 
-	for(QGraphicsItem* item : items())
+	for (QGraphicsItem* item : items())
 	{
 		CopyFilterGUIConnectionItem* connItem = qgraphicsitem_cast<CopyFilterGUIConnectionItem*>(item);
-		if(connItem != NULL && connItem->getTarget() != NULL)
+		if (connItem != NULL && connItem->getTarget() != NULL)
 		{
 			connItems.push_back(connItem);
 		}
 	}
 
-	std::sort(connItems.begin(), connItems.end(), [](CopyFilterGUIConnectionItem * a, CopyFilterGUIConnectionItem * b)
+	std::sort(connItems.begin(), connItems.end(), [](CopyFilterGUIConnectionItem* a, CopyFilterGUIConnectionItem* b)
 	{
 		double diff = a->getTarget()->x() - b->getTarget()->x();
-		if(diff == 0.0)
+		if (diff == 0.0)
 			diff = a->getSource()->x() - b->getSource()->x();
 
 		return diff < 0;
@@ -134,11 +134,11 @@ std::vector<Assignment> CopyFilterGUIScene::buildAssignments()
 
 	std::vector<Assignment> assignments;
 	QHash<QString, Assignment*> channelAssignmentMap;
-	for(CopyFilterGUIConnectionItem* connItem : connItems)
+	for (CopyFilterGUIConnectionItem* connItem : connItems)
 	{
 		QString oc = connItem->getTarget()->getName();
 		Assignment* assignment = channelAssignmentMap.value(oc);
-		if(assignment == NULL)
+		if (assignment == NULL)
 		{
 			Assignment newAssignment;
 			newAssignment.targetChannel = oc.toStdWString();
@@ -177,7 +177,7 @@ void CopyFilterGUIScene::lineEditEditingFinished()
 {
 	QLineEdit* lineEdit = qobject_cast<QLineEdit*>(QObject::sender());
 	// might be called twice
-	if(!lineEdit->isVisible())
+	if (!lineEdit->isVisible())
 		return;
 
 	QString text = lineEdit->text();
@@ -197,12 +197,12 @@ void CopyFilterGUIScene::lineEditEditingFinished()
 void CopyFilterGUIScene::keyPressEvent(QKeyEvent* event)
 {
 	// focusItem != NULL means that the cursor is inside a line edit
-	if(event->key() == Qt::Key_Delete && focusItem() == NULL)
+	if (event->key() == Qt::Key_Delete && focusItem() == NULL)
 	{
-		for(QGraphicsItem* item : selectedItems())
+		for (QGraphicsItem* item : selectedItems())
 		{
 			CopyFilterGUIConnectionItem* connectionItem = qgraphicsitem_cast<CopyFilterGUIConnectionItem*>(item);
-			if(connectionItem != NULL)
+			if (connectionItem != NULL)
 			{
 				removeItem(connectionItem);
 				delete connectionItem;

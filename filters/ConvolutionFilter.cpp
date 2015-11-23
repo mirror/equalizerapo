@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -51,11 +51,11 @@ vector<wstring> ConvolutionFilter::initialize(float sampleRate, unsigned maxFram
 	SF_INFO info;
 
 	SNDFILE* inFile = sf_wchar_open(filename.c_str(), SFM_READ, &info);
-	if(inFile == NULL)
+	if (inFile == NULL)
 	{
 		LogF(L"Error while reading impulse response file: %S", sf_strerror(inFile));
 	}
-	else if(abs(sampleRate - info.samplerate) > 1.0f)
+	else if (abs(sampleRate - info.samplerate) > 1.0f)
 	{
 		LogF(L"Impulse response sample rate (%d Hz) does not match device sample rate (%f Hz)", info.samplerate, sampleRate);
 	}
@@ -68,34 +68,34 @@ vector<wstring> ConvolutionFilter::initialize(float sampleRate, unsigned maxFram
 		float* interleavedBuf = new float[frameCount * fileChannelCount];
 
 		sf_count_t numRead = 0;
-		while(numRead < frameCount)
+		while (numRead < frameCount)
 			numRead += sf_readf_float(inFile, interleavedBuf + numRead * fileChannelCount, frameCount - numRead);
 
 		sf_close(inFile);
 		inFile = NULL;
 
 		float** bufs = new float*[fileChannelCount];
-		for(unsigned i=0; i<fileChannelCount; i++)
+		for (unsigned i = 0; i < fileChannelCount; i++)
 		{
 			float* buf = new float[frameCount];
 			float* p = interleavedBuf + i;
-			for(unsigned j=0; j<frameCount; j++)
+			for (unsigned j = 0; j < frameCount; j++)
 			{
-				buf[j] = p[j*fileChannelCount];
+				buf[j] = p[j * fileChannelCount];
 			}
 
 			bufs[i] = buf;
 		}
 
 		filters = (HConvSingle*)MemoryHelper::alloc(sizeof(HConvSingle) * channelCount);
-		for(unsigned i=0; i<channelCount; i++)
+		for (unsigned i = 0; i < channelCount; i++)
 		{
 			hcInitSingle(&filters[i], bufs[i % fileChannelCount], frameCount, maxFrameCount, 1);
 		}
 
-		for(unsigned i=0; i<fileChannelCount; i++)
+		for (unsigned i = 0; i < fileChannelCount; i++)
 		{
-			delete[] bufs[i];
+			delete[]bufs[i];
 		}
 		delete bufs;
 		delete interleavedBuf;
@@ -107,10 +107,10 @@ vector<wstring> ConvolutionFilter::initialize(float sampleRate, unsigned maxFram
 #pragma AVRT_CODE_BEGIN
 void ConvolutionFilter::process(float** output, float** input, unsigned frameCount)
 {
-	if(filters == NULL)
+	if (filters == NULL)
 		return;
 
-	for(unsigned i=0; i<channelCount; i++)
+	for (unsigned i = 0; i < channelCount; i++)
 	{
 		float* inputChannel = input[i];
 		float* outputChannel = output[i];
@@ -125,9 +125,9 @@ void ConvolutionFilter::process(float** output, float** input, unsigned frameCou
 
 void ConvolutionFilter::cleanup()
 {
-	if(filters != NULL)
+	if (filters != NULL)
 	{
-		for(unsigned i=0; i<channelCount; i++)
+		for (unsigned i = 0; i < channelCount; i++)
 			hcCloseSingle(&filters[i]);
 
 		MemoryHelper::free(filters);

@@ -111,8 +111,8 @@ SOURCES += main.cpp\
 	../parser/RegistryFunctions.cpp \
 	../parser/StringOperators.cpp \
 	AnalysisThread.cpp \
-    widgets/ExponentialSpinBox.cpp \
-    FilterTableMimeData.cpp
+	widgets/ExponentialSpinBox.cpp \
+	FilterTableMimeData.cpp
 
 HEADERS  += \
 	../helpers/LogHelper.h \
@@ -212,8 +212,8 @@ HEADERS  += \
 	../parser/RegistryFunctions.h \
 	../parser/StringOperators.h \
 	AnalysisThread.h \
-    widgets/ExponentialSpinBox.h \
-    FilterTableMimeData.h
+	widgets/ExponentialSpinBox.h \
+	FilterTableMimeData.h
 
 FORMS    += \
 	guis/PreampFilterGUI.ui \
@@ -254,4 +254,4 @@ TRANSLATIONS += translations/Editor_de.ts
 
 RC_ICONS = icons/accessories-text-editor.ico
 
-DISTFILES +=
+DISTFILES += ../uncrustify.cfg

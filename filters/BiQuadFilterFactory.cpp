@@ -69,19 +69,19 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 {
 	BiQuadFilter* filter = NULL;
 
-	if(command.find(L"Filter") == 0)
+	if (command.find(L"Filter") == 0)
 	{
-		//Conversion to period as decimal mark, if needed
+		// Conversion to period as decimal mark, if needed
 		parameters = StringHelper::replaceCharacters(parameters, L",", L".");
 
 		wsmatch match;
 		wstring typeString;
 
 		bool found = regex_search(parameters, match, regexType);
-		if(found)
+		if (found)
 		{
 			typeString = match.str(1);
-			if(filterNameToTypeMap.find(typeString) != filterNameToTypeMap.end())
+			if (filterNameToTypeMap.find(typeString) != filterNameToTypeMap.end())
 			{
 				BiQuad::Type type = filterNameToTypeMap[typeString];
 				wstring typeDescription = filterTypeToDescriptionMap[type];
@@ -98,7 +98,7 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 				bool error = false;
 
 				found = regex_search(parameters, match, regexFreq);
-				if(found)
+				if (found)
 				{
 					wstring freqString = match.str(1);
 					freq = getFreq(freqString);
@@ -111,30 +111,30 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 				}
 
 				found = regex_search(parameters, match, regexGain);
-				if(found)
+				if (found)
 				{
-					if(type == BiQuad::LOW_PASS || type == BiQuad::HIGH_PASS || type == BiQuad::NOTCH || type == BiQuad::ALL_PASS)
+					if (type == BiQuad::LOW_PASS || type == BiQuad::HIGH_PASS || type == BiQuad::NOTCH || type == BiQuad::ALL_PASS)
 						TraceF(L"Ignoring gain for filter of type %s", typeDescription.c_str());
 					else
 					{
 						wstring gainString = match.str(1);
 						gain = wcstod(gainString.c_str(), NULL);
-						if(type == BiQuad::PEAKING)
+						if (type == BiQuad::PEAKING)
 							stream << ", gain " << gain << " dB";
 						else
 							stream << " and gain " << gain << " dB";
 					}
 				}
-				else if(type == BiQuad::PEAKING || type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+				else if (type == BiQuad::PEAKING || type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
 				{
 					LogF(L"No gain given in filter string %s%s", typeString.c_str(), parameters.c_str());
 					error = true;
 				}
 
 				found = regex_search(parameters, match, regexQ);
-				if(found)
+				if (found)
 				{
-					if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+					if (type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
 						TraceF(L"Ignoring Q for filter of type %s", typeDescription.c_str());
 					else
 					{
@@ -145,9 +145,9 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 				}
 
 				found = regex_search(parameters, match, regexBW);
-				if(found)
+				if (found)
 				{
-					if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+					if (type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
 						TraceF(L"Ignoring bandwidth for filter of type %s", typeDescription.c_str());
 					else
 					{
@@ -159,9 +159,9 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 				}
 
 				found = regex_search(parameters, match, regexSlope);
-				if(found)
+				if (found)
 				{
-					if(!(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF))
+					if (!(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF))
 						TraceF(L"Ignoring slope for filter of type %s", typeDescription.c_str());
 					else
 					{
@@ -171,35 +171,35 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 					}
 				}
 
-				if(bandwidthOrQOrS == 0)
+				if (bandwidthOrQOrS == 0)
 				{
-					if(type == BiQuad::PEAKING || type == BiQuad::ALL_PASS)
+					if (type == BiQuad::PEAKING || type == BiQuad::ALL_PASS)
 					{
 						LogF(L"No Q or bandwidth given in filter string %s%s", typeString.c_str(), parameters.c_str());
 						error = true;
 					}
-					else if(type == BiQuad::LOW_PASS || type == BiQuad::HIGH_PASS || type == BiQuad::BAND_PASS)
+					else if (type == BiQuad::LOW_PASS || type == BiQuad::HIGH_PASS || type == BiQuad::BAND_PASS)
 					{
 						bandwidthOrQOrS = M_SQRT1_2;
 					}
-					else if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+					else if (type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
 					{
 						bandwidthOrQOrS = 0.9; // found out by experimentation with RoomEQWizard
 					}
-					else if(type == BiQuad::NOTCH)
+					else if (type == BiQuad::NOTCH)
 					{
 						bandwidthOrQOrS = 30.0; // found out by experimentation with RoomEQWizard
 					}
 				}
-				else if(type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
+				else if (type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
 				{
 					// Maximum S is 1 for 12 dB
 					bandwidthOrQOrS /= 12.0;
-					if(typeString[typeString.length()-1] != L'C')
+					if (typeString[typeString.length() - 1] != L'C')
 						isCornerFreq = true;
 				}
 
-				if(!error)
+				if (!error)
 				{
 					TraceF(L"%s", stream.str().c_str());
 
@@ -207,14 +207,14 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 					filter = new(mem) BiQuadFilter(type, gain, freq, bandwidthOrQOrS, isBandwidth, isCornerFreq);
 				}
 			}
-			else if(typeString != L"None")
+			else if (typeString != L"None")
 			{
 				LogF(L"Invalid filter type %s", typeString.c_str());
 			}
 		}
 	}
 
-	if(filter == NULL)
+	if (filter == NULL)
 		return vector<IFilter*>(0);
 	return vector<IFilter*>(1, filter);
 }
@@ -225,13 +225,13 @@ double BiQuadFilterFactory::getFreq(const wstring& freqString)
 	// remove thousand's separator for locales utilizing non-breaking space
 	wstring s = StringHelper::replaceCharacters(freqString, L"\u00A0", L"");
 	int matched = swscanf_s(s.c_str(), L"%lf", &result);
-	if(matched == 1)
+	if (matched == 1)
 	{
-		if(s.length() >= 5 && s.find_first_of(L"eE") == wstring::npos)
+		if (s.length() >= 5 && s.find_first_of(L"eE") == wstring::npos)
 		{
-			if(s[s.length() - 4] == L'.')
+			if (s[s.length() - 4] == L'.')
 			{
-				//Interpret as thousands separator because of Room EQ Wizard
+				// Interpret as thousands separator because of Room EQ Wizard
 				result *= 1000.0;
 			}
 		}

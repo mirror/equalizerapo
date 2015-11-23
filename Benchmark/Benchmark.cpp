@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2012  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2012  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 	{
 		stringstream versionStream;
 		versionStream << MAJOR << "." << MINOR;
-		if(REVISION != 0)
+		if (REVISION != 0)
 			versionStream << "." << REVISION;
 		TCLAP::CmdLine cmd("Benchmark generates a linear sine sweep or reads from the given input file. "
 			"It then filters the waveform using the Equalizer APO filter configuration "
@@ -71,8 +71,8 @@ int main(int argc, char** argv)
 		bool verbose = verboseArg.getValue();
 		LogHelper::set(stderr, verbose, true, true);
 #ifdef _DEBUG
-		_CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
-		//_CrtSetBreakAlloc(3318);
+		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+		// _CrtSetBreakAlloc(3318);
 #endif
 
 		unsigned sampleRate;
@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 		float length;
 		float* buf;
 
-		if(REVISION == 0)
+		if (REVISION == 0)
 			printf("Benchmark %d.%d\n", MAJOR, MINOR);
 		else
 			printf("Benchmark %d.%d.%d\n", MAJOR, MINOR, REVISION);
@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 		printf("\n");
 
 		string input = inputArg.getValue();
-		if(input != "")
+		if (input != "")
 		{
 			printf("Reading sound data from %s\n", input.c_str());
 
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
 
 			SF_INFO info;
 			SNDFILE* inFile = sf_open(input.c_str(), SFM_READ, &info);
-			if(inFile == NULL)
+			if (inFile == NULL)
 			{
 				fprintf(stderr, "%s", sf_strerror(inFile));
 				return 1;
@@ -115,7 +115,7 @@ int main(int argc, char** argv)
 			buf = new float[frameCount * channelCount];
 
 			sf_count_t numRead = 0;
-			while(numRead < frameCount)
+			while (numRead < frameCount)
 				numRead += sf_readf_float(inFile, buf + numRead * channelCount, frameCount - numRead);
 
 			sf_close(inFile);
@@ -141,13 +141,13 @@ int main(int argc, char** argv)
 			timer.start();
 
 			buf = new float[frameCount * channelCount];
-			for(unsigned i=0; i<frameCount; i++)
+			for (unsigned i = 0; i < frameCount; i++)
 			{
-				double t=i*1.0 / sampleRate;
-				float s = (float)sin(((sweepFrom + sweepDiff*(t/length)/2)*t)*2*M_PI);
+				double t = i * 1.0 / sampleRate;
+				float s = (float)sin(((sweepFrom + sweepDiff * (t / length) / 2) * t) * 2 * M_PI);
 
-				for(unsigned j=0; j<channelCount; j++)
-					buf[i*channelCount + j] = s;
+				for (unsigned j = 0; j < channelCount; j++)
+					buf[i * channelCount + j] = s;
 			}
 
 			double genTime = timer.stop();
@@ -157,8 +157,8 @@ int main(int argc, char** argv)
 		unsigned batchsize = batchsizeArg.getValue();
 
 		float* buf2 = new float[frameCount * channelCount];
-		for(unsigned i=0;i<frameCount*channelCount;i++)
-			buf2[i]=0.0f;
+		for (unsigned i = 0; i < frameCount * channelCount; i++)
+			buf2[i] = 0.0f;
 
 		PrecisionTimer timer;
 		timer.start();
@@ -170,16 +170,16 @@ int main(int argc, char** argv)
 		engine.initialize((float)sampleRate, channelCount, channelCount, channelCount, channelMask, batchsize);
 
 		double initTime = timer.stop();
-		if(!verbose)
+		if (!verbose)
 			printf("\nLoading configuration took %g ms\n", initTime * 1000.0);
 
 		printf("\nProcessing %d frames from %d channel(s)\n", frameCount, channelCount);
 
 		timer.start();
 
-		for(unsigned i=0; i<frameCount; i+=batchsize)
+		for (unsigned i = 0; i < frameCount; i += batchsize)
 		{
-			engine.process(buf2 + i*channelCount, buf + i*channelCount, min(batchsize, frameCount - i));
+			engine.process(buf2 + i * channelCount, buf + i * channelCount, min(batchsize, frameCount - i));
 		}
 
 		double time = timer.stop();
@@ -189,25 +189,25 @@ int main(int argc, char** argv)
 
 		unsigned clipCount = 0;
 		float max = 0;
-		for(unsigned i=0; i<frameCount*channelCount; i++)
+		for (unsigned i = 0; i < frameCount * channelCount; i++)
 		{
 			float f = fabs(buf2[i]);
-			if(f > max)
+			if (f > max)
 				max = f;
-			if(f > 1.0f)
+			if (f > 1.0f)
 				clipCount++;
 		}
 
 		printf("Max output level: %f (%f dB)", max, log10(max) * 20.0f);
-		if(clipCount > 0)
+		if (clipCount > 0)
 			printf(" (%d samples clipped!)", clipCount);
 		printf("\n");
 
 		string output = outputArg.getValue();
-		if(output == "")
+		if (output == "")
 		{
 			char temp[255];
-			GetTempPathA(sizeof(temp)/sizeof(wchar_t), temp);
+			GetTempPathA(sizeof(temp) / sizeof(wchar_t), temp);
 
 			output = temp;
 			output += "testout.wav";
@@ -217,28 +217,28 @@ int main(int argc, char** argv)
 
 		SF_INFO info = {frameCount, (int)sampleRate, (int)channelCount, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 0};
 		SNDFILE* outFile = sf_open(output.c_str(), SFM_WRITE, &info);
-		if(outFile == NULL)
+		if (outFile == NULL)
 		{
 			fprintf(stderr, "%s", sf_strerror(outFile));
 			return 1;
 		}
 
 		sf_count_t numWritten = 0;
-		while(numWritten < frameCount)
+		while (numWritten < frameCount)
 			numWritten += sf_writef_float(outFile, buf2 + numWritten * channelCount, frameCount - numWritten);
 
 		sf_close(outFile);
 		outFile = NULL;
 
-		delete[] buf;
-		delete[] buf2;
+		delete[]buf;
+		delete[]buf2;
 
-		if(!noPauseArg.getValue())
+		if (!noPauseArg.getValue())
 			system("pause");
 
 		return 0;
 	}
-	catch(TCLAP::ArgException e)
+	catch (TCLAP::ArgException e)
 	{
 		printf("Error: %s for arg %s\n", e.error().c_str(), e.argId().c_str());
 		return -1;

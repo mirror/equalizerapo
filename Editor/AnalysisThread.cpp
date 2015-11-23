@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <QElapsedTimer>
@@ -36,18 +36,18 @@ AnalysisThread::~AnalysisThread()
 
 	wait();
 
-	if(resultFreqData != NULL)
+	if (resultFreqData != NULL)
 		fftwf_free(resultFreqData);
 
-	if(buf != NULL)
+	if (buf != NULL)
 		delete buf;
-	if(buf2 != NULL)
+	if (buf2 != NULL)
 		delete buf2;
-	if(timeData != NULL)
+	if (timeData != NULL)
 		fftwf_free(timeData);
-	if(freqData != NULL)
+	if (freqData != NULL)
 		fftwf_free(freqData);
-	if(planForward != NULL)
+	if (planForward != NULL)
 		fftwf_destroy_plan(planForward);
 }
 
@@ -115,12 +115,12 @@ int AnalysisThread::getProcessedFrames() const
 
 void AnalysisThread::run()
 {
-	while(true)
+	while (true)
 	{
 		mutex.lock();
-		if(!quit && this->frameCount == 0)
+		if (!quit && this->frameCount == 0)
 			condition.wait(&mutex);
-		if(quit)
+		if (quit)
 		{
 			mutex.unlock();
 			break;
@@ -138,13 +138,13 @@ void AnalysisThread::run()
 		timer.start();
 
 		unsigned channelCount = device.channelCount;
-		if(channelMask != 0 && channelMask != device.channelMask)
+		if (channelMask != 0 && channelMask != device.channelMask)
 		{
 			channelCount = 0;
-			for(int i = 0; i < 31; i++)
+			for (int i = 0; i < 31; i++)
 			{
 				int channelPos = 1 << i;
-				if(channelMask & channelPos)
+				if (channelMask & channelPos)
 					channelCount++;
 			}
 		}
@@ -157,31 +157,31 @@ void AnalysisThread::run()
 		engine.initialize(sampleRate, channelCount, channelCount, channelCount, channelMask, frameCount, configPath.toStdWString());
 		double initializationTime = (timer.nsecsElapsed() - startTime) / 1e6;
 
-		if(frameCount != lastFrameCount || channelCount != lastChannelCount)
+		if (frameCount != lastFrameCount || channelCount != lastChannelCount)
 		{
-			if(buf != NULL)
+			if (buf != NULL)
 				delete buf;
 			buf = new float[frameCount * channelCount];
 			memset(buf, 0, frameCount * channelCount * sizeof(float));
 
-			if(buf2 != NULL)
+			if (buf2 != NULL)
 				delete buf2;
 			buf2 = new float[frameCount * channelCount];
 		}
-		for(unsigned i = 0; i < channelCount; i++)
+		for (unsigned i = 0; i < channelCount; i++)
 			buf[i] = 1.0f;
 
-		if(frameCount != lastFrameCount)
+		if (frameCount != lastFrameCount)
 		{
-			if(timeData != NULL)
+			if (timeData != NULL)
 				fftwf_free(timeData);
 			timeData = fftwf_alloc_real(frameCount);
 
-			if(freqData != NULL)
+			if (freqData != NULL)
 				fftwf_free(freqData);
 			freqData = fftwf_alloc_complex(frameCount);
 
-			if(planForward != NULL)
+			if (planForward != NULL)
 				fftwf_destroy_plan(planForward);
 			planForward = fftwf_plan_dft_r2c_1d(frameCount, timeData, freqData, FFTW_ESTIMATE);
 		}
@@ -193,50 +193,50 @@ void AnalysisThread::run()
 		int startFrame = -1;
 		double processingTime = 0.0;
 		int processedFrames = 0;
-		while(true)
+		while (true)
 		{
 			qint64 startTime = timer.nsecsElapsed();
 			engine.process(buf2, buf, frameCount);
 			processingTime += (timer.nsecsElapsed() - startTime) / 1e6;
 			processedFrames += frameCount;
 
-			if(startFrame != -1)
+			if (startFrame != -1)
 			{
-				for(int i = 0; i < startFrame; i++)
+				for (int i = 0; i < startFrame; i++)
 				{
 					timeData[frameCount - startFrame + i] = buf2[i * channelCount + channelIndex];
 				}
 				break;
 			}
 
-			for(int i = 0; i < frameCount; i++)
+			for (int i = 0; i < frameCount; i++)
 			{
 				float s = buf2[i * channelCount + channelIndex];
-				if(abs(s) > 1e-5f)
+				if (abs(s) > 1e-5f)
 				{
 					startFrame = i;
 					break;
 				}
 			}
 
-			if(startFrame != -1)
+			if (startFrame != -1)
 			{
-				for(int i = 0; i < frameCount - startFrame; i++)
+				for (int i = 0; i < frameCount - startFrame; i++)
 				{
 					timeData[i] = buf2[(startFrame + i) * channelCount + channelIndex];
 				}
 
-				if(startFrame == 0)
+				if (startFrame == 0)
 					break;
 			}
 
-			if(latency == 0)
+			if (latency == 0)
 			{
-				for(unsigned i = 0; i < channelCount; i++)
+				for (unsigned i = 0; i < channelCount; i++)
 					buf[i] = 0.0f;
 			}
 
-			if(startFrame == -1)
+			if (startFrame == -1)
 				latency += frameCount;
 		}
 		latency += startFrame;
@@ -245,19 +245,19 @@ void AnalysisThread::run()
 
 		double peakGain = -DBL_MAX;
 
-		for(int i = 0; i < frameCount; i++)
+		for (int i = 0; i < frameCount; i++)
 		{
 			float sqrGain = freqData[i][0] * freqData[i][0] + freqData[i][1] * freqData[i][1];
-			if(sqrGain > peakGain)
+			if (sqrGain > peakGain)
 				peakGain = sqrGain;
 		}
 		peakGain = sqrt(peakGain);
 		peakGain = log10(peakGain) * 20.0;
 
 		mutex.lock();
-		if(this->freqDataLength != frameCount)
+		if (this->freqDataLength != frameCount)
 		{
-			if(resultFreqData != NULL)
+			if (resultFreqData != NULL)
 				fftwf_free(resultFreqData);
 			resultFreqData = fftwf_alloc_complex(frameCount);
 		}

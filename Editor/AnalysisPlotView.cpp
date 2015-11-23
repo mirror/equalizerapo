@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <algorithm>
@@ -41,15 +41,15 @@ void AnalysisPlotView::drawBackground(QPainter* painter, const QRectF& rect)
 	QPainterPath path;
 	bool first = true;
 	double lastDb = -1000;
-	for(int x = rect.left() - 1; x <= rect.right() + 1; x++)
+	for (int x = rect.left() - 1; x <= rect.right() + 1; x++)
 	{
 		double hz = s->xToHz(x);
 		double db = gainIterator.gainAt(hz);
 		double y = s->dbToY(db);
-		if(db == lastDb)
+		if (db == lastDb)
 			y = floor(y) + 0.5;
 		lastDb = db;
-		if(first)
+		if (first)
 		{
 			path.moveTo(x, y);
 			first = false;
@@ -64,7 +64,7 @@ void AnalysisPlotView::drawBackground(QPainter* painter, const QRectF& rect)
 	path.lineTo(rect.left() - 1, rect.bottom() + 1);
 
 	double thresholdY = s->dbToY(0);
-	if(rect.top() < thresholdY)
+	if (rect.top() < thresholdY)
 	{
 		QPainterPath rectPath;
 		rectPath.addRect(rect.left(), rect.top(), rect.width(), min(thresholdY - rect.top(), rect.height()));

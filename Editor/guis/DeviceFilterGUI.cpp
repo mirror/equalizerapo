@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <string>
@@ -25,8 +25,8 @@
 
 using namespace std;
 
-DeviceFilterGUI::DeviceFilterGUI(DeviceFilterGUIFactory* factory):
-	ui(new Ui::DeviceFilterGUI)
+DeviceFilterGUI::DeviceFilterGUI(DeviceFilterGUIFactory* factory)
+	: ui(new Ui::DeviceFilterGUI)
 {
 	ui->setupUi(this);
 	this->factory = factory;
@@ -52,7 +52,7 @@ void DeviceFilterGUI::load(const QString& parameters)
 
 	QTreeWidgetItem* lastItem = NULL;
 
-	if(parameters.trimmed() == "all")
+	if (parameters.trimmed() == "all")
 	{
 		QStringList values;
 		values.append("");
@@ -64,23 +64,23 @@ void DeviceFilterGUI::load(const QString& parameters)
 	else
 	{
 		const QList<DeviceAPOInfo>& devices = factory->getDevices();
-		for(const DeviceAPOInfo& apoInfo : devices)
+		for (const DeviceAPOInfo& apoInfo : devices)
 		{
-			if(!apoInfo.isInstalled)
+			if (!apoInfo.isInstalled)
 				continue;
 
 			wstring deviceString = apoInfo.connectionName + L" " + apoInfo.deviceName + L" " + apoInfo.deviceGuid;
-			if(DeviceFilterFactory::matchDevice(deviceString, pattern.toStdWString()))
+			if (DeviceFilterFactory::matchDevice(deviceString, pattern.toStdWString()))
 			{
 				QStringList values;
-				if(apoInfo.isInput)
+				if (apoInfo.isInput)
 					values.append(tr("Capture"));
 				else
 					values.append(tr("Playback"));
 				values.append(QString::fromStdWString(apoInfo.connectionName));
 				values.append(QString::fromStdWString(apoInfo.deviceName));
 				QString state;
-				if(apoInfo.isInstalled)
+				if (apoInfo.isInstalled)
 					state = tr("APO installed");
 				else
 					state = tr("APO not installed");
@@ -89,7 +89,7 @@ void DeviceFilterGUI::load(const QString& parameters)
 			}
 		}
 
-		if(ui->treeWidget->topLevelItemCount() == 0)
+		if (ui->treeWidget->topLevelItemCount() == 0)
 		{
 			QStringList values;
 			values.append("");
@@ -102,12 +102,12 @@ void DeviceFilterGUI::load(const QString& parameters)
 		}
 	}
 
-	for(int i = 0; i < ui->treeWidget->columnCount(); i++)
+	for (int i = 0; i < ui->treeWidget->columnCount(); i++)
 		ui->treeWidget->resizeColumnToContents(i);
 
 	int headerHeight = ui->treeWidget->header()->height();
 	int itemAreaHeight = 0;
-	if(lastItem != NULL)
+	if (lastItem != NULL)
 		itemAreaHeight = ui->treeWidget->visualItemRect(lastItem).bottom() + 1;
 	ui->treeWidget->setFixedHeight(headerHeight + itemAreaHeight + 3);
 }
@@ -121,7 +121,7 @@ void DeviceFilterGUI::store(QString& command, QString& parameters)
 void DeviceFilterGUI::on_pushButton_clicked()
 {
 	DeviceFilterGUIDialog dialog(this, factory, pattern);
-	if(dialog.exec() == QDialog::Accepted)
+	if (dialog.exec() == QDialog::Accepted)
 	{
 		load(dialog.getPattern());
 		emit updateModel();

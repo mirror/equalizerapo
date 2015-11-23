@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2012  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2012  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #pragma once
@@ -26,9 +26,9 @@
 #include <windows.h>
 
 // {EACD2258-FCAC-4FF4-B36D-419E924A6D79}
-const GUID EQUALIZERAPO_PRE_MIX_GUID = { 0xeacd2258, 0xfcac, 0x4ff4, { 0xb3, 0x6d, 0x41, 0x9e, 0x92, 0x4a, 0x6d, 0x79 } };
+const GUID EQUALIZERAPO_PRE_MIX_GUID = {0xeacd2258, 0xfcac, 0x4ff4, {0xb3, 0x6d, 0x41, 0x9e, 0x92, 0x4a, 0x6d, 0x79}};
 // {EC1CC9CE-FAED-4822-828A-82A81A6F018F}
-const GUID EQUALIZERAPO_POST_MIX_GUID = { 0xec1cc9ce, 0xfaed, 0x4822, { 0x82, 0x8a, 0x82, 0xa8, 0x1a, 0x6f, 0x01, 0x8f } };
+const GUID EQUALIZERAPO_POST_MIX_GUID = {0xec1cc9ce, 0xfaed, 0x4822, {0x82, 0x8a, 0x82, 0xa8, 0x1a, 0x6f, 0x01, 0x8f}};
 
 #define APP_REGPATH L"HKEY_LOCAL_MACHINE\\SOFTWARE\\EqualizerAPO"
 #define USER_REGPATH L"HKEY_CURRENT_USER\\SOFTWARE\\EqualizerAPO"
@@ -67,7 +67,8 @@ private:
 class RegistryException
 {
 public:
-	RegistryException(const std::wstring& message):message(message) {}
+	RegistryException(const std::wstring& message)
+		: message(message) {}
 
 	std::wstring getMessage()
 	{

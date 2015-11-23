@@ -30,19 +30,19 @@ vector<IFilter*> ChannelFilterFactory::createFilter(const wstring& configPath, w
 {
 	ChannelFilter* filter = NULL;
 
-	if(command == L"Channel")
+	if (command == L"Channel")
 	{
 		wstring value = parameters + L" ";
 
 		vector<wstring> words;
 		wstring currentWord;
-		for(unsigned i=0; i<value.length(); i++)
+		for (unsigned i = 0; i < value.length(); i++)
 		{
 			wchar_t c = towupper(value[i]);
 
-			if(c == L' ')
+			if (c == L' ')
 			{
-				if(currentWord.length() > 0)
+				if (currentWord.length() > 0)
 				{
 					words.push_back(currentWord);
 
@@ -59,7 +59,7 @@ vector<IFilter*> ChannelFilterFactory::createFilter(const wstring& configPath, w
 		filter = new(mem) ChannelFilter(words);
 	}
 
-	if(filter == NULL)
+	if (filter == NULL)
 		return vector<IFilter*>(0);
 	return vector<IFilter*>(1, filter);
 }

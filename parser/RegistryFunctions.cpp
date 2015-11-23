@@ -26,16 +26,16 @@ using namespace std;
 using namespace mup;
 
 ReadRegStringFunction::ReadRegStringFunction(FilterEngine* engine)
-	:ICallback(cmFUNC, L"readRegString", 2)
+	: ICallback(cmFUNC, L"readRegString", 2)
 {
 	this->engine = engine;
 }
 
-void ReadRegStringFunction::Eval(ptr_val_type& ret, const ptr_val_type *arg, int argc)
+void ReadRegStringFunction::Eval(ptr_val_type& ret, const ptr_val_type* arg, int argc)
 {
-	if(!arg[0]->IsString())
+	if (!arg[0]->IsString())
 		throw ParserError(ErrorContext(ecTYPE_CONFLICT_FUN, -1, GetIdent(), arg[0]->GetType(), 's', 1));
-	if(!arg[1]->IsString())
+	if (!arg[1]->IsString())
 		throw ParserError(ErrorContext(ecTYPE_CONFLICT_FUN, -1, GetIdent(), arg[1]->GetType(), 's', 2));
 
 	wstring key = arg[0]->GetString();
@@ -49,7 +49,7 @@ void ReadRegStringFunction::Eval(ptr_val_type& ret, const ptr_val_type *arg, int
 
 		engine->watchRegistryKey(key);
 	}
-	catch(RegistryException e)
+	catch (RegistryException e)
 	{
 		throw ParserError(e.getMessage());
 	}
@@ -66,16 +66,16 @@ IToken* ReadRegStringFunction::Clone() const
 }
 
 ReadRegDWORDFunction::ReadRegDWORDFunction(FilterEngine* engine)
-	:ICallback(cmFUNC, L"readRegDWORD", 2)
+	: ICallback(cmFUNC, L"readRegDWORD", 2)
 {
 	this->engine = engine;
 }
 
-void ReadRegDWORDFunction::Eval(ptr_val_type& ret, const ptr_val_type *arg, int argc)
+void ReadRegDWORDFunction::Eval(ptr_val_type& ret, const ptr_val_type* arg, int argc)
 {
-	if(!arg[0]->IsString())
+	if (!arg[0]->IsString())
 		throw ParserError(ErrorContext(ecTYPE_CONFLICT_FUN, -1, GetIdent(), arg[0]->GetType(), 's', 1));
-	if(!arg[1]->IsString())
+	if (!arg[1]->IsString())
 		throw ParserError(ErrorContext(ecTYPE_CONFLICT_FUN, -1, GetIdent(), arg[1]->GetType(), 's', 2));
 
 	wstring key = arg[0]->GetString();
@@ -89,7 +89,7 @@ void ReadRegDWORDFunction::Eval(ptr_val_type& ret, const ptr_val_type *arg, int 
 
 		engine->watchRegistryKey(key);
 	}
-	catch(RegistryException e)
+	catch (RegistryException e)
 	{
 		throw ParserError(e.getMessage());
 	}

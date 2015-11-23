@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2014  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2014  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -37,7 +37,7 @@ vector<IFilter*> IfFilterFactory::startOfConfiguration()
 {
 	trueCount = 0;
 	falseCount = 0;
-	while(!trueCountStack.empty())
+	while (!trueCountStack.empty())
 		trueCountStack.pop();
 
 	return vector<IFilter*>();
@@ -48,7 +48,7 @@ std::vector<IFilter*> IfFilterFactory::startOfFile(const std::wstring& configPat
 	trueCountStack.push(trueCount);
 	trueCount = 0;
 	executeElse = false;
-	if(falseCount != 0)
+	if (falseCount != 0)
 	{
 		LogF(L"File was included inside If that evaluated to false!");
 		falseCount = 0;
@@ -61,21 +61,21 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 {
 	wstring expression = StringHelper::trim(parameters);
 
-	if(command == L"If")
+	if (command == L"If")
 	{
-		if(falseCount == 0)
+		if (falseCount == 0)
 		{
 			try
 			{
 				parser->SetExpr(expression);
 				Value result = parser->Eval();
 				bool isTrue = toBoolean(result);
-				if(result.GetType() == L'b')
+				if (result.GetType() == L'b')
 					TraceF(L"If(%s) evaluated to %s", expression.c_str(), result.ToString().c_str());
 				else
 					TraceF(L"If(%s) evaluated to %s (%s)", expression.c_str(), result.ToString().c_str(), isTrue ? L"true" : L"false");
 
-				if(isTrue)
+				if (isTrue)
 				{
 					trueCount++;
 				}
@@ -85,7 +85,7 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 					executeElse = true;
 				}
 			}
-			catch(ParserError e)
+			catch (ParserError e)
 			{
 				LogF(L"Error while evaluating If(%s): %s", expression.c_str(), e.GetMsg().c_str());
 				falseCount++;
@@ -96,11 +96,11 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 			falseCount++;
 		}
 	}
-	else if(command == L"ElseIf")
+	else if (command == L"ElseIf")
 	{
-		if(falseCount == 0)
+		if (falseCount == 0)
 		{
-			if(trueCount == 0)
+			if (trueCount == 0)
 			{
 				LogF(L"ElseIf without If!");
 			}
@@ -110,36 +110,36 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 				trueCount--;
 			}
 		}
-		else if(falseCount == 1 && executeElse)
+		else if (falseCount == 1 && executeElse)
 		{
 			try
 			{
 				parser->SetExpr(expression);
 				Value result = parser->Eval();
 				bool isTrue = toBoolean(result);
-				if(result.GetType() == L'b')
+				if (result.GetType() == L'b')
 					TraceF(L"ElseIf(%s) evaluated to %s", expression.c_str(), result.ToString().c_str());
 				else
 					TraceF(L"ElseIf(%s) evaluated to %s (%s)", expression.c_str(), result.ToString().c_str(), isTrue ? L"true" : L"false");
 
-				if(isTrue)
+				if (isTrue)
 				{
 					falseCount--;
 					trueCount++;
 					executeElse = false;
 				}
 			}
-			catch(ParserError e)
+			catch (ParserError e)
 			{
 				LogF(L"Error while evaluating ElseIf(%s): %s", expression.c_str(), e.GetMsg().c_str());
 			}
 		}
 	}
-	else if(command == L"Else")
+	else if (command == L"Else")
 	{
-		if(falseCount == 0)
+		if (falseCount == 0)
 		{
-			if(trueCount == 0)
+			if (trueCount == 0)
 			{
 				LogF(L"Else without If!");
 			}
@@ -149,18 +149,18 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 				trueCount--;
 			}
 		}
-		else if(falseCount == 1 && executeElse)
+		else if (falseCount == 1 && executeElse)
 		{
 			falseCount--;
 			trueCount++;
 			executeElse = false;
 		}
 	}
-	else if(command == L"EndIf")
+	else if (command == L"EndIf")
 	{
-		if(falseCount == 0)
+		if (falseCount == 0)
 		{
-			if(trueCount == 0)
+			if (trueCount == 0)
 				LogF(L"EndIf without If!");
 			else
 				trueCount--;
@@ -170,11 +170,11 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 			falseCount--;
 		}
 
-		if(falseCount == 0)
+		if (falseCount == 0)
 			executeElse = false;
 	}
 
-	if(falseCount > 0)
+	if (falseCount > 0)
 		// skip line for further factories
 		command = L"";
 
@@ -183,7 +183,7 @@ vector<IFilter*> IfFilterFactory::createFilter(const wstring& configPath, wstrin
 
 std::vector<IFilter*> IfFilterFactory::endOfFile(const std::wstring& configPath)
 {
-	if(trueCount != 0 || falseCount != 0)
+	if (trueCount != 0 || falseCount != 0)
 	{
 		LogF(L"If was not closed by EndIf!");
 		falseCount = 0;
@@ -199,7 +199,7 @@ bool IfFilterFactory::toBoolean(const Value& value)
 	bool result = false;
 
 	wchar_t type = value.GetType();
-	switch(type)
+	switch (type)
 	{
 	case 'i':
 		{

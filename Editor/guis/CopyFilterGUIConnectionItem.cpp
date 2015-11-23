@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <QGraphicsScene>
@@ -64,7 +64,7 @@ QPainterPath CopyFilterGUIConnectionItem::shape() const
 	QPainterPath path;
 	path.setFillRule(Qt::WindingFill);
 	double length = line().length();
-	if(length > 0)
+	if (length > 0)
 	{
 		double offset = min(length, maxArrowSize);
 		QLineF unit = l.unitVector();
@@ -89,13 +89,13 @@ QPainterPath CopyFilterGUIConnectionItem::shape() const
 		polygon2.append(p1 + 3 * n);
 		path.addPolygon(polygon2);
 
-		if(factor != 1.0 || isDecibel)
+		if (factor != 1.0 || isDecibel)
 		{
 			QFont font;
 			font.setPixelSize(10);
 			QPointF center = (l.p1() + l.p2()) / 2;
 			QString text = QString("%1").arg(factor);
-			if(isDecibel)
+			if (isDecibel)
 				text += " dB";
 
 			QFontMetrics fontMetrics(font);
@@ -119,10 +119,10 @@ bool CopyFilterGUIConnectionItem::contains(const QPointF& point) const
 void CopyFilterGUIConnectionItem::paint(QPainter* painter, const QStyleOptionGraphicsItem* option, QWidget* widget)
 {
 	QLineF l = line();
-	if(!l.isNull())
+	if (!l.isNull())
 	{
 		painter->setBrush(Qt::black);
-		if(isSelected())
+		if (isSelected())
 		{
 			painter->setBrush(Qt::blue);
 			painter->setPen(QPen(Qt::blue, 1.5));
@@ -146,14 +146,14 @@ void CopyFilterGUIConnectionItem::paint(QPainter* painter, const QStyleOptionGra
 
 		painter->drawPolygon(polygon);
 
-		if(factor != 1.0 || isDecibel)
+		if (factor != 1.0 || isDecibel)
 		{
 			QFont font = painter->font();
 			font.setPixelSize(10);
 			painter->setFont(font);
 			QPointF center = (l.p1() + l.p2()) / 2;
 			QString text = QString("%1").arg(factor);
-			if(isDecibel)
+			if (isDecibel)
 				text += " dB";
 
 			QSizeF size = painter->fontMetrics().size(0, text);
@@ -171,7 +171,7 @@ void CopyFilterGUIConnectionItem::paint(QPainter* painter, const QStyleOptionGra
 void CopyFilterGUIConnectionItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent* event)
 {
 	QString text = QString("%1").arg(factor);
-	if(isDecibel)
+	if (isDecibel)
 		text += " dB";
 
 	ResizingLineEdit* lineEdit = new ResizingLineEdit("");
@@ -199,7 +199,7 @@ void CopyFilterGUIConnectionItem::hoverLeaveEvent(QGraphicsSceneHoverEvent* even
 
 QVariant CopyFilterGUIConnectionItem::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant& value)
 {
-	if(change == ItemSelectedHasChanged)
+	if (change == ItemSelectedHasChanged)
 	{
 		setZValue(isSelected() ? 1 : 0);
 	}
@@ -211,7 +211,7 @@ void CopyFilterGUIConnectionItem::lineEditEditingFinished()
 {
 	QLineEdit* lineEdit = qobject_cast<QLineEdit*>(QObject::sender());
 	// might be called twice
-	if(!lineEdit->isVisible())
+	if (!lineEdit->isVisible())
 		return;
 
 	QString text = lineEdit->text();
@@ -220,7 +220,7 @@ void CopyFilterGUIConnectionItem::lineEditEditingFinished()
 	int lengthBefore = text.length();
 	text.replace("db", "", Qt::CaseInsensitive);
 	double value = text.toDouble(&ok);
-	if(ok)
+	if (ok)
 	{
 		factor = value;
 		isDecibel = text.length() < lengthBefore;
@@ -229,7 +229,7 @@ void CopyFilterGUIConnectionItem::lineEditEditingFinished()
 	lineEdit->setVisible(false);
 	lineEdit->deleteLater();
 
-	emit ((CopyFilterGUIScene*)scene())->updateModel();
+	emit((CopyFilterGUIScene*)scene())->updateModel();
 }
 
 CopyFilterGUIChannelItem* CopyFilterGUIConnectionItem::getSource() const

@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <QWheelEvent>
@@ -23,8 +23,8 @@
 #include "FrequencyPlotScene.h"
 #include "FrequencyPlotVRuler.h"
 
-FrequencyPlotVRuler::FrequencyPlotVRuler(QWidget *parent) :
-	QWidget(parent)
+FrequencyPlotVRuler::FrequencyPlotVRuler(QWidget* parent)
+	: QWidget(parent)
 {
 }
 
@@ -40,9 +40,9 @@ void FrequencyPlotVRuler::paintEvent(QPaintEvent*)
 	double dbStep = abs(s->yToDb(0) - s->yToDb(30));
 
 	double dbBase = pow(10, floor(log10(dbStep)));
-	if(dbStep >= 5 * dbBase)
+	if (dbStep >= 5 * dbBase)
 		dbStep = 5 * dbBase;
-	else if(dbStep >= 2 * dbBase)
+	else if (dbStep >= 2 * dbBase)
 		dbStep = 2 * dbBase;
 	else
 		dbStep = dbBase;
@@ -51,23 +51,23 @@ void FrequencyPlotVRuler::paintEvent(QPaintEvent*)
 	double toDb = ceil(s->yToDb(bottomRight.y()) / dbStep) * dbStep;
 
 	painter.setPen(QColor(50, 50, 50));
-	for(double db = toDb; db <= fromDb; db += dbStep)
+	for (double db = toDb; db <= fromDb; db += dbStep)
 	{
-		if(abs(db) < 1e-6)
+		if (abs(db) < 1e-6)
 			db = 0;
 		double y = s->dbToY(db);
-		if(y != -1)
+		if (y != -1)
 			painter.drawText(0, y - topLeft.y() - 1, width(), 0, Qt::TextDontClip | Qt::AlignCenter, QString("%0").arg(db));
 	}
 
 	QPoint mousePos = view->getLastMousePos();
-	if(!mousePos.isNull())
+	if (!mousePos.isNull())
 	{
 		QPointF mouseScenePos = view->mapToScene(mousePos);
 
 		double db = s->yToDb(mouseScenePos.y());
 		double y = s->dbToY(db);
-		if(y != -1)
+		if (y != -1)
 		{
 			QString text = QString("%0").arg(db, 0, 'f', 1);
 			QFontMetrics metrics = painter.fontMetrics();

@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2013  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2013  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -31,10 +31,10 @@ wstring StringHelper::replaceCharacters(const wstring& s, const wstring& chars, 
 	wstring result;
 	result.reserve(s.length());
 
-	for(unsigned i=0; i<s.length(); i++)
+	for (unsigned i = 0; i < s.length(); i++)
 	{
 		wchar_t c = s[i];
-		if(chars.find(c) == -1)
+		if (chars.find(c) == -1)
 			result += c;
 		else
 			result += replacement;
@@ -68,7 +68,7 @@ wstring StringHelper::toLowerCase(const wstring& s)
 	wstring result = charBuf;
 	delete charBuf;
 
-	if(err == 0)
+	if (err == 0)
 		return result;
 	else
 		return s;
@@ -83,7 +83,7 @@ wstring StringHelper::toUpperCase(const wstring& s)
 	wstring result = charBuf;
 	delete charBuf;
 
-	if(err == 0)
+	if (err == 0)
 		return result;
 	else
 		return s;
@@ -94,21 +94,21 @@ wstring StringHelper::trim(const wstring& s)
 	int firstNonSpace = -1;
 	int lastNonSpace = -1;
 
-	for(unsigned i=0;i<s.length();i++)
+	for (unsigned i = 0; i < s.length(); i++)
 	{
 		wchar_t c = s[i];
-		if(!iswspace(c))
+		if (!iswspace(c))
 		{
-			if(firstNonSpace == -1)
+			if (firstNonSpace == -1)
 				firstNonSpace = i;
 			lastNonSpace = i;
 		}
 	}
 
-	if(firstNonSpace == -1)
+	if (firstNonSpace == -1)
 		return L"";
 	else
-		return s.substr(firstNonSpace, lastNonSpace-firstNonSpace+1);
+		return s.substr(firstNonSpace, lastNonSpace - firstNonSpace + 1);
 }
 
 vector<wstring> StringHelper::split(const wstring& s, wchar_t splitChar, bool skipEmpty)
@@ -116,16 +116,16 @@ vector<wstring> StringHelper::split(const wstring& s, wchar_t splitChar, bool sk
 	vector<wstring> result;
 	size_t prevPos = 0;
 	size_t pos = 0;
-	while((pos = s.find(splitChar, pos)) != wstring::npos)
+	while ((pos = s.find(splitChar, pos)) != wstring::npos)
 	{
-		wstring part = s.substr(prevPos, pos-prevPos);
-		if(part.length() > 0 || !skipEmpty)
+		wstring part = s.substr(prevPos, pos - prevPos);
+		if (part.length() > 0 || !skipEmpty)
 			result.push_back(part);
 		prevPos = ++pos;
 	}
 
 	wstring part = s.substr(prevPos);
-	if(part.length() > 0 || !skipEmpty)
+	if (part.length() > 0 || !skipEmpty)
 		result.push_back(part);
 
 	return result;
@@ -137,9 +137,9 @@ wstring StringHelper::join(const vector<wstring>& strings, const wstring& separa
 
 	bool first = true;
 
-	for(vector<wstring>::const_iterator it = strings.cbegin(); it != strings.cend(); it++)
+	for (vector<wstring>::const_iterator it = strings.cbegin(); it != strings.cend(); it++)
 	{
-		if(first)
+		if (first)
 			first = false;
 		else
 			stream << separator;
@@ -153,7 +153,7 @@ wstring StringHelper::getSystemErrorString(long status)
 {
 	wchar_t* buf;
 
-	if(FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, status, 0, (LPTSTR)&buf, 0, NULL) != 0)
+	if (FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM, NULL, status, 0, (LPTSTR)&buf, 0, NULL) != 0)
 	{
 		wstring result(buf);
 		LocalFree(buf);

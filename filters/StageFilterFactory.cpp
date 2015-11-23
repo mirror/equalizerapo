@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2014  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2014  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -37,7 +37,7 @@ void StageFilterFactory::initialize(FilterEngine* engine)
 vector<IFilter*> StageFilterFactory::startOfConfiguration()
 {
 	stageMatches = capture || !preMix || !postMixInstalled;
-	while(!stageMatchesStack.empty())
+	while (!stageMatchesStack.empty())
 		stageMatchesStack.pop();
 
 	return vector<IFilter*>();
@@ -52,35 +52,35 @@ std::vector<IFilter*> StageFilterFactory::startOfFile(const std::wstring& config
 
 vector<IFilter*> StageFilterFactory::createFilter(const wstring& configPath, wstring& command, wstring& parameters)
 {
-	if(command == L"Stage")
+	if (command == L"Stage")
 	{
 		stageMatches = false;
 
 		wstring stageString = StringHelper::toLowerCase(StringHelper::trim(parameters));
 		vector<wstring> parts = StringHelper::split(stageString, L' ');
 		wstring matchingPart;
-		for(auto it=parts.begin(); it!=parts.end(); it++)
+		for (auto it = parts.begin(); it != parts.end(); it++)
 		{
 			const wstring& part = *it;
-			if(part == L"pre-mix")
+			if (part == L"pre-mix")
 			{
-				if(!capture && preMix)
+				if (!capture && preMix)
 				{
 					stageMatches = true;
 					matchingPart = part;
 				}
 			}
-			else if(part == L"post-mix")
+			else if (part == L"post-mix")
 			{
-				if(!capture && !preMix)
+				if (!capture && !preMix)
 				{
 					stageMatches = true;
 					matchingPart = part;
 				}
 			}
-			else if(part == L"capture")
+			else if (part == L"capture")
 			{
-				if(capture)
+				if (capture)
 				{
 					stageMatches = true;
 					matchingPart = part;
@@ -92,13 +92,13 @@ vector<IFilter*> StageFilterFactory::createFilter(const wstring& configPath, wst
 			}
 		}
 
-		if(stageMatches)
+		if (stageMatches)
 			TraceF(L"Matching stage \"%s\"", matchingPart.c_str());
 		else
 			TraceF(L"Not matching stage set \"%s\"", stageString.c_str());
 	}
 
-	if(!stageMatches)
+	if (!stageMatches)
 		// skip line for further factories
 		command = L"";
 

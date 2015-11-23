@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <QFileDialog>
@@ -24,8 +24,8 @@
 #include "ConvolutionFilterGUI.h"
 #include "ui_ConvolutionFilterGUI.h"
 
-ConvolutionFilterGUI::ConvolutionFilterGUI(const QString& configPath, unsigned deviceSampleRate, const QString& path) :
-	ui(new Ui::ConvolutionFilterGUI), deviceSampleRate(deviceSampleRate)
+ConvolutionFilterGUI::ConvolutionFilterGUI(const QString& configPath, unsigned deviceSampleRate, const QString& path)
+	: ui(new Ui::ConvolutionFilterGUI), deviceSampleRate(deviceSampleRate)
 {
 	ui->setupUi(this);
 
@@ -51,19 +51,19 @@ void ConvolutionFilterGUI::on_selectFileToolButton_clicked()
 	QFileInfo fileInfo(configPath);
 	QDir configDir = fileInfo.absoluteDir();
 	QString path = ui->pathLineEdit->text();
-	if(path.length() > 0)
+	if (path.length() > 0)
 		fileInfo.setFile(configDir, path);
 
 	QFileDialog dialog(this, tr("Select impulse response file"), fileInfo.absolutePath(), "*.wav;*.flac;*.ogg");
 	dialog.setFileMode(QFileDialog::ExistingFile);
 	dialog.setNameFilter(tr("Impulse response (*.wav *.flac *.ogg)"));
-	if(path.length() > 0)
+	if (path.length() > 0)
 		dialog.selectFile(fileInfo.fileName());
-	if(dialog.exec() == QDialog::Accepted)
+	if (dialog.exec() == QDialog::Accepted)
 	{
 		QString absolutePath = dialog.selectedFiles().first();
 		QString relativePath = configDir.relativeFilePath(absolutePath);
-		if(relativePath.startsWith("../../"))
+		if (relativePath.startsWith("../../"))
 			relativePath = absolutePath;
 		ui->pathLineEdit->setText(QDir::toNativeSeparators(relativePath));
 		updateFileInfo();
@@ -85,7 +85,7 @@ void ConvolutionFilterGUI::updateFileInfo()
 	QString error = "";
 
 	QString path = ui->pathLineEdit->text();
-	if(path.length() == 0)
+	if (path.length() == 0)
 	{
 		error = tr("No file selected");
 		labelsVisible = false;
@@ -95,7 +95,7 @@ void ConvolutionFilterGUI::updateFileInfo()
 		QFileInfo fileInfo(configPath);
 		QDir configDir = fileInfo.absoluteDir();
 		fileInfo.setFile(configDir, path);
-		if(!fileInfo.exists())
+		if (!fileInfo.exists())
 		{
 			error = tr("File not found");
 			labelsVisible = false;
@@ -106,7 +106,7 @@ void ConvolutionFilterGUI::updateFileInfo()
 
 			SF_INFO info;
 			SNDFILE* file = sf_wchar_open(path.toStdWString().c_str(), SFM_READ, &info);
-			if(file == NULL)
+			if (file == NULL)
 			{
 				error = tr("Unsupported file format");
 				labelsVisible = false;
@@ -120,7 +120,7 @@ void ConvolutionFilterGUI::updateFileInfo()
 				ui->labelSampleRateValue->setText(tr("%0 Hz").arg(sampleRate));
 				sf_close(file);
 
-				if(sampleRate != deviceSampleRate)
+				if (sampleRate != deviceSampleRate)
 				{
 					error = tr("The file sample rate does not match the device sample rate (%0 Hz)!\nSelect a different file or change the device configuration.").arg(deviceSampleRate);
 				}

@@ -43,24 +43,24 @@ vector<IFilter*> IIRFilterFactory::createFilter(const wstring& configPath, wstri
 {
 	IIRFilter* filter = NULL;
 
-	if(command.find(L"Filter") == 0)
+	if (command.find(L"Filter") == 0)
 	{
 		wsmatch match;
 		wstring typeString;
 
 		bool found = regex_search(parameters, match, regexType);
-		if(found)
+		if (found)
 		{
 			typeString = match.str(1);
-			if(typeString == L"IIR")
+			if (typeString == L"IIR")
 			{
 				bool found = regex_search(parameters, match, regexOrder);
-				if(found)
+				if (found)
 				{
 					wstring orderString = match.str(1);
 					unsigned order = wcstol(orderString.c_str(), NULL, 10);
 
-					if(order<1)
+					if (order < 1)
 					{
 						LogF(L"Order %d not supported, must at least be 1", order);
 					}
@@ -68,27 +68,27 @@ vector<IFilter*> IIRFilterFactory::createFilter(const wstring& configPath, wstri
 					{
 						found = regex_search(parameters, match, regexCoefficients);
 
-						if(found)
+						if (found)
 						{
 							wstring coefficientsString = match.str(1);
 							vector<wstring> coefficientStrings = StringHelper::split(coefficientsString, L' ');
-							if(coefficientStrings.size() != (order + 1) * 2)
+							if (coefficientStrings.size() != (order + 1) * 2)
 							{
 								LogF(L"Invalid number of coefficients. Expected %d coefficients instead of %d", (order + 1) * 2, coefficientStrings.size());
 							}
 							else
 							{
 								vector<double> coefficients;
-								for(auto it = coefficientStrings.begin(); it!=coefficientStrings.end(); it++)
+								for (auto it = coefficientStrings.begin(); it != coefficientStrings.end(); it++)
 								{
 									coefficients.push_back(wcstod(it->c_str(), NULL));
 								}
 
 								wstringstream stream;
 								stream << L"Adding IIR filter of order " << order << " with coefficients";
-								for(unsigned i=0; i<=order; i++)
+								for (unsigned i = 0; i <= order; i++)
 									stream << L" b" << i << L"=" << coefficients[i];
-								for(unsigned i=0; i<=order; i++)
+								for (unsigned i = 0; i <= order; i++)
 									stream << L" a" << i << L"=" << coefficients[i + order + 1];
 
 								TraceF(L"%s", stream.str().c_str());
@@ -103,7 +103,7 @@ vector<IFilter*> IIRFilterFactory::createFilter(const wstring& configPath, wstri
 		}
 	}
 
-	if(filter == NULL)
+	if (filter == NULL)
 		return vector<IFilter*>(0);
 	return vector<IFilter*>(1, filter);
 }

@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "FrequencyPlotView.h"
@@ -31,12 +31,11 @@ static double maxDb = 100;
 
 vector<double> FrequencyPlotScene::bands15 = {25, 40, 63, 100, 160, 250, 400, 630, 1000, 1600, 2500, 4000, 6300, 10000, 16000};
 vector<double> FrequencyPlotScene::bands31 = {20, 25, 31.5, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800,
-											  1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000
-											 };
+											  1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000};
 vector<double> FrequencyPlotScene::bandsVar;
 
-FrequencyPlotScene::FrequencyPlotScene(QObject *parent) :
-	QGraphicsScene(parent)
+FrequencyPlotScene::FrequencyPlotScene(QObject* parent)
+	: QGraphicsScene(parent)
 {
 	updateSceneRect();
 }
@@ -53,7 +52,7 @@ double FrequencyPlotScene::xToHz(double x)
 
 double FrequencyPlotScene::hzToX(double hz)
 {
-	if(hz < minHz || hz > maxHz)
+	if (hz < minHz || hz > maxHz)
 		return -1;
 
 	return log(hz / minHz) / log(maxHz / minHz) * maxX * zoomX;
@@ -61,12 +60,12 @@ double FrequencyPlotScene::hzToX(double hz)
 
 double FrequencyPlotScene::yToDb(double y)
 {
-	return (minDb + (1 - y / zoomY / maxY) * (maxDb - minDb));
+	return(minDb + (1 - y / zoomY / maxY) * (maxDb - minDb));
 }
 
 double FrequencyPlotScene::dbToY(double db)
 {
-	if(db < minDb || db > maxDb)
+	if (db < minDb || db > maxDb)
 		return -1;
 
 	return (1 - (db - minDb) / (maxDb - minDb)) * maxY * zoomY;
@@ -88,7 +87,7 @@ void FrequencyPlotScene::setZoom(double zoomX, double zoomY)
 	this->zoomY = zoomY;
 	updateSceneRect();
 
-	for(QGraphicsItem* item : items())
+	for (QGraphicsItem* item : items())
 	{
 		FrequencyPlotItem* plotItem = (FrequencyPlotItem*)item;
 		plotItem->updatePos();
@@ -107,7 +106,7 @@ int FrequencyPlotScene::getBandCount() const
 
 void FrequencyPlotScene::setBandCount(int value)
 {
-	if(value != bandCount)
+	if (value != bandCount)
 	{
 		bandCount = value;
 		update();
@@ -121,9 +120,9 @@ const vector<double>& FrequencyPlotScene::getBands()
 	return getBands(bandCount);
 }
 
-const std::vector<double>&FrequencyPlotScene::getBands(int count)
+const std::vector<double>& FrequencyPlotScene::getBands(int count)
 {
-	switch(count)
+	switch (count)
 	{
 	case 15:
 		return bands15;

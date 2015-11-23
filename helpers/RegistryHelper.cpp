@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2012  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2012  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -40,13 +40,13 @@ wstring RegistryHelper::readValue(wstring key, wstring valuename)
 	DWORD type;
 	DWORD bufSize;
 	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 	{
 		RegCloseKey(keyHandle);
 		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
-	if(type != REG_SZ)
+	if (type != REG_SZ)
 	{
 		RegCloseKey(keyHandle);
 		throw RegistryException(L"Registry value " + key + L"\\" + valuename + L" has wrong type");
@@ -57,14 +57,14 @@ wstring RegistryHelper::readValue(wstring key, wstring valuename)
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 	{
 		delete buf;
 		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
-	//Remove zero-termination
-	if(buf[bufSize / sizeof(wchar_t) - 1] == L'\0')
+	// Remove zero-termination
+	if (buf[bufSize / sizeof(wchar_t) - 1] == L'\0')
 		bufSize -= sizeof(wchar_t);
 	result = wstring((wchar_t*)buf, (wstring::size_type)bufSize / sizeof(wchar_t));
 	delete buf;
@@ -82,13 +82,13 @@ unsigned long RegistryHelper::readDWORDValue(wstring key, wstring valuename)
 	DWORD type;
 	DWORD bufSize;
 	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 	{
 		RegCloseKey(keyHandle);
 		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
-	if(type != REG_DWORD)
+	if (type != REG_DWORD)
 	{
 		RegCloseKey(keyHandle);
 		throw RegistryException(L"Registry value " + key + L"\\" + valuename + L" has wrong type");
@@ -99,7 +99,7 @@ unsigned long RegistryHelper::readDWORDValue(wstring key, wstring valuename)
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 	{
 		delete buf;
 		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
@@ -121,13 +121,13 @@ vector<wstring> RegistryHelper::readMultiValue(wstring key, wstring valuename)
 	DWORD type;
 	DWORD bufSize;
 	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 	{
 		RegCloseKey(keyHandle);
 		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
-	if(type != REG_MULTI_SZ)
+	if (type != REG_MULTI_SZ)
 	{
 		RegCloseKey(keyHandle);
 		throw RegistryException(L"Registry value " + key + L"\\" + valuename + L" has wrong type");
@@ -138,28 +138,28 @@ vector<wstring> RegistryHelper::readMultiValue(wstring key, wstring valuename)
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 	{
 		delete buf;
 		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
 	size_t length = bufSize / sizeof(wchar_t);
-	//Remove zero-termination
-	while(length > 0 && buf[length - 1] == L'\0')
+	// Remove zero-termination
+	while (length > 0 && buf[length - 1] == L'\0')
 		length--;
 
 	size_t start = 0;
-	for(size_t i = 0; i < length; i++)
+	for (size_t i = 0; i < length; i++)
 	{
-		if(buf[i] == L'\0')
+		if (buf[i] == L'\0')
 		{
 			result.push_back(wstring(buf + start, i - start));
 			start = i + 1;
 		}
 	}
 
-	if(length > start)
+	if (length > start)
 		result.push_back(wstring(buf + start, length - start));
 
 	delete buf;
@@ -175,13 +175,13 @@ vector<unsigned char> RegistryHelper::readBinaryValue(wstring key, wstring value
 	DWORD type;
 	DWORD bufSize;
 	status = RegQueryValueExW(keyHandle, valuename.c_str(), NULL, &type, NULL, &bufSize);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 	{
 		RegCloseKey(keyHandle);
 		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
 
-	if(type != REG_BINARY)
+	if (type != REG_BINARY)
 	{
 		RegCloseKey(keyHandle);
 		throw RegistryException(L"Registry value " + key + L"\\" + valuename + L" has wrong type");
@@ -192,7 +192,7 @@ vector<unsigned char> RegistryHelper::readBinaryValue(wstring key, wstring value
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 	{
 		throw RegistryException(L"Error while reading registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 	}
@@ -208,7 +208,7 @@ void RegistryHelper::writeValue(wstring key, wstring valuename, wstring value)
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while writing to registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 }
 
@@ -229,7 +229,7 @@ void RegistryHelper::writeMultiValue(wstring key, wstring valuename, wstring val
 	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
 
 	wchar_t* data = new wchar_t[value.size() + 2];
-	value._Copy_s(data, (value.size() + 2)*sizeof(wchar_t), value.size());
+	value._Copy_s(data, (value.size() + 2) * sizeof(wchar_t), value.size());
 	data[value.size()] = L'\0';
 	data[value.size() + 1] = L'\0';
 
@@ -239,7 +239,7 @@ void RegistryHelper::writeMultiValue(wstring key, wstring valuename, wstring val
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while writing to registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 }
 
@@ -248,12 +248,12 @@ void RegistryHelper::writeMultiValue(wstring key, wstring valuename, vector<wstr
 	HKEY keyHandle = openKey(key, KEY_SET_VALUE | KEY_WOW64_64KEY);
 
 	size_t size = 1;
-	for(wstring value : values)
+	for (wstring value : values)
 		size += value.size() + 1;
 
 	wchar_t* data = new wchar_t[size];
 	size_t offset = 0;
-	for(wstring value : values)
+	for (wstring value : values)
 	{
 		value._Copy_s(data + offset, size * sizeof(wchar_t), value.size());
 		offset += value.size();
@@ -267,7 +267,7 @@ void RegistryHelper::writeMultiValue(wstring key, wstring valuename, vector<wstr
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while writing to registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 }
 
@@ -279,7 +279,7 @@ void RegistryHelper::deleteValue(wstring key, wstring valuename)
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while deleting registry value " + key + L"\\" + valuename + L": " + StringHelper::getSystemErrorString(status));
 }
 
@@ -290,7 +290,7 @@ void RegistryHelper::createKey(wstring key)
 
 	HKEY keyHandle;
 	LSTATUS status = RegCreateKeyExW(rootKey, subKey.c_str(), 0, NULL, 0, KEY_SET_VALUE | KEY_WOW64_64KEY, NULL, &keyHandle, NULL);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while creating registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	RegCloseKey(keyHandle);
@@ -302,7 +302,7 @@ void RegistryHelper::deleteKey(wstring key)
 	wstring subKey = splitKey(key, &rootKey);
 
 	LSTATUS status = RegDeleteKeyExW(rootKey, subKey.c_str(), KEY_WOW64_64KEY, 0);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while deleting registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 }
 
@@ -315,18 +315,18 @@ void RegistryHelper::makeWritable(wstring key)
 
 	PSECURITY_DESCRIPTOR oldSd = (PSECURITY_DESCRIPTOR)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, descriptorSize);
 	LSTATUS status = RegGetKeySecurity(keyHandle, DACL_SECURITY_INFORMATION, oldSd, &descriptorSize);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while getting security information for registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	BOOL aclPresent, aclDefaulted;
 	PACL oldAcl = NULL;
-	if(!GetSecurityDescriptorDacl(oldSd, &aclPresent, &oldAcl, &aclDefaulted))
+	if (!GetSecurityDescriptorDacl(oldSd, &aclPresent, &oldAcl, &aclDefaulted))
 		throw RegistryException(L"Error in GetSecurityDescriptorDacl while ensuring writability");
 
 	PSID sid = NULL;
 	SID_IDENTIFIER_AUTHORITY authority = SECURITY_NT_AUTHORITY;
-	if(!AllocateAndInitializeSid(&authority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
-								 0, 0, 0, 0, 0, 0, &sid))
+	if (!AllocateAndInitializeSid(&authority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
+		0, 0, 0, 0, 0, 0, &sid))
 		throw RegistryException(L"Error in AllocateAndInitializeSid while ensuring writability");
 
 	EXPLICIT_ACCESS ea;
@@ -338,21 +338,21 @@ void RegistryHelper::makeWritable(wstring key)
 	ea.Trustee.ptstrName = (LPWSTR)sid;
 
 	PACL acl = NULL;
-	if(ERROR_SUCCESS != SetEntriesInAcl(1, &ea, oldAcl, &acl))
+	if (ERROR_SUCCESS != SetEntriesInAcl(1, &ea, oldAcl, &acl))
 		throw RegistryException(L"Error in SetEntriesInAcl while ensuring writability");
 
 	PSECURITY_DESCRIPTOR sd = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
-	if(NULL == sd)
+	if (NULL == sd)
 		throw RegistryException(L"Error in LocalAlloc while ensuring writability");
 
-	if(!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION))
+	if (!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION))
 		throw RegistryException(L"Error in InitializeSecurityDescriptor while ensuring writability");
 
-	if(!SetSecurityDescriptorDacl(sd, TRUE, acl, FALSE))
+	if (!SetSecurityDescriptorDacl(sd, TRUE, acl, FALSE))
 		throw RegistryException(L"Error in SetSecurityDescriptorDacl while ensuring writability");
 
 	status = RegSetKeySecurity(keyHandle, DACL_SECURITY_INFORMATION, sd);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while setting security information for registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	FreeSid(sid);
@@ -364,11 +364,11 @@ void RegistryHelper::makeWritable(wstring key)
 void RegistryHelper::takeOwnership(wstring key)
 {
 	HANDLE tokenHandle;
-	if(!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &tokenHandle))
+	if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &tokenHandle))
 		throw RegistryException(L"Error in OpenProcessToken while taking ownership");
 
 	LUID luid;
-	if(!LookupPrivilegeValue(NULL, SE_TAKE_OWNERSHIP_NAME, &luid))
+	if (!LookupPrivilegeValue(NULL, SE_TAKE_OWNERSHIP_NAME, &luid))
 		throw RegistryException(L"Error in LookupPrivilegeValue while taking ownership");
 
 	TOKEN_PRIVILEGES tp;
@@ -376,34 +376,34 @@ void RegistryHelper::takeOwnership(wstring key)
 	tp.Privileges[0].Luid = luid;
 	tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-	if(!AdjustTokenPrivileges(tokenHandle, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
+	if (!AdjustTokenPrivileges(tokenHandle, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
 		throw RegistryException(L"Error in AdjustTokenPrivileges while taking ownership");
 
 	HKEY keyHandle = openKey(key, WRITE_OWNER | KEY_WOW64_64KEY);
 
 	PSECURITY_DESCRIPTOR sd = (PSECURITY_DESCRIPTOR)LocalAlloc(LPTR, SECURITY_DESCRIPTOR_MIN_LENGTH);
-	if(NULL == sd)
+	if (NULL == sd)
 		throw RegistryException(L"Error in SetPrivilege while taking ownership");
 
-	if(!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION))
+	if (!InitializeSecurityDescriptor(sd, SECURITY_DESCRIPTOR_REVISION))
 		throw RegistryException(L"Error in InitializeSecurityDescriptor while taking ownership");
 
 	PSID sid = NULL;
 	SID_IDENTIFIER_AUTHORITY authority = SECURITY_NT_AUTHORITY;
-	if(!AllocateAndInitializeSid(&authority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
-								 0, 0, 0, 0, 0, 0, &sid))
+	if (!AllocateAndInitializeSid(&authority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS,
+		0, 0, 0, 0, 0, 0, &sid))
 		throw RegistryException(L"Error in AllocateAndInitializeSid while taking ownership");
 
-	if(!SetSecurityDescriptorOwner(sd, sid, FALSE))
+	if (!SetSecurityDescriptorOwner(sd, sid, FALSE))
 		throw RegistryException(L"Error in SetSecurityDescriptorOwner while taking ownership");
 
 	LSTATUS status = RegSetKeySecurity(keyHandle, OWNER_SECURITY_INFORMATION, sd);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while setting security information for registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	tp.Privileges[0].Attributes = 0;
 
-	if(!AdjustTokenPrivileges(tokenHandle, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
+	if (!AdjustTokenPrivileges(tokenHandle, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
 		throw RegistryException(L"Error in AdjustTokenPrivileges while taking ownership");
 
 	FreeSid(sid);
@@ -420,7 +420,7 @@ bool RegistryHelper::keyExists(wstring key)
 	HKEY keyHandle;
 	result = (RegOpenKeyExW(rootKey, subKey.c_str(), 0, KEY_QUERY_VALUE | KEY_WOW64_64KEY, &keyHandle) == ERROR_SUCCESS);
 
-	if(result)
+	if (result)
 		RegCloseKey(keyHandle);
 
 	return result;
@@ -448,7 +448,7 @@ vector<wstring> RegistryHelper::enumSubKeys(wstring key)
 	int i = 0;
 
 	LSTATUS status;
-	while((status = RegEnumKeyExW(keyHandle, i++, keyName, &keyLength, NULL, NULL, NULL, NULL)) == ERROR_SUCCESS)
+	while ((status = RegEnumKeyExW(keyHandle, i++, keyName, &keyLength, NULL, NULL, NULL, NULL)) == ERROR_SUCCESS)
 	{
 		keyLength = sizeof(keyName) / sizeof(wchar_t);
 
@@ -457,7 +457,7 @@ vector<wstring> RegistryHelper::enumSubKeys(wstring key)
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_NO_MORE_ITEMS)
+	if (status != ERROR_NO_MORE_ITEMS)
 		throw RegistryException(L"Error while enumerating sub keys of registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	return result;
@@ -473,7 +473,7 @@ bool RegistryHelper::keyEmpty(wstring key)
 
 	RegCloseKey(keyHandle);
 
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while reading info for registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	return keyCount == 0 && valueCount == 0;
@@ -482,12 +482,12 @@ bool RegistryHelper::keyEmpty(wstring key)
 void RegistryHelper::saveToFile(wstring key, vector<wstring> valuenames, wstring filepath)
 {
 	wofstream stream(filepath);
-	if(!stream.good())
+	if (!stream.good())
 		throw RegistryException(L"Error while opening file " + filepath + L" for writing");
 
 	stream << L"Windows Registry Editor Version 5.00\n" << endl;
 	stream << L"[HKEY_LOCAL_MACHINE\\" << key << L"]" << endl;
-	for(vector<wstring>::iterator it = valuenames.begin(); it != valuenames.end(); it++)
+	for (vector<wstring>::iterator it = valuenames.begin(); it != valuenames.end(); it++)
 	{
 		wstring& valuename = *it;
 		wstring value = readValue(key, valuename);
@@ -502,7 +502,7 @@ void RegistryHelper::saveToFile(wstring key, vector<wstring> valuenames, wstring
 wstring RegistryHelper::getGuidString(GUID guid)
 {
 	wchar_t* temp;
-	if(FAILED(StringFromCLSID(guid, &temp)))
+	if (FAILED(StringFromCLSID(guid, &temp)))
 		throw RegistryException(L"Could not convert GUID to string");
 	std::wstring result(temp);
 	CoTaskMemFree(temp);
@@ -512,18 +512,18 @@ wstring RegistryHelper::getGuidString(GUID guid)
 
 bool RegistryHelper::isWindowsVersionAtLeast(unsigned major, unsigned minor)
 {
-	if(windowsVersion == 0)
+	if (windowsVersion == 0)
 	{
 		DWORD handle;
 		DWORD size = GetFileVersionInfoSizeW(L"kernel32.dll", &handle);
-		if(size != 0)
+		if (size != 0)
 		{
 			void* data = malloc(size);
-			if(GetFileVersionInfo(L"kernel32.dll", handle, size, data))
+			if (GetFileVersionInfo(L"kernel32.dll", handle, size, data))
 			{
 				VS_FIXEDFILEINFO* info;
 				UINT len;
-				if(VerQueryValueW(data, L"\\", (LPVOID*)&info, &len))
+				if (VerQueryValueW(data, L"\\", (LPVOID*)&info, &len))
 					windowsVersion = info->dwProductVersionMS;
 			}
 			free(data);
@@ -543,7 +543,7 @@ HKEY RegistryHelper::openKey(const wstring& key, REGSAM samDesired)
 
 	HKEY keyHandle;
 	LSTATUS status = RegOpenKeyExW(rootKey, subKey.c_str(), 0, samDesired, &keyHandle);
-	if(status != ERROR_SUCCESS)
+	if (status != ERROR_SUCCESS)
 		throw RegistryException(L"Error while opening registry key " + key + L": " + StringHelper::getSystemErrorString(status));
 
 	return keyHandle;
@@ -552,22 +552,22 @@ HKEY RegistryHelper::openKey(const wstring& key, REGSAM samDesired)
 wstring RegistryHelper::splitKey(const wstring& key, HKEY* rootKey)
 {
 	size_t pos = key.find(L'\\');
-	if(pos == wstring::npos)
+	if (pos == wstring::npos)
 		throw RegistryException(L"Key " + key + L" has invalid format");
 
 	wstring rootPart = key.substr(0, pos);
 	wstring pathPart = key.substr(pos + 1);
 
 	wstring p = StringHelper::toUpperCase(rootPart);
-	if(p == L"HKEY_CLASSES_ROOT")
+	if (p == L"HKEY_CLASSES_ROOT")
 		*rootKey = HKEY_CLASSES_ROOT;
-	else if(p == L"HKEY_CURRENT_CONFIG")
+	else if (p == L"HKEY_CURRENT_CONFIG")
 		*rootKey = HKEY_CURRENT_CONFIG;
-	else if(p == L"HKEY_CURRENT_USER")
+	else if (p == L"HKEY_CURRENT_USER")
 		*rootKey = HKEY_CURRENT_USER;
-	else if(p == L"HKEY_LOCAL_MACHINE")
+	else if (p == L"HKEY_LOCAL_MACHINE")
 		*rootKey = HKEY_LOCAL_MACHINE;
-	else if(p == L"HKEY_USERS")
+	else if (p == L"HKEY_USERS")
 		*rootKey = HKEY_USERS;
 	else
 		throw RegistryException(L"Unknown root key " + rootPart);

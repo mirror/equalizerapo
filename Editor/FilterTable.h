@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2014  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2014  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #pragma once
@@ -39,7 +39,8 @@ class FilterTable : public QWidget
 {
 	Q_OBJECT
 public:
-	struct Item {
+	struct Item
+	{
 		Item()
 		{
 		}
@@ -54,7 +55,7 @@ public:
 		IFilterGUI* gui = NULL;
 	};
 
-	explicit FilterTable(MainWindow* mainWindow, QWidget *parent = 0);
+	explicit FilterTable(MainWindow* mainWindow, QWidget* parent = 0);
 	void initialize(QScrollArea* scrollArea, const QList<DeviceAPOInfo>& outputDevices, const QList<DeviceAPOInfo>& inputDevices);
 	void updateDeviceAndChannelMask(DeviceAPOInfo* selectedDevice, int selectedChannelMask);
 	void updateGuis();
@@ -101,11 +102,11 @@ public slots:
 
 protected:
 	void mousePressEvent(QMouseEvent* event) override;
-	void mouseMoveEvent(QMouseEvent *event) override;
-	void dragEnterEvent(QDragEnterEvent *event) override;
-	void dragMoveEvent(QDragMoveEvent *event) override;
+	void mouseMoveEvent(QMouseEvent* event) override;
+	void dragEnterEvent(QDragEnterEvent* event) override;
+	void dragMoveEvent(QDragMoveEvent* event) override;
 	void dragLeaveEvent(QDragLeaveEvent* event) override;
-	void dropEvent(QDropEvent *event) override;
+	void dropEvent(QDropEvent* event) override;
 	void keyPressEvent(QKeyEvent* event) override;
 	void wheelEvent(QWheelEvent* event) override;
 	bool eventFilter(QObject* obj, QEvent* event) override;
@@ -144,7 +145,7 @@ template<typename T> inline uint qHash(QList<T> list)
 {
 	uint hashValue = 0;
 
-	for(T t : list)
+	for (T t : list)
 		hashValue = 31 * hashValue + qHash(t);
 
 	return hashValue;

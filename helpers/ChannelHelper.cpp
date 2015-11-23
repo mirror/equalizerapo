@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -46,7 +46,7 @@ ChannelHelper::ChannelHelper()
 	channelNameToPosMap[L"SL"] = SPEAKER_SIDE_LEFT;
 	channelNameToPosMap[L"SR"] = SPEAKER_SIDE_RIGHT;
 
-	for(unordered_map<wstring, int>::iterator it=channelNameToPosMap.begin(); it!=channelNameToPosMap.end(); it++)
+	for (unordered_map<wstring, int>::iterator it = channelNameToPosMap.begin(); it != channelNameToPosMap.end(); it++)
 		channelPosToNameMap[it->second] = it->first;
 }
 
@@ -54,7 +54,7 @@ int ChannelHelper::getDefaultChannelMask(int channelCount)
 {
 	int channelMask;
 
-	switch(channelCount)
+	switch (channelCount)
 	{
 	case 1:
 		channelMask = KSAUDIO_SPEAKER_MONO;
@@ -81,13 +81,13 @@ int ChannelHelper::getDefaultChannelMask(int channelCount)
 vector<wstring> ChannelHelper::getChannelNames(int channelCount, int channelMask)
 {
 	vector<wstring> channelNames;
-	int c=1;
-	for(int i=0; i<31; i++)
+	int c = 1;
+	for (int i = 0; i < 31; i++)
 	{
-		int channelPos = 1<<i;
-		if(channelMask & channelPos)
+		int channelPos = 1 << i;
+		if (channelMask & channelPos)
 		{
-			if(channelPosToNameMap.find(channelPos) != channelPosToNameMap.end())
+			if (channelPosToNameMap.find(channelPos) != channelPosToNameMap.end())
 				channelNames.push_back(channelPosToNameMap[channelPos]);
 			else
 				channelNames.push_back(to_wstring((unsigned long long)c));
@@ -96,7 +96,7 @@ vector<wstring> ChannelHelper::getChannelNames(int channelCount, int channelMask
 	}
 
 	// handle channels not covered by channelMask
-	for(; c<=channelCount; c++)
+	for (; c <= channelCount; c++)
 		channelNames.push_back(to_wstring((unsigned long long)c));
 
 	return channelNames;
@@ -106,11 +106,11 @@ int ChannelHelper::getChannelIndex(std::wstring word, const std::vector<std::wst
 {
 	int channelIndex = -1;
 
-	if(iswdigit(word[0]))
+	if (iswdigit(word[0]))
 	{
 		channelIndex = wcstol(word.c_str(), NULL, 10) - 1;
 
-		if(channelIndex < 0 || channelIndex >= (int)channelNames.size())
+		if (channelIndex < 0 || channelIndex >= (int)channelNames.size())
 		{
 			LogFStatic(L"Channel number %s out of range (1 - %d)", word.c_str(), channelNames.size());
 			channelIndex = -1;
@@ -120,22 +120,22 @@ int ChannelHelper::getChannelIndex(std::wstring word, const std::vector<std::wst
 	{
 		vector<wstring>::const_iterator pos = find(channelNames.begin(), channelNames.end(), word);
 
-		if(pos == channelNames.end())
+		if (pos == channelNames.end())
 		{
-			//Special handling to accept "wrong", but unambiguous positions
-			if(word == L"SL")
+			// Special handling to accept "wrong", but unambiguous positions
+			if (word == L"SL")
 				pos = find(channelNames.begin(), channelNames.end(), L"RL");
-			else if(word == L"SR")
+			else if (word == L"SR")
 				pos = find(channelNames.begin(), channelNames.end(), L"RR");
-			else if(word == L"RL")
+			else if (word == L"RL")
 				pos = find(channelNames.begin(), channelNames.end(), L"SL");
-			else if(word == L"RR")
+			else if (word == L"RR")
 				pos = find(channelNames.begin(), channelNames.end(), L"SR");
 		}
 
-		if(pos != channelNames.end())
+		if (pos != channelNames.end())
 			channelIndex = (int)(pos - channelNames.begin());
-		else if(!allowNew)
+		else if (!allowNew)
 			LogFStatic(L"Invalid channel position %s", word.c_str());
 	}
 

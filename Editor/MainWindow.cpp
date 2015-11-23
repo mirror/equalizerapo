@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <sstream>
@@ -47,16 +47,16 @@
 
 using namespace std;
 
-MainWindow::MainWindow(QDir configDir, QWidget *parent) :
-	QMainWindow(parent), ui(new Ui::MainWindow), configDir(configDir)
+MainWindow::MainWindow(QDir configDir, QWidget* parent)
+	: QMainWindow(parent), ui(new Ui::MainWindow), configDir(configDir)
 {
 	outputDevices = QList<DeviceAPOInfo>::fromVector(QVector<DeviceAPOInfo>::fromStdVector(DeviceAPOInfo::loadAllInfos(false)));
 	inputDevices = QList<DeviceAPOInfo>::fromVector(QVector<DeviceAPOInfo>::fromStdVector(DeviceAPOInfo::loadAllInfos(true)));
 
 	defaultOutputDevice = NULL;
-	for(DeviceAPOInfo& apoInfo : outputDevices)
+	for (DeviceAPOInfo& apoInfo : outputDevices)
 	{
-		if(apoInfo.isDefaultDevice)
+		if (apoInfo.isDefaultDevice)
 		{
 			defaultOutputDevice = &apoInfo;
 			break;
@@ -68,7 +68,7 @@ MainWindow::MainWindow(QDir configDir, QWidget *parent) :
 	LogHelper::set(stderr, true, false, false);
 
 	QString version = QString("%0.%1").arg(MAJOR).arg(MINOR);
-	if(REVISION != 0)
+	if (REVISION != 0)
 		version += QString(".%0").arg(REVISION);
 	setWindowTitle(tr("Equalizer APO %0 Configuration Editor").arg(version));
 
@@ -103,7 +103,7 @@ MainWindow::MainWindow(QDir configDir, QWidget *parent) :
 	ui->mainToolBar->addWidget(channelConfigurationComboBox);
 
 	QStandardItemModel* model = qobject_cast<QStandardItemModel*>(deviceComboBox->model());
-	if(defaultOutputDevice != NULL)
+	if (defaultOutputDevice != NULL)
 		deviceComboBox->addItem(tr("Default") + " (" + QString::fromStdWString(defaultOutputDevice->connectionName) + " - " + QString::fromStdWString(defaultOutputDevice->deviceName) + ")", NULL);
 
 	deviceComboBox->addItem(tr("Playback devices:"));
@@ -113,8 +113,8 @@ MainWindow::MainWindow(QDir configDir, QWidget *parent) :
 	item->setFont(font);
 	item->setSelectable(false);
 
-	for(DeviceAPOInfo& apoInfo : outputDevices)
-		if(apoInfo.isInstalled)
+	for (DeviceAPOInfo& apoInfo : outputDevices)
+		if (apoInfo.isInstalled)
 			deviceComboBox->addItem(QString::fromStdWString(apoInfo.connectionName) + " - " + QString::fromStdWString(apoInfo.deviceName), QVariant::fromValue(&apoInfo));
 
 	deviceComboBox->addItem(tr("Capture devices:"));
@@ -122,8 +122,8 @@ MainWindow::MainWindow(QDir configDir, QWidget *parent) :
 	item->setFont(font);
 	item->setSelectable(false);
 
-	for(DeviceAPOInfo& apoInfo : inputDevices)
-		if(apoInfo.isInstalled)
+	for (DeviceAPOInfo& apoInfo : inputDevices)
+		if (apoInfo.isInstalled)
 			deviceComboBox->addItem(QString::fromStdWString(apoInfo.connectionName) + " - " + QString::fromStdWString(apoInfo.deviceName), QVariant::fromValue(&apoInfo));
 
 	connect(channelConfigurationComboBox, SIGNAL(activated(int)), this, SLOT(channelConfigurationSelected(int)));
@@ -136,21 +136,21 @@ MainWindow::MainWindow(QDir configDir, QWidget *parent) :
 	connect(analysisThread, SIGNAL(analysisFinished()), this, SLOT(updateAnalysisPanel()));
 
 	QLocale autoLocale = QLocale::system();
-	if(autoLocale.language() != QLocale::German)
+	if (autoLocale.language() != QLocale::German)
 		autoLocale = QLocale("en");
 	QLocale::Language languages[] = {QLocale::AnyLanguage, QLocale::English, QLocale::German};
-	for(int i = 0; i < sizeof(languages) / sizeof(QLocale::Language); i++)
+	for (int i = 0; i < sizeof(languages) / sizeof(QLocale::Language); i++)
 	{
 		QLocale::Language language = languages[i];
 		QString languageName;
-		if(language == QLocale::AnyLanguage)
+		if (language == QLocale::AnyLanguage)
 			languageName = autoLocale.nativeLanguageName();
 		else
 			languageName = QLocale(language).nativeLanguageName();
-		if(languageName == "American English")
+		if (languageName == "American English")
 			languageName = "English";
 		QString text;
-		if(language == QLocale::AnyLanguage)
+		if (language == QLocale::AnyLanguage)
 			text = tr("Automatic (%0)").arg(languageName);
 		else
 			text = languageName;
@@ -172,18 +172,18 @@ MainWindow::~MainWindow()
 
 void MainWindow::doChecks()
 {
-	if(!DeviceAPOInfo::checkProtectedAudioDG(false) || !DeviceAPOInfo::checkAPORegistration(false))
+	if (!DeviceAPOInfo::checkProtectedAudioDG(false) || !DeviceAPOInfo::checkAPORegistration(false))
 	{
-		if(QMessageBox::warning(this, tr("Registry problem"), tr("A registry value that is required for the operation of Equalizer APO is not set correctly.\nDo you want to run the Configurator application to fix the problem?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+		if (QMessageBox::warning(this, tr("Registry problem"), tr("A registry value that is required for the operation of Equalizer APO is not set correctly.\nDo you want to run the Configurator application to fix the problem?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 		{
 			runConfigurator();
 			return;
 		}
 	}
 
-	if(!defaultOutputDevice->isInstalled)
+	if (!defaultOutputDevice->isInstalled)
 	{
-		if(QMessageBox::warning(this, tr("APO not installed to device"), tr("Equalizer APO has not been installed to the selected device.\nDo you want to run the Configurator application to fix the problem?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+		if (QMessageBox::warning(this, tr("APO not installed to device"), tr("Equalizer APO has not been installed to the selected device.\nDo you want to run the Configurator application to fix the problem?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 		{
 			runConfigurator();
 			return;
@@ -191,20 +191,20 @@ void MainWindow::doChecks()
 	}
 
 	DeviceAPOInfo* disabledApoInfo = NULL;
-	for(DeviceAPOInfo& apoInfo : outputDevices)
+	for (DeviceAPOInfo& apoInfo : outputDevices)
 	{
-		if(apoInfo.isInstalled && apoInfo.isEnhancementsDisabled)
+		if (apoInfo.isInstalled && apoInfo.isEnhancementsDisabled)
 		{
 			disabledApoInfo = &apoInfo;
 			break;
 		}
 	}
 
-	if(disabledApoInfo == NULL)
+	if (disabledApoInfo == NULL)
 	{
-		for(DeviceAPOInfo& apoInfo : inputDevices)
+		for (DeviceAPOInfo& apoInfo : inputDevices)
 		{
-			if(apoInfo.isInstalled && apoInfo.isEnhancementsDisabled)
+			if (apoInfo.isInstalled && apoInfo.isEnhancementsDisabled)
 			{
 				disabledApoInfo = &apoInfo;
 				break;
@@ -212,9 +212,9 @@ void MainWindow::doChecks()
 		}
 	}
 
-	if(disabledApoInfo != NULL)
+	if (disabledApoInfo != NULL)
 	{
-		if(QMessageBox::warning(this, tr("Audio enhancements disabled"), tr("Audio enhancements are not enabled for the device\n%0 %1.\nDo you want to run the Configurator application to fix the problem?").arg(QString::fromStdWString(disabledApoInfo->connectionName)).arg(QString::fromStdWString(disabledApoInfo->deviceName)), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+		if (QMessageBox::warning(this, tr("Audio enhancements disabled"), tr("Audio enhancements are not enabled for the device\n%0 %1.\nDo you want to run the Configurator application to fix the problem?").arg(QString::fromStdWString(disabledApoInfo->connectionName)).arg(QString::fromStdWString(disabledApoInfo->deviceName)), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 		{
 			runConfigurator();
 			return;
@@ -227,7 +227,7 @@ void MainWindow::runConfigurator()
 	// cannot use QProcess::startDetached because of UAC
 	wstring file = (QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/Configurator.exe")).toStdWString();
 	int result = (int)ShellExecuteW(NULL, L"open", file.c_str(), NULL, NULL, SW_SHOWNORMAL);
-	if(result == SE_ERR_ACCESSDENIED)
+	if (result == SE_ERR_ACCESSDENIED)
 		ShellExecuteW(NULL, L"runas", file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
 
@@ -235,12 +235,12 @@ void MainWindow::load(QString path)
 {
 	path = QDir::toNativeSeparators(path);
 
-	for(int i = 0; i < ui->tabWidget->count(); i++)
+	for (int i = 0; i < ui->tabWidget->count(); i++)
 	{
 		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(i));
 		FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
 
-		if(filterTable->getConfigPath() == path)
+		if (filterTable->getConfigPath() == path)
 		{
 			ui->tabWidget->setCurrentIndex(i);
 			return;
@@ -251,13 +251,13 @@ void MainWindow::load(QString path)
 	timer.start();
 
 	HANDLE hFile = INVALID_HANDLE_VALUE;
-	while(hFile == INVALID_HANDLE_VALUE)
+	while (hFile == INVALID_HANDLE_VALUE)
 	{
 		hFile = CreateFile(path.toStdWString().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-		if(hFile == INVALID_HANDLE_VALUE)
+		if (hFile == INVALID_HANDLE_VALUE)
 		{
 			DWORD error = GetLastError();
-			if(error != ERROR_SHARING_VIOLATION)
+			if (error != ERROR_SHARING_VIOLATION)
 			{
 				QMessageBox::critical(this, tr("Error"), tr("Error while reading configuration file: %0").arg(QString::fromStdWString(StringHelper::getSystemErrorString(error))));
 				return;
@@ -272,7 +272,7 @@ void MainWindow::load(QString path)
 
 	char buf[8192];
 	unsigned long bytesRead = -1;
-	while(ReadFile(hFile, buf, sizeof(buf), &bytesRead, NULL) && bytesRead != 0)
+	while (ReadFile(hFile, buf, sizeof(buf), &bytesRead, NULL) && bytesRead != 0)
 	{
 		inputStream.write(buf, bytesRead);
 	}
@@ -282,15 +282,15 @@ void MainWindow::load(QString path)
 	inputStream.seekg(0);
 
 	QList<QString> lines;
-	while(inputStream.good())
+	while (inputStream.good())
 	{
 		string encodedLine;
 		getline(inputStream, encodedLine);
-		if(encodedLine.size() > 0 && encodedLine[encodedLine.size() - 1] == '\r')
+		if (encodedLine.size() > 0 && encodedLine[encodedLine.size() - 1] == '\r')
 			encodedLine.resize(encodedLine.size() - 1);
 
 		wstring line = StringHelper::toWString(encodedLine, CP_UTF8);
-		if(line.find(L'\uFFFD') != -1)
+		if (line.find(L'\uFFFD') != -1)
 			line = StringHelper::toWString(encodedLine, CP_ACP);
 
 		lines.append(QString::fromStdWString(line));
@@ -309,7 +309,7 @@ void MainWindow::load(QString path)
 
 	recentFiles.removeAll(path);
 	recentFiles.prepend(path);
-	if(recentFiles.size() > 10)
+	if (recentFiles.size() > 10)
 		recentFiles.removeLast();
 	updateRecentFiles();
 }
@@ -323,9 +323,9 @@ void MainWindow::save(FilterTable* filterTable, QString path)
 
 	bool first = true;
 	QByteArray byteArray;
-	for(QString line : lines)
+	for (QString line : lines)
 	{
-		if(first)
+		if (first)
 			first = false;
 		else
 			byteArray.append("\r\n");
@@ -333,13 +333,13 @@ void MainWindow::save(FilterTable* filterTable, QString path)
 	}
 
 	HANDLE hFile = INVALID_HANDLE_VALUE;
-	while(hFile == INVALID_HANDLE_VALUE)
+	while (hFile == INVALID_HANDLE_VALUE)
 	{
 		hFile = CreateFile(path.toStdWString().c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-		if(hFile == INVALID_HANDLE_VALUE)
+		if (hFile == INVALID_HANDLE_VALUE)
 		{
 			DWORD error = GetLastError();
-			if(error != ERROR_SHARING_VIOLATION)
+			if (error != ERROR_SHARING_VIOLATION)
 			{
 				QMessageBox::critical(this, tr("Error"), tr("Error while writing configuration file: %0").arg(QString::fromStdWString(StringHelper::getSystemErrorString(error))));
 				return;
@@ -352,7 +352,7 @@ void MainWindow::save(FilterTable* filterTable, QString path)
 
 	unsigned long bytesWritten;
 	WriteFile(hFile, byteArray.constData(), byteArray.length(), &bytesWritten, NULL);
-	if(bytesWritten != byteArray.length())
+	if (bytesWritten != byteArray.length())
 	{
 		// should never happen
 		QMessageBox::critical(this, tr("Error"), tr("Only %0/%1 bytes have been written!").arg(bytesWritten).arg(byteArray.length()));
@@ -378,16 +378,16 @@ bool MainWindow::shouldRestart()
 void MainWindow::closeEvent(QCloseEvent* event)
 {
 	bool canceled = false;
-	for(int i = 0; i < ui->tabWidget->count(); i++)
+	for (int i = 0; i < ui->tabWidget->count(); i++)
 	{
-		if(!askForClose(i))
+		if (!askForClose(i))
 		{
 			canceled = true;
 			break;
 		}
 	}
 
-	if(canceled)
+	if (canceled)
 	{
 		event->ignore();
 		restart = false;
@@ -403,32 +403,32 @@ void MainWindow::closeEvent(QCloseEvent* event)
 void MainWindow::deviceSelected(int index)
 {
 	DeviceAPOInfo* apoInfo = deviceComboBox->itemData(index).value<DeviceAPOInfo*>();
-	if(apoInfo == NULL)
+	if (apoInfo == NULL)
 		apoInfo = defaultOutputDevice;
 
 	channelConfigurationComboBox->clear();
 
 	const QList<GUIChannelHelper::ChannelConfigurationInfo>& infos = GUIChannelHelper::getInstance()->getChannelConfigurationInfos();
 
-	if(apoInfo != NULL)
+	if (apoInfo != NULL)
 	{
 		const GUIChannelHelper::ChannelConfigurationInfo* selectedInfo = NULL;
-		for(const GUIChannelHelper::ChannelConfigurationInfo& info : infos)
+		for (const GUIChannelHelper::ChannelConfigurationInfo& info : infos)
 		{
-			if(info.channelMask == apoInfo->channelMask)
+			if (info.channelMask == apoInfo->channelMask)
 			{
 				selectedInfo = &info;
 				break;
 			}
 		}
 
-		if(selectedInfo != NULL)
+		if (selectedInfo != NULL)
 			channelConfigurationComboBox->addItem(tr("From device") + " (" + selectedInfo->name + ")", 0);
 		else
 			channelConfigurationComboBox->addItem(tr("From device") + " (" + apoInfo->channelCount + " channels)", 0);
 	}
 
-	for(const GUIChannelHelper::ChannelConfigurationInfo& info : infos)
+	for (const GUIChannelHelper::ChannelConfigurationInfo& info : infos)
 		channelConfigurationComboBox->addItem(info.name, info.channelMask);
 
 	channelConfigurationSelected(channelConfigurationComboBox->currentIndex());
@@ -440,7 +440,7 @@ void MainWindow::channelConfigurationSelected(int index)
 	int channelMask;
 	getDeviceAndChannelMask(&selectedDevice, &channelMask);
 
-	for(int i = 0; i < ui->tabWidget->count(); i++)
+	for (int i = 0; i < ui->tabWidget->count(); i++)
 	{
 		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(i));
 		FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
@@ -449,22 +449,22 @@ void MainWindow::channelConfigurationSelected(int index)
 
 	ui->analysisChannelComboBox->clear();
 
-	if(selectedDevice != NULL)
+	if (selectedDevice != NULL)
 	{
 		unsigned channelCount = selectedDevice->channelCount;
-		if(channelMask != 0 && channelMask != selectedDevice->channelMask)
+		if (channelMask != 0 && channelMask != selectedDevice->channelMask)
 		{
 			channelCount = 0;
-			for(int i = 0; i < 31; i++)
+			for (int i = 0; i < 31; i++)
 			{
 				int channelPos = 1 << i;
-				if(channelMask & channelPos)
+				if (channelMask & channelPos)
 					channelCount++;
 			}
 		}
 
 		vector<wstring> channelNames = ChannelHelper::getChannelNames(channelCount, channelMask);
-		for(wstring channelName : channelNames)
+		for (wstring channelName : channelNames)
 		{
 			ui->analysisChannelComboBox->addItem(QString::fromStdWString(channelName));
 		}
@@ -475,10 +475,10 @@ void MainWindow::linesChanged()
 {
 	FilterTable* filterTable = qobject_cast<FilterTable*>(sender());
 
-	if(instantModeCheckBox->isChecked())
+	if (instantModeCheckBox->isChecked())
 	{
 		QString configPath = filterTable->getConfigPath();
-		if(configPath.length() > 0)
+		if (configPath.length() > 0)
 		{
 			save(filterTable, configPath);
 			return;
@@ -486,17 +486,17 @@ void MainWindow::linesChanged()
 	}
 
 	int tabIndex = -1;
-	for(int i = 0; i < ui->tabWidget->count(); i++)
+	for (int i = 0; i < ui->tabWidget->count(); i++)
 	{
 		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(i));
-		if(scrollArea->widget() == filterTable)
+		if (scrollArea->widget() == filterTable)
 		{
 			tabIndex = i;
 			break;
 		}
 	}
 	QString tabText = ui->tabWidget->tabText(tabIndex);
-	if(!tabText.endsWith('*'))
+	if (!tabText.endsWith('*'))
 	{
 		tabText += '*';
 		ui->tabWidget->setTabText(tabIndex, tabText);
@@ -505,7 +505,7 @@ void MainWindow::linesChanged()
 
 bool MainWindow::on_tabWidget_tabCloseRequested(int index)
 {
-	if(askForClose(index))
+	if (askForClose(index))
 		ui->tabWidget->removeTab(index);
 	return true;
 }
@@ -514,25 +514,25 @@ void MainWindow::on_actionOpen_triggered()
 {
 	QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
 	QString path;
-	if(scrollArea != NULL)
+	if (scrollArea != NULL)
 	{
 		FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
-		if(filterTable->getConfigPath().length() > 0)
+		if (filterTable->getConfigPath().length() > 0)
 		{
 			QFileInfo fileInfo(filterTable->getConfigPath());
 			path = fileInfo.absolutePath();
 		}
 	}
-	if(path.length() == 0)
+	if (path.length() == 0)
 		path = configDir.absolutePath();
 
 	QFileDialog dialog(this, tr("Open file"), path, "*.txt");
 	dialog.setFileMode(QFileDialog::ExistingFiles);
 	dialog.setNameFilter(tr("E-APO configurations (*.txt)"));
 
-	if(dialog.exec() == QDialog::Accepted)
+	if (dialog.exec() == QDialog::Accepted)
 	{
-		for(QString file : dialog.selectedFiles())
+		for (QString file : dialog.selectedFiles())
 			load(file);
 	}
 }
@@ -540,12 +540,12 @@ void MainWindow::on_actionOpen_triggered()
 void MainWindow::on_actionSave_triggered()
 {
 	QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
-	if(scrollArea == NULL)
+	if (scrollArea == NULL)
 		return;
 
 	FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
 
-	if(filterTable->getConfigPath().length() == 0)
+	if (filterTable->getConfigPath().length() == 0)
 	{
 		ui->actionSaveAs->trigger();
 	}
@@ -554,7 +554,7 @@ void MainWindow::on_actionSave_triggered()
 		save(filterTable, filterTable->getConfigPath());
 
 		QString tabText = ui->tabWidget->tabText(ui->tabWidget->currentIndex());
-		if(tabText.endsWith('*'))
+		if (tabText.endsWith('*'))
 			ui->tabWidget->setTabText(ui->tabWidget->currentIndex(), tabText.left(tabText.length() - 1));
 	}
 }
@@ -562,13 +562,13 @@ void MainWindow::on_actionSave_triggered()
 void MainWindow::on_actionSaveAs_triggered()
 {
 	QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
-	if(scrollArea == NULL)
+	if (scrollArea == NULL)
 		return;
 
 	FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
 	QString path;
 	QString filename;
-	if(filterTable->getConfigPath().length() == 0)
+	if (filterTable->getConfigPath().length() == 0)
 	{
 		path = configDir.absolutePath();
 	}
@@ -583,10 +583,10 @@ void MainWindow::on_actionSaveAs_triggered()
 	dialog.setAcceptMode(QFileDialog::AcceptSave);
 	dialog.setNameFilter(tr("E-APO configurations (*.txt)"));
 	dialog.setDefaultSuffix(".txt");
-	if(filename.length() > 0)
+	if (filename.length() > 0)
 		dialog.selectFile(filename);
 
-	if(dialog.exec() == QDialog::Accepted)
+	if (dialog.exec() == QDialog::Accepted)
 	{
 		QString savePath = dialog.selectedFiles().first();
 		save(filterTable, savePath);
@@ -616,7 +616,7 @@ void MainWindow::recentFileSelected()
 void MainWindow::on_actionCut_triggered()
 {
 	QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
-	if(scrollArea == NULL)
+	if (scrollArea == NULL)
 		return;
 
 	FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
@@ -626,7 +626,7 @@ void MainWindow::on_actionCut_triggered()
 void MainWindow::on_actionCopy_triggered()
 {
 	QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
-	if(scrollArea == NULL)
+	if (scrollArea == NULL)
 		return;
 
 	FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
@@ -636,7 +636,7 @@ void MainWindow::on_actionCopy_triggered()
 void MainWindow::on_actionPaste_triggered()
 {
 	QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
-	if(scrollArea == NULL)
+	if (scrollArea == NULL)
 		return;
 
 	FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
@@ -646,7 +646,7 @@ void MainWindow::on_actionPaste_triggered()
 void MainWindow::on_actionDelete_triggered()
 {
 	QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
-	if(scrollArea == NULL)
+	if (scrollArea == NULL)
 		return;
 
 	FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
@@ -655,19 +655,19 @@ void MainWindow::on_actionDelete_triggered()
 
 void MainWindow::instantModeEnabled(bool enabled)
 {
-	if(enabled)
+	if (enabled)
 	{
-		for(int i = 0; i < ui->tabWidget->count(); i++)
+		for (int i = 0; i < ui->tabWidget->count(); i++)
 		{
 			QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(i));
 			FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
 
-			if(filterTable->getConfigPath().length() > 0)
+			if (filterTable->getConfigPath().length() > 0)
 			{
 				save(filterTable, filterTable->getConfigPath());
 
 				QString tabText = ui->tabWidget->tabText(i);
-				if(tabText.endsWith('*'))
+				if (tabText.endsWith('*'))
 					ui->tabWidget->setTabText(i, tabText.left(tabText.length() - 1));
 			}
 		}
@@ -740,7 +740,7 @@ void MainWindow::languageSelected(bool selected)
 {
 	QAction* action = qobject_cast<QAction*>(sender());
 
-	if(!selected)
+	if (!selected)
 	{
 		action->setChecked(true);
 		return;
@@ -748,10 +748,10 @@ void MainWindow::languageSelected(bool selected)
 
 	QLocale::Language language = (QLocale::Language)action->data().toInt();
 
-	if(QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
+	if (QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
 	{
 		QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
-		if(language == QLocale::AnyLanguage)
+		if (language == QLocale::AnyLanguage)
 		{
 			settings.remove("language");
 		}
@@ -759,7 +759,7 @@ void MainWindow::languageSelected(bool selected)
 		{
 			QString name = QLocale(language).name();
 			int index = name.indexOf('_');
-			if(index != -1)
+			if (index != -1)
 				name = name.left(index);
 			settings.setValue("language", name);
 		}
@@ -775,15 +775,15 @@ void MainWindow::languageSelected(bool selected)
 
 void MainWindow::on_actionResetAllGlobalPreferences_triggered()
 {
-	if(QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
+	if (QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
 	{
 		QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
-		for(QString key : settings.childGroups())
+		for (QString key : settings.childGroups())
 		{
-			if(key != "file-specific")
+			if (key != "file-specific")
 				settings.remove(key);
 		}
-		for(QString key : settings.childKeys())
+		for (QString key : settings.childKeys())
 			settings.remove(key);
 
 		restart = true;
@@ -794,12 +794,12 @@ void MainWindow::on_actionResetAllGlobalPreferences_triggered()
 
 void MainWindow::on_actionResetAllFileSpecificPreferences_triggered()
 {
-	if(QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
+	if (QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
 	{
 		QSettings settings(QString::fromWCharArray(EDITOR_PER_FILE_REGPATH), QSettings::NativeFormat);
-		for(QString key : settings.childGroups())
+		for (QString key : settings.childGroups())
 			settings.remove(key);
-		for(QString key : settings.childKeys())
+		for (QString key : settings.childKeys())
 			settings.remove(key);
 
 		restart = true;
@@ -832,15 +832,15 @@ FilterTable* MainWindow::addTab(QString title, QString tooltip)
 void MainWindow::getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* channelMask)
 {
 	*selectedDevice = deviceComboBox->currentData().value<DeviceAPOInfo*>();
-	if(*selectedDevice == NULL)
+	if (*selectedDevice == NULL)
 		*selectedDevice = defaultOutputDevice;
 
 	*channelMask = channelConfigurationComboBox->currentData().toInt();
-	if(*channelMask == 0 && selectedDevice != NULL)
+	if (*channelMask == 0 && selectedDevice != NULL)
 	{
 		*channelMask = (*selectedDevice)->channelMask;
 
-		if(*channelMask == 0)
+		if (*channelMask == 0)
 			*channelMask = ChannelHelper::getDefaultChannelMask((*selectedDevice)->channelCount);
 	}
 }
@@ -848,7 +848,7 @@ void MainWindow::getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* ch
 bool MainWindow::askForClose(int tabIndex)
 {
 	bool discarded = false;
-	if(ui->tabWidget->tabText(tabIndex).endsWith('*'))
+	if (ui->tabWidget->tabText(tabIndex).endsWith('*'))
 	{
 		ui->tabWidget->setCurrentIndex(tabIndex);
 		QString configPath = ui->tabWidget->tabToolTip(tabIndex);
@@ -863,11 +863,11 @@ bool MainWindow::askForClose(int tabIndex)
 		messageBox.setWindowFlags(Qt::Dialog | Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint);
 		int result = messageBox.exec();
 
-		switch(result)
+		switch (result)
 		{
 		case QMessageBox::Save:
 			ui->actionSave->trigger();
-			if(ui->tabWidget->tabText(tabIndex).endsWith('*'))
+			if (ui->tabWidget->tabText(tabIndex).endsWith('*'))
 				// saving was canceled
 				return false;
 			break;
@@ -879,10 +879,10 @@ bool MainWindow::askForClose(int tabIndex)
 		}
 	}
 
-	if(!discarded && !noSaveFilePreferences)
+	if (!discarded && !noSaveFilePreferences)
 	{
 		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(tabIndex));
-		if(scrollArea != NULL)
+		if (scrollArea != NULL)
 		{
 			FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
 			filterTable->savePreferences();
@@ -899,23 +899,23 @@ void MainWindow::startAnalysis()
 	int channelMask;
 	getDeviceAndChannelMask(&selectedDevice, &channelMask);
 
-	if(selectedDevice != NULL)
+	if (selectedDevice != NULL)
 	{
 		QString configPath;
 
-		if(ui->startFromComboBox->currentIndex() == 1)
+		if (ui->startFromComboBox->currentIndex() == 1)
 		{
 			QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
-			if(scrollArea != NULL)
+			if (scrollArea != NULL)
 			{
 				FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
 
-				if(filterTable->getConfigPath().length() > 0)
+				if (filterTable->getConfigPath().length() > 0)
 					configPath = filterTable->getConfigPath();
 			}
 		}
 
-		if(configPath.isEmpty())
+		if (configPath.isEmpty())
 			configPath = configDir.absoluteFilePath("config.txt");
 		configPath = QDir::toNativeSeparators(configPath);
 
@@ -927,10 +927,10 @@ void MainWindow::loadPreferences()
 {
 	QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
 	QVariant geometryValue = settings.value("geometry");
-	if(geometryValue.isValid())
+	if (geometryValue.isValid())
 		restoreGeometry(geometryValue.toByteArray());
 	QVariant stateValue = settings.value("windowState");
-	if(stateValue.isValid())
+	if (stateValue.isValid())
 		restoreState(stateValue.toByteArray());
 	instantModeCheckBox->setChecked(settings.value("instantMode", true).toBool());
 
@@ -939,7 +939,7 @@ void MainWindow::loadPreferences()
 	ui->resolutionSpinBox->setValue(settings.value("analysis/resolution", 65536).toInt());
 	double zoomX = settings.value("analysis/zoomX", 1.0).toDouble();
 	double zoomY = settings.value("analysis/zoomY", 1.0).toDouble();
-	if(zoomX != 1.0 || zoomY != 1.0)
+	if (zoomX != 1.0 || zoomY != 1.0)
 		analysisPlotScene->setZoom(zoomX, zoomY);
 	int scrollX = settings.value("analysis/scrollX", round(analysisPlotScene->hzToX(20))).toInt();
 	int scrollY = settings.value("analysis/scrollY", round(analysisPlotScene->dbToY(22))).toInt();
@@ -947,13 +947,13 @@ void MainWindow::loadPreferences()
 
 	QVariant openFilesValue = settings.value("openFiles");
 	int tabIndex = settings.value("tabIndex").toInt();
-	if(openFilesValue.isValid())
+	if (openFilesValue.isValid())
 	{
 		QStringList fileList = openFilesValue.toStringList();
-		for(int i = 0; i < fileList.size(); i++)
+		for (int i = 0; i < fileList.size(); i++)
 		{
 			load(fileList[i]);
-			if(i == tabIndex)
+			if (i == tabIndex)
 				tabIndex = ui->tabWidget->currentIndex();
 		}
 	}
@@ -963,18 +963,18 @@ void MainWindow::loadPreferences()
 
 	QVariant languageValue = settings.value("language");
 	QLocale::Language language;
-	if(languageValue.isValid())
+	if (languageValue.isValid())
 		language = QLocale(languageValue.toString()).language();
 	else
 		language = QLocale::AnyLanguage;
 
-	for(QAction* action : ui->menuLanguage->actions())
+	for (QAction* action : ui->menuLanguage->actions())
 		action->setChecked(action->data().toInt() == language);
 }
 
 void MainWindow::savePreferences()
 {
-	if(noSavePreferences)
+	if (noSavePreferences)
 		return;
 
 	QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
@@ -995,13 +995,13 @@ void MainWindow::savePreferences()
 	settings.setValue("analysis/scrollY", value);
 
 	QStringList fileList;
-	for(int i = 0; i < ui->tabWidget->count(); i++)
+	for (int i = 0; i < ui->tabWidget->count(); i++)
 	{
 		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(i));
-		if(scrollArea == NULL)
+		if (scrollArea == NULL)
 			continue;
 		FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
-		if(filterTable->getConfigPath().length() > 0)
+		if (filterTable->getConfigPath().length() > 0)
 		{
 			fileList.append(filterTable->getConfigPath());
 		}
@@ -1017,17 +1017,17 @@ void MainWindow::updateRecentFiles()
 {
 	QList<QAction*> actions = ui->menuFile->actions();
 	int separatorsFound = 0;
-	for(int i = actions.size() - 1; i >= 0; i--)
+	for (int i = actions.size() - 1; i >= 0; i--)
 	{
 		QAction* action = actions[i];
-		if(action->isSeparator())
+		if (action->isSeparator())
 		{
 			separatorsFound++;
 
-			if(separatorsFound == 1)
+			if (separatorsFound == 1)
 			{
 				QList<QAction*> newActions;
-				for(QString recentFile : recentFiles)
+				for (QString recentFile : recentFiles)
 				{
 					QAction* newAction = new QAction(recentFile, ui->menuFile);
 					connect(newAction, SIGNAL(triggered(bool)), this, SLOT(recentFileSelected()));
@@ -1040,7 +1040,7 @@ void MainWindow::updateRecentFiles()
 				break;
 			}
 		}
-		else if(separatorsFound >= 1)
+		else if (separatorsFound >= 1)
 		{
 			ui->menuFile->removeAction(action);
 		}

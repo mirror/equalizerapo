@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2012  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2012  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -33,7 +33,7 @@ static HINSTANCE hModule;
 
 BOOL WINAPI DllMain(HINSTANCE hModule, DWORD dwReason, void* lpReserved)
 {
-	if(dwReason == DLL_PROCESS_ATTACH)
+	if (dwReason == DLL_PROCESS_ATTACH)
 		::hModule = hModule;
 
 	return TRUE;
@@ -41,7 +41,7 @@ BOOL WINAPI DllMain(HINSTANCE hModule, DWORD dwReason, void* lpReserved)
 
 STDAPI DllCanUnloadNow()
 {
-	if(EqualizerAPO::instCount == 0 && ClassFactory::lockCount == 0)
+	if (EqualizerAPO::instCount == 0 && ClassFactory::lockCount == 0)
 		return S_OK;
 	else
 		return S_FALSE;
@@ -49,11 +49,11 @@ STDAPI DllCanUnloadNow()
 
 STDAPI DllGetClassObject(const CLSID& clsid, const IID& iid, void** ppv)
 {
-	if(clsid != EQUALIZERAPO_POST_MIX_GUID && clsid != EQUALIZERAPO_PRE_MIX_GUID)
+	if (clsid != EQUALIZERAPO_POST_MIX_GUID && clsid != EQUALIZERAPO_PRE_MIX_GUID)
 		return CLASS_E_CLASSNOTAVAILABLE;
 
 	ClassFactory* factory = new ClassFactory();
-	if(factory == NULL)
+	if (factory == NULL)
 		return E_OUTOFMEMORY;
 
 	HRESULT hr = factory->QueryInterface(iid, ppv);
@@ -65,17 +65,17 @@ STDAPI DllGetClassObject(const CLSID& clsid, const IID& iid, void** ppv)
 STDAPI DllRegisterServer()
 {
 	wchar_t filename[1024];
-	GetModuleFileNameW(hModule, filename, sizeof(filename)/sizeof(wchar_t));
+	GetModuleFileNameW(hModule, filename, sizeof(filename) / sizeof(wchar_t));
 
 	HRESULT hr = RegisterAPO(EqualizerAPO::regPostMixProperties);
-	if(FAILED(hr))
+	if (FAILED(hr))
 	{
 		UnregisterAPO(EQUALIZERAPO_POST_MIX_GUID);
 		return hr;
 	}
 
 	hr = RegisterAPO(EqualizerAPO::regPreMixProperties);
-	if(FAILED(hr))
+	if (FAILED(hr))
 	{
 		UnregisterAPO(EQUALIZERAPO_POST_MIX_GUID);
 		UnregisterAPO(EQUALIZERAPO_PRE_MIX_GUID);
@@ -100,7 +100,7 @@ STDAPI DllRegisterServer()
 		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"", filename);
 		RegistryHelper::writeValue(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32", L"ThreadingModel", L"Both");
 	}
-	catch(RegistryException e)
+	catch (RegistryException e)
 	{
 		UnregisterAPO(EQUALIZERAPO_POST_MIX_GUID);
 		UnregisterAPO(EQUALIZERAPO_PRE_MIX_GUID);
@@ -124,7 +124,7 @@ STDAPI DllUnregisterServer()
 		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString + L"\\InprocServer32");
 		RegistryHelper::deleteKey(L"HKEY_LOCAL_MACHINE\\SOFTWARE\\Classes\\CLSID\\" + apoClsidString);
 	}
-	catch(RegistryException e)
+	catch (RegistryException e)
 	{
 		return E_FAIL;
 	}

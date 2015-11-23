@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2014  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2014  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -26,15 +26,15 @@ using namespace std;
 using namespace mup;
 
 RegexSearchFunction::RegexSearchFunction()
-		:ICallback(cmFUNC, L"regexSearch", 2)
+	: ICallback(cmFUNC, L"regexSearch", 2)
 {
 }
 
-void RegexSearchFunction::Eval(ptr_val_type& ret, const ptr_val_type *arg, int argc)
+void RegexSearchFunction::Eval(ptr_val_type& ret, const ptr_val_type* arg, int argc)
 {
-	if(!arg[0]->IsString())
+	if (!arg[0]->IsString())
 		throw ParserError(ErrorContext(ecTYPE_CONFLICT_FUN, -1, GetIdent(), arg[0]->GetType(), 's', 1));
-	if(!arg[1]->IsString())
+	if (!arg[1]->IsString())
 		throw ParserError(ErrorContext(ecTYPE_CONFLICT_FUN, -1, GetIdent(), arg[1]->GetType(), 's', 2));
 
 	wstring regexString = arg[0]->GetString();
@@ -45,9 +45,9 @@ void RegexSearchFunction::Eval(ptr_val_type& ret, const ptr_val_type *arg, int a
 	bool found = regex_search(string, match, regex);
 
 	vector<Value> result;
-	if(found)
+	if (found)
 	{
-		for(unsigned i=0; i<match.size(); i++)
+		for (unsigned i = 0; i < match.size(); i++)
 			result.push_back(match.str(i));
 	}
 
@@ -65,17 +65,17 @@ IToken* RegexSearchFunction::Clone() const
 }
 
 RegexReplaceFunction::RegexReplaceFunction()
-		:ICallback(cmFUNC, L"regexReplace", 3)
+	: ICallback(cmFUNC, L"regexReplace", 3)
 {
 }
 
-void RegexReplaceFunction::Eval(ptr_val_type& ret, const ptr_val_type *arg, int argc)
+void RegexReplaceFunction::Eval(ptr_val_type& ret, const ptr_val_type* arg, int argc)
 {
-	if(!arg[0]->IsString())
+	if (!arg[0]->IsString())
 		throw ParserError(ErrorContext(ecTYPE_CONFLICT_FUN, -1, GetIdent(), arg[0]->GetType(), 's', 1));
-	if(!arg[1]->IsString())
+	if (!arg[1]->IsString())
 		throw ParserError(ErrorContext(ecTYPE_CONFLICT_FUN, -1, GetIdent(), arg[1]->GetType(), 's', 2));
-	if(!arg[2]->IsString())
+	if (!arg[2]->IsString())
 		throw ParserError(ErrorContext(ecTYPE_CONFLICT_FUN, -1, GetIdent(), arg[2]->GetType(), 's', 3));
 
 	wstring regexString = arg[0]->GetString();

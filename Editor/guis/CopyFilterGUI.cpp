@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "Editor/widgets/ResizeCorner.h"
@@ -27,8 +27,8 @@ static const int DEFAULT_HEIGHT = 88;
 
 using namespace std;
 
-CopyFilterGUI::CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable) :
-	ui(new Ui::CopyFilterGUI)
+CopyFilterGUI::CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable)
+	: ui(new Ui::CopyFilterGUI)
 {
 	ui->setupUi(this);
 
@@ -40,10 +40,10 @@ CopyFilterGUI::CopyFilterGUI(CopyFilter* filter, FilterTable* filterTable) :
 
 	ResizeCorner* cornerWidget = new ResizeCorner(filterTable,
 			QSize(0, 50), QSize(0, INT_MAX),
-	[this]() {
+			[this]() {
 		return QSize(0, ui->scrollArea->height());
 	},
-	[this](QSize size) {
+			[this](QSize size) {
 		ui->scrollArea->setFixedHeight(size.height());
 	}, ui->scrollArea);
 	cornerWidget->setCursor(Qt::SizeVerCursor);
@@ -66,7 +66,7 @@ void CopyFilterGUI::configureChannels(vector<wstring>& channelNames)
 {
 	vector<Assignment> assignments = ui->form->buildAssignments();
 
-	if(channelNames != inputChannelNames)
+	if (channelNames != inputChannelNames)
 	{
 		inputChannelNames = channelNames;
 
@@ -74,24 +74,24 @@ void CopyFilterGUI::configureChannels(vector<wstring>& channelNames)
 		ui->form->setChannelNames(channelNames);
 	}
 
-	for(Assignment assignment : assignments)
+	for (Assignment assignment : assignments)
 	{
-		if(assignment.targetChannel == L"")
+		if (assignment.targetChannel == L"")
 			continue;
 		bool hasSummand = false;
-		for(Assignment::Summand summand : assignment.sourceSum)
+		for (Assignment::Summand summand : assignment.sourceSum)
 		{
-			if(summand.channel != L" ")
+			if (summand.channel != L" ")
 			{
 				hasSummand = true;
 				break;
 			}
 		}
-		if(!hasSummand)
+		if (!hasSummand)
 			continue;
 
 		int channelIndex = ChannelHelper::getChannelIndex(assignment.targetChannel, channelNames, true);
-		if(channelIndex == -1)
+		if (channelIndex == -1)
 			channelNames.push_back(assignment.targetChannel);
 	}
 }
@@ -102,29 +102,29 @@ void CopyFilterGUI::store(QString& command, QString& parameters)
 
 	std::vector<Assignment> assignments;
 
-	if(ui->tabWidget->currentIndex() == 0)
+	if (ui->tabWidget->currentIndex() == 0)
 		assignments = scene->buildAssignments();
 	else
 		assignments = ui->form->buildAssignments();
 
 	bool firstAssignment = true;
-	for(const Assignment& assignment : assignments)
+	for (const Assignment& assignment : assignments)
 	{
-		if(assignment.targetChannel == L"")
+		if (assignment.targetChannel == L"")
 			continue;
 
 		bool firstSummand = true;
-		for(const Assignment::Summand& summand : assignment.sourceSum)
+		for (const Assignment::Summand& summand : assignment.sourceSum)
 		{
 			// skip not yet filled row
-			if(summand.channel == L" ")
+			if (summand.channel == L" ")
 				continue;
 
-			if(firstSummand)
+			if (firstSummand)
 			{
 				firstSummand = false;
 
-				if(firstAssignment)
+				if (firstAssignment)
 					firstAssignment = false;
 				else
 					parameters += " ";
@@ -140,25 +140,25 @@ void CopyFilterGUI::store(QString& command, QString& parameters)
 			bool hasChannel = summand.channel != L"";
 			bool hasFactor = !hasChannel || summand.factor != 1.0 || summand.isDecibel;
 
-			if(hasFactor)
+			if (hasFactor)
 			{
 				QString factorString;
 				factorString.setNum(summand.factor);
-				if(factorString != "0" && !factorString.contains('.'))
+				if (factorString != "0" && !factorString.contains('.'))
 					factorString += ".0";
 				parameters += factorString;
-				if(summand.isDecibel)
+				if (summand.isDecibel)
 					parameters += "dB";
 			}
 
-			if(hasFactor && hasChannel)
+			if (hasFactor && hasChannel)
 				parameters += "*";
 
-			if(hasChannel)
+			if (hasChannel)
 				parameters += QString::fromStdWString(summand.channel);
 		}
 
-		if(ui->tabWidget->currentIndex() == 0)
+		if (ui->tabWidget->currentIndex() == 0)
 			ui->form->load(assignments);
 		else
 			scene->load(inputChannelNames, assignments);
@@ -173,8 +173,8 @@ void CopyFilterGUI::loadPreferences(const QVariantMap& prefs)
 
 void CopyFilterGUI::storePreferences(QVariantMap& prefs)
 {
-	if(ui->scrollArea->height() != DEFAULT_HEIGHT)
+	if (ui->scrollArea->height() != DEFAULT_HEIGHT)
 		prefs.insert("height", ui->scrollArea->height());
-	if(ui->tabWidget->currentIndex() != 0)
+	if (ui->tabWidget->currentIndex() != 0)
 		prefs.insert("tabIndex", ui->tabWidget->currentIndex());
 }

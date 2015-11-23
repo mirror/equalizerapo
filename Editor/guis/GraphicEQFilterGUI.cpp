@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <vector>
@@ -36,8 +36,8 @@ using namespace std;
 
 QRegularExpression GraphicEQFilterGUI::numberRegEx("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
 
-GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPath, FilterTable* filterTable) :
-	ui(new Ui::GraphicEQFilterGUI), configPath(configPath)
+GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPath, FilterTable* filterTable)
+	: ui(new Ui::GraphicEQFilterGUI), configPath(configPath)
 {
 	ui->setupUi(this);
 
@@ -46,10 +46,10 @@ GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPa
 
 	ResizeCorner* cornerWidget = new ResizeCorner(filterTable,
 			QSize(0, ui->graphicsView->minimumHeight()), QSize(10000 - ui->tableWidget->minimumWidth(), INT_MAX),
-	[this]() {
+			[this]() {
 		return QSize(10000 - ui->tableWidget->width(), ui->graphicsView->height());
 	},
-	[this](QSize size) {
+			[this](QSize size) {
 		ui->tableWidget->setFixedWidth(10000 - size.width());
 		ui->graphicsView->setFixedHeight(size.height());
 	}, ui->graphicsView);
@@ -71,7 +71,7 @@ GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPa
 	scene->setNodes(filter->getNodes());
 
 	int bandCount = scene->verifyBands(filter->getNodes());
-	switch(bandCount)
+	switch (bandCount)
 	{
 	case 15:
 		ui->radioButton15->click();
@@ -91,14 +91,14 @@ GraphicEQFilterGUI::~GraphicEQFilterGUI()
 	delete ui;
 }
 
-void GraphicEQFilterGUI::store(QString & command, QString & parameters)
+void GraphicEQFilterGUI::store(QString& command, QString& parameters)
 {
 	command = "GraphicEQ";
 
 	bool first = true;
-	for(FilterNode node : scene->getNodes())
+	for (FilterNode node : scene->getNodes())
 	{
-		if(first)
+		if (first)
 			first = false;
 		else
 			parameters += "; ";
@@ -113,7 +113,7 @@ void GraphicEQFilterGUI::loadPreferences(const QVariantMap& prefs)
 	ui->graphicsView->setFixedHeight(prefs.value("viewHeight", DEFAULT_VIEW_HEIGHT).toInt());
 	double zoomX = prefs.value("zoomX", 1.0).toDouble();
 	double zoomY = prefs.value("zoomY", 1.0).toDouble();
-	if(zoomX != 1.0 || zoomY != 1.0)
+	if (zoomX != 1.0 || zoomY != 1.0)
 		scene->setZoom(zoomX, zoomY);
 	int scrollX = prefs.value("scrollX", round(scene->hzToX(20))).toInt();
 	int scrollY = prefs.value("scrollY", round(scene->dbToY(22))).toInt();
@@ -122,21 +122,21 @@ void GraphicEQFilterGUI::loadPreferences(const QVariantMap& prefs)
 
 void GraphicEQFilterGUI::storePreferences(QVariantMap& prefs)
 {
-	if(ui->tableWidget->width() != DEFAULT_TABLE_WIDTH)
+	if (ui->tableWidget->width() != DEFAULT_TABLE_WIDTH)
 		prefs.insert("tableWidth", ui->tableWidget->width());
-	if(ui->graphicsView->height() != DEFAULT_VIEW_HEIGHT)
+	if (ui->graphicsView->height() != DEFAULT_VIEW_HEIGHT)
 		prefs.insert("viewHeight", ui->graphicsView->height());
-	if(scene->getZoomX() != 1.0)
+	if (scene->getZoomX() != 1.0)
 		prefs.insert("zoomX", scene->getZoomX());
-	if(scene->getZoomY() != 1.0)
+	if (scene->getZoomY() != 1.0)
 		prefs.insert("zoomY", scene->getZoomY());
 	QScrollBar* hScrollBar = ui->graphicsView->horizontalScrollBar();
 	int value = hScrollBar->value();
-	if(value != round(scene->hzToX(20)))
+	if (value != round(scene->hzToX(20)))
 		prefs.insert("scrollX", value);
 	QScrollBar* vScrollBar = ui->graphicsView->verticalScrollBar();
 	value = vScrollBar->value();
-	if(value != round(scene->dbToY(22)))
+	if (value != round(scene->dbToY(22)))
 		prefs.insert("scrollY", value);
 }
 
@@ -180,7 +180,7 @@ void GraphicEQFilterGUI::moveRow(int fromIndex, int toIndex)
 	ui->tableWidget->insertRow(toIndex);
 	ui->tableWidget->setItem(toIndex, 0, freqItem);
 	ui->tableWidget->setItem(toIndex, 1, gainItem);
-	if(selected)
+	if (selected)
 	{
 		QModelIndex modelIndex = ui->tableWidget->model()->index(toIndex, 0);
 		ui->tableWidget->selectionModel()->select(modelIndex, QItemSelectionModel::Rows | QItemSelectionModel::Select);
@@ -193,7 +193,7 @@ void GraphicEQFilterGUI::selectRow(int index, bool select)
 {
 	ui->tableWidget->blockSignals(true);
 	QItemSelectionModel::SelectionFlags command = QItemSelectionModel::Rows;
-	if(select)
+	if (select)
 		command |= QItemSelectionModel::Select;
 	else
 		command |= QItemSelectionModel::Deselect;
@@ -205,12 +205,12 @@ void GraphicEQFilterGUI::selectRow(int index, bool select)
 
 void GraphicEQFilterGUI::on_tableWidget_cellChanged(int row, int column)
 {
-	if(column == 0)
+	if (column == 0)
 	{
 		QTableWidgetItem* freqItem = ui->tableWidget->item(row, 0);
 		bool ok;
 		double freq = freqItem->text().toDouble(&ok);
-		if(ok)
+		if (ok)
 		{
 			double gain = scene->getNodes()[row].dbGain;
 			scene->setNode(row, freq, gain);
@@ -221,12 +221,12 @@ void GraphicEQFilterGUI::on_tableWidget_cellChanged(int row, int column)
 			freqItem->setText(QString("%0").arg(freq));
 		}
 	}
-	else if(column == 1)
+	else if (column == 1)
 	{
 		QTableWidgetItem* gainItem = ui->tableWidget->item(row, 1);
 		bool ok;
 		double gain = gainItem->text().toDouble(&ok);
-		if(ok)
+		if (ok)
 		{
 			double freq = scene->getNodes()[row].freq;
 			scene->setNode(row, freq, gain);
@@ -242,7 +242,7 @@ void GraphicEQFilterGUI::on_tableWidget_cellChanged(int row, int column)
 void GraphicEQFilterGUI::on_tableWidget_itemSelectionChanged()
 {
 	QSet<int> selectedRows;
-	for(QTableWidgetItem* item : ui->tableWidget->selectedItems())
+	for (QTableWidgetItem* item : ui->tableWidget->selectedItems())
 		selectedRows.insert(item->row());
 
 	scene->setSelectedNodes(selectedRows);
@@ -250,7 +250,7 @@ void GraphicEQFilterGUI::on_tableWidget_itemSelectionChanged()
 
 void GraphicEQFilterGUI::on_radioButton15_toggled(bool checked)
 {
-	if(checked)
+	if (checked)
 	{
 		scene->setBandCount(15);
 		setFreqEditable(false);
@@ -259,7 +259,7 @@ void GraphicEQFilterGUI::on_radioButton15_toggled(bool checked)
 
 void GraphicEQFilterGUI::on_radioButton31_toggled(bool checked)
 {
-	if(checked)
+	if (checked)
 	{
 		scene->setBandCount(31);
 		setFreqEditable(false);
@@ -268,7 +268,7 @@ void GraphicEQFilterGUI::on_radioButton31_toggled(bool checked)
 
 void GraphicEQFilterGUI::on_radioButtonVar_toggled(bool checked)
 {
-	if(checked)
+	if (checked)
 	{
 		scene->setBandCount(-1);
 		setFreqEditable(true);
@@ -278,10 +278,10 @@ void GraphicEQFilterGUI::on_radioButtonVar_toggled(bool checked)
 void GraphicEQFilterGUI::setFreqEditable(bool editable)
 {
 	ui->tableWidget->blockSignals(true);
-	for(int i = 0; i < ui->tableWidget->rowCount(); i++)
+	for (int i = 0; i < ui->tableWidget->rowCount(); i++)
 	{
 		QTableWidgetItem* item = ui->tableWidget->item(i, 0);
-		if(editable)
+		if (editable)
 			item->setFlags(item->flags() | Qt::ItemIsEditable | Qt::ItemIsEnabled);
 		else
 			item->setFlags(item->flags() & ~(Qt::ItemIsEditable | Qt::ItemIsEnabled));
@@ -298,32 +298,32 @@ void GraphicEQFilterGUI::on_actionImport_triggered()
 	nameFilters.append(tr("Frequency response (*.csv)"));
 	nameFilters.append(tr("All files (*.*)"));
 	dialog.setNameFilters(nameFilters);
-	if(dialog.exec() == QDialog::Accepted)
+	if (dialog.exec() == QDialog::Accepted)
 	{
 		vector<FilterNode> newNodes;
 
-		for(QString path : dialog.selectedFiles())
+		for (QString path : dialog.selectedFiles())
 		{
 			QFile file(path);
-			if(file.open(QFile::ReadOnly))
+			if (file.open(QFile::ReadOnly))
 			{
 				QTextStream stream(&file);
 				QString text = stream.readAll();
-				if(!text.contains('.'))
+				if (!text.contains('.'))
 					text = text.replace(',', '.');
 				QRegularExpressionMatchIterator it = numberRegEx.globalMatch(text);
-				while(it.hasNext())
+				while (it.hasNext())
 				{
 					QRegularExpressionMatch match = it.next();
 					QString freqString = match.captured();
 					bool ok;
 					double freq = freqString.toDouble(&ok);
-					if(ok && it.hasNext())
+					if (ok && it.hasNext())
 					{
 						match = it.next();
 						QString gainString = match.captured();
 						double gain = gainString.toDouble(&ok);
-						if(ok)
+						if (ok)
 							newNodes.push_back(FilterNode(freq, gain));
 					}
 				}
@@ -334,9 +334,9 @@ void GraphicEQFilterGUI::on_actionImport_triggered()
 		scene->setNodes(newNodes);
 
 		int bandCount = scene->verifyBands(newNodes);
-		if(bandCount != scene->getBandCount())
+		if (bandCount != scene->getBandCount())
 		{
-			switch(bandCount)
+			switch (bandCount)
 			{
 			case 15:
 				ui->radioButton15->click();
@@ -367,15 +367,15 @@ void GraphicEQFilterGUI::on_actionExport_triggered()
 	dialog.setNameFilters(nameFilters);
 	dialog.setDefaultSuffix(".csv");
 
-	if(dialog.exec() == QDialog::Accepted)
+	if (dialog.exec() == QDialog::Accepted)
 	{
 		QString savePath = dialog.selectedFiles().first();
 
 		QFile file(savePath);
-		if(file.open(QFile::WriteOnly | QFile::Truncate))
+		if (file.open(QFile::WriteOnly | QFile::Truncate))
 		{
 			QTextStream stream(&file);
-			for(FilterNode node : scene->getNodes())
+			for (FilterNode node : scene->getNodes())
 			{
 				stream << node.freq << '\t' << node.dbGain << '\n';
 			}
@@ -387,7 +387,7 @@ void GraphicEQFilterGUI::on_actionExport_triggered()
 void GraphicEQFilterGUI::on_actionInvertResponse_triggered()
 {
 	vector<FilterNode> newNodes = scene->getNodes();
-	for(FilterNode& node : newNodes)
+	for (FilterNode& node : newNodes)
 		node.dbGain = -node.dbGain;
 
 	scene->setNodes(newNodes);
@@ -399,15 +399,15 @@ void GraphicEQFilterGUI::on_actionNormalizeResponse_triggered()
 	vector<FilterNode> newNodes = scene->getNodes();
 
 	double maxGain = -DBL_MAX;
-	for(FilterNode node : newNodes)
+	for (FilterNode node : newNodes)
 	{
-		if(node.dbGain > maxGain)
+		if (node.dbGain > maxGain)
 			maxGain = node.dbGain;
 	}
 
-	if(maxGain != 0)
+	if (maxGain != 0)
 	{
-		for(FilterNode& node : newNodes)
+		for (FilterNode& node : newNodes)
 			node.dbGain -= maxGain;
 
 		scene->setNodes(newNodes);
@@ -421,9 +421,9 @@ void GraphicEQFilterGUI::on_actionResetResponse_triggered()
 	QSet<int> selectedIndices = scene->getSelectedIndices();
 
 	int index = 0;
-	for(FilterNode& node : newNodes)
+	for (FilterNode& node : newNodes)
 	{
-		if(selectedIndices.isEmpty() || selectedIndices.contains(index))
+		if (selectedIndices.isEmpty() || selectedIndices.contains(index))
 			node.dbGain = 0.0;
 		index++;
 	}

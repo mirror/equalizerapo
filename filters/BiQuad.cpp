@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2013  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2013  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -25,7 +25,7 @@ using namespace std;
 BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandwidthOrQOrS, bool isBandwidth)
 {
 	double A;
-	if(type == PEAKING || type == LOW_SHELF || type == HIGH_SHELF)
+	if (type == PEAKING || type == LOW_SHELF || type == HIGH_SHELF)
 		A = pow(10, dbGain / 40);
 	else
 		A = pow(10, dbGain / 20);
@@ -37,30 +37,30 @@ BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandw
 
 	if (type == LOW_SHELF || type == HIGH_SHELF) // S
 	{
-		alpha = sn/2 * sqrt((A + 1/A) * (1/bandwidthOrQOrS - 1) + 2);
+		alpha = sn / 2 * sqrt((A + 1 / A) * (1 / bandwidthOrQOrS - 1) + 2);
 		beta = 2 * sqrt(A) * alpha;
 	}
-	else if(isBandwidth) // BW
-		alpha = sn * sinh(M_LN2/2 * bandwidthOrQOrS * omega / sn);
+	else if (isBandwidth) // BW
+		alpha = sn * sinh(M_LN2 / 2 * bandwidthOrQOrS * omega / sn);
 	else // Q
 		alpha = sn / (2 * bandwidthOrQOrS);
 
 	double b0, b1, b2, a0, a1, a2;
 
-	switch(type)
+	switch (type)
 	{
 	case LOW_PASS:
-		b0 = (1 - cs) /2;
+		b0 = (1 - cs) / 2;
 		b1 = 1 - cs;
-		b2 = (1 - cs) /2;
+		b2 = (1 - cs) / 2;
 		a0 = 1 + alpha;
 		a1 = -2 * cs;
 		a2 = 1 - alpha;
 		break;
 	case HIGH_PASS:
-		b0 = (1 + cs) /2;
+		b0 = (1 + cs) / 2;
 		b1 = -(1 + cs);
-		b2 = (1 + cs) /2;
+		b2 = (1 + cs) / 2;
 		a0 = 1 + alpha;
 		a1 = -2 * cs;
 		a2 = 1 - alpha;
@@ -130,7 +130,7 @@ BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandw
 double BiQuad::gainAt(double freq, double srate)
 {
 	double omega = 2 * M_PI * freq / srate;
-	double sn = sin(omega/2.0);
+	double sn = sin(omega / 2.0);
 	double phi = sn * sn;
 	double b0 = this->a0;
 	double b1 = this->a[0];
@@ -139,8 +139,8 @@ double BiQuad::gainAt(double freq, double srate)
 	double a1 = this->a[2];
 	double a2 = this->a[3];
 
-	double dbGain = 10*log10( pow(b0+b1+b2, 2) - 4*(b0*b1 + 4*b0*b2 + b1*b2)*phi + 16*b0*b2*phi*phi )
-		-10*log10( pow(a0+a1+a2, 2) - 4*(a0*a1 + 4*a0*a2 + a1*a2)*phi + 16*a0*a2*phi*phi );
+	double dbGain = 10 * log10(pow(b0 + b1 + b2, 2) - 4 * (b0 * b1 + 4 * b0 * b2 + b1 * b2) * phi + 16 * b0 * b2 * phi * phi)
+		- 10 * log10(pow(a0 + a1 + a2, 2) - 4 * (a0 * a1 + 4 * a0 * a2 + a1 * a2) * phi + 16 * a0 * a2 * phi * phi);
 
 	return dbGain;
 }

@@ -30,17 +30,17 @@ vector<IFilter*> CopyFilterFactory::createFilter(const wstring& configPath, wstr
 {
 	CopyFilter* filter = NULL;
 
-	if(command == L"Copy")
+	if (command == L"Copy")
 	{
 		vector<Assignment> assignments;
 
 		vector<wstring> assignmentStrings = StringHelper::split(parameters, L' ');
-		for(vector<wstring>::iterator it=assignmentStrings.begin(); it!=assignmentStrings.end(); it++)
+		for (vector<wstring>::iterator it = assignmentStrings.begin(); it != assignmentStrings.end(); it++)
 		{
 			Assignment assignment;
 
 			vector<wstring> parts = StringHelper::split(*it, L'=');
-			if(parts.size() == 2)
+			if (parts.size() == 2)
 			{
 				wstring target = parts[0];
 				wstring source = parts[1];
@@ -48,26 +48,26 @@ vector<IFilter*> CopyFilterFactory::createFilter(const wstring& configPath, wstr
 				assignment.targetChannel = target;
 
 				vector<wstring> summands = StringHelper::split(source, '+');
-				for(vector<wstring>::iterator it2=summands.begin(); it2!=summands.end(); it2++)
+				for (vector<wstring>::iterator it2 = summands.begin(); it2 != summands.end(); it2++)
 				{
 					vector<wstring> factors = StringHelper::split(*it2, '*');
 					wstring factor;
 					wstring channel;
-					if(factors.size() == 2)
+					if (factors.size() == 2)
 					{
 						factor = factors[0];
 						channel = factors[1];
 					}
-					else if(factors.size() == 1)
+					else if (factors.size() == 1)
 					{
-						if(factors[0] == L"0" || factors[0].find(L'.') != wstring::npos)
+						if (factors[0] == L"0" || factors[0].find(L'.') != wstring::npos)
 							factor = factors[0];
 						else
 							channel = factors[0];
 					}
 
 					Assignment::Summand summand;
-					if(factor == L"")
+					if (factor == L"")
 					{
 						summand.factor = 1.0;
 						summand.isDecibel = false;
@@ -75,7 +75,7 @@ vector<IFilter*> CopyFilterFactory::createFilter(const wstring& configPath, wstr
 					else
 					{
 						summand.factor = wcstod(factor.c_str(), NULL);
-						summand.isDecibel = factor.size() > 2 && StringHelper::toLowerCase(factor.substr(factor.size()-2)) == L"db";
+						summand.isDecibel = factor.size() > 2 && StringHelper::toLowerCase(factor.substr(factor.size() - 2)) == L"db";
 					}
 
 					summand.channel = channel;
@@ -83,7 +83,7 @@ vector<IFilter*> CopyFilterFactory::createFilter(const wstring& configPath, wstr
 				}
 			}
 
-			if(assignment.targetChannel != L"" && !assignment.sourceSum.empty())
+			if (assignment.targetChannel != L"" && !assignment.sourceSum.empty())
 				assignments.push_back(assignment);
 		}
 
@@ -91,7 +91,7 @@ vector<IFilter*> CopyFilterFactory::createFilter(const wstring& configPath, wstr
 		filter = new(mem) CopyFilter(assignments);
 	}
 
-	if(filter == NULL)
+	if (filter == NULL)
 		return vector<IFilter*>(0);
 	return vector<IFilter*>(1, filter);
 }

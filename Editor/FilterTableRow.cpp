@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2015  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2015  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include <QToolBar>
@@ -25,8 +25,8 @@
 #include "FilterTableRow.h"
 #include "ui_FilterTableRow.h"
 
-FilterTableRow::FilterTableRow(FilterTable* table, int number, FilterTable::Item* item, IFilterGUI* gui) :
-	QWidget(table),
+FilterTableRow::FilterTableRow(FilterTable* table, int number, FilterTable::Item* item, IFilterGUI* gui)
+	: QWidget(table),
 	ui(new Ui::FilterTableRow)
 {
 	ui->setupUi(this);
@@ -44,7 +44,7 @@ FilterTableRow::FilterTableRow(FilterTable* table, int number, FilterTable::Item
 
 	ui->stackedWidget->setContentsMargins(0, 5, 0, 5);
 
-	if(gui != NULL)
+	if (gui != NULL)
 	{
 		connect(gui, SIGNAL(updateModel()), this, SLOT(updateModel()));
 		ui->stackedWidget->addWidget(gui);
@@ -70,7 +70,7 @@ QRect FilterTableRow::getHeaderRect()
 
 void FilterTableRow::editText()
 {
-	if(!ui->actionEditText->isChecked())
+	if (!ui->actionEditText->isChecked())
 		ui->actionEditText->trigger();
 }
 
@@ -78,14 +78,14 @@ QSize FilterTableRow::sizeHint() const
 {
 	QSize size = QWidget::minimumSizeHint();
 	int preferredWidth = table->getPreferredWidth();
-	if(size.width() < preferredWidth)
+	if (size.width() < preferredWidth)
 		size = QSize(preferredWidth, size.height());
 	return size;
 }
 
 void FilterTableRow::mouseDoubleClickEvent(QMouseEvent*)
 {
-	if(gui == NULL && ui->stackedWidget->currentIndex() == 1)
+	if (gui == NULL && ui->stackedWidget->currentIndex() == 1)
 		ui->actionEditText->trigger();
 }
 
@@ -98,16 +98,16 @@ void FilterTableRow::paintEvent(QPaintEvent*)
 	r = r.marginsAdded(QMarginsF(-1.5, -1.5, -1.5, -0.5));
 
 	QColor color;
-	if(table->getSelectedItems().contains(item))
+	if (table->getSelectedItems().contains(item))
 	{
-		if(table->getFocusedItem() == item)
+		if (table->getFocusedItem() == item)
 			color = QColor(44, 111, 222);
 		else
 			color = QColor(64, 136, 255);
 	}
 	else
 	{
-		if(table->getFocusedItem() == item)
+		if (table->getFocusedItem() == item)
 			color = QColor(160, 160, 160);
 		else
 			color = QColor(180, 180, 180);
@@ -149,7 +149,7 @@ void FilterTableRow::on_actionAdd_triggered()
 	QPoint p = ui->toolBar->mapToGlobal(QPoint(rect.x(), rect.y() + rect.height()));
 	QAction* action = menu->exec(p);
 	ui->actionAdd->setChecked(false);
-	if(action != NULL)
+	if (action != NULL)
 	{
 		FilterTemplate t = action->data().value<FilterTemplate>();
 		QString line = t.getLine();
@@ -166,9 +166,9 @@ void FilterTableRow::on_actionRemove_triggered()
 
 void FilterTableRow::on_actionEditText_triggered(bool checked)
 {
-	if(checked)
+	if (checked)
 	{
-		if(!lastEditTime.isValid() || lastEditTime.elapsed() > 100)
+		if (!lastEditTime.isValid() || lastEditTime.elapsed() > 100)
 		{
 			ui->lineEdit->setText(item->text);
 			ui->stackedWidget->setCurrentIndex(0);
@@ -183,9 +183,9 @@ void FilterTableRow::on_actionEditText_triggered(bool checked)
 
 void FilterTableRow::on_lineEdit_editingFinished()
 {
-	if(ui->stackedWidget->currentIndex() == 0 && !editingDone)
+	if (ui->stackedWidget->currentIndex() == 0 && !editingDone)
 	{
-		if(ui->lineEdit->text() != item->text)
+		if (ui->lineEdit->text() != item->text)
 		{
 			editingDone = true;
 			item->text = ui->lineEdit->text();
@@ -204,7 +204,7 @@ void FilterTableRow::on_lineEdit_editingFinished()
 
 void FilterTableRow::on_lineEdit_editingCanceled()
 {
-	if(ui->stackedWidget->currentIndex() == 0)
+	if (ui->stackedWidget->currentIndex() == 0)
 	{
 		// will cause editingFinished to be called, so prevent committing
 		editingDone = true;

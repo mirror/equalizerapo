@@ -1,20 +1,20 @@
 /*
-	This file is part of EqualizerAPO, a system-wide equalizer.
-	Copyright (C) 2014  Jonas Thedering
+    This file is part of EqualizerAPO, a system-wide equalizer.
+    Copyright (C) 2014  Jonas Thedering
 
-	This program is free software; you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation; either version 2 of the License, or
-	(at your option) any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-	You should have received a copy of the GNU General Public License along
-	with this program; if not, write to the Free Software Foundation, Inc.,
-	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -49,7 +49,7 @@ void ExpressionFilterFactory::initialize(FilterEngine* engine)
 
 vector<IFilter*> ExpressionFilterFactory::createFilter(const wstring& configPath, wstring& command, wstring& parameters)
 {
-	if(command.length() > 0 && command[0] == L'#')
+	if (command.length() > 0 && command[0] == L'#')
 		return vector<IFilter*>();
 
 	bool inExpression = false;
@@ -57,14 +57,14 @@ vector<IFilter*> ExpressionFilterFactory::createFilter(const wstring& configPath
 
 	wstring output;
 	wstring expression;
-	for(unsigned i=0; i<parameters.size(); i++)
+	for (unsigned i = 0; i < parameters.size(); i++)
 	{
 		wchar_t c = parameters[i];
-		if(c == L'`')
+		if (c == L'`')
 		{
-			if(!inExpression)
+			if (!inExpression)
 			{
-				if(lastWasBackslash)
+				if (lastWasBackslash)
 				{
 					output += c;
 				}
@@ -75,7 +75,7 @@ vector<IFilter*> ExpressionFilterFactory::createFilter(const wstring& configPath
 			}
 			else
 			{
-				if(lastWasBackslash)
+				if (lastWasBackslash)
 				{
 					expression += c;
 				}
@@ -87,14 +87,14 @@ vector<IFilter*> ExpressionFilterFactory::createFilter(const wstring& configPath
 						parser->SetExpr(expression);
 						Value result = parser->Eval();
 						wstring resultString;
-						if(result.GetType() == L's')
+						if (result.GetType() == L's')
 							resultString = result.GetString();
 						else
 							resultString = result.ToString().c_str();
 						output += resultString;
 						TraceF(L"Inline expression %s evaluated to %s", expression.c_str(), resultString.c_str());
 					}
-					catch(ParserError e)
+					catch (ParserError e)
 					{
 						LogF(L"Error while evaluating inline expression %s: %s", expression.c_str(), e.GetMsg().c_str());
 					}
@@ -103,11 +103,11 @@ vector<IFilter*> ExpressionFilterFactory::createFilter(const wstring& configPath
 			}
 			lastWasBackslash = false;
 		}
-		else if(c == L'\\')
+		else if (c == L'\\')
 		{
-			if(i >= parameters.size()-1 || parameters[i+1] != L'`')
+			if (i >= parameters.size() - 1 || parameters[i + 1] != L'`')
 			{
-				if(inExpression)
+				if (inExpression)
 					expression += c;
 				else
 					output += c;
@@ -116,7 +116,7 @@ vector<IFilter*> ExpressionFilterFactory::createFilter(const wstring& configPath
 		}
 		else
 		{
-			if(inExpression)
+			if (inExpression)
 				expression += c;
 			else
 				output += c;
@@ -126,7 +126,7 @@ vector<IFilter*> ExpressionFilterFactory::createFilter(const wstring& configPath
 
 	parameters = output;
 
-	if(command == L"Eval")
+	if (command == L"Eval")
 	{
 		try
 		{
@@ -134,13 +134,13 @@ vector<IFilter*> ExpressionFilterFactory::createFilter(const wstring& configPath
 			parser->SetExpr(expression);
 			Value result = parser->Eval();
 			wstring resultString;
-			if(result.GetType() == L's')
+			if (result.GetType() == L's')
 				resultString = result.GetString();
 			else
 				resultString = result.ToString().c_str();
 			TraceF(L"Expression %s evaluated to %s", expression.c_str(), resultString.c_str());
 		}
-		catch(ParserError e)
+		catch (ParserError e)
 		{
 			LogF(L"Error while evaluating expression %s: %s", expression.c_str(), e.GetMsg().c_str());
 		}
