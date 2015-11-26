@@ -422,7 +422,26 @@ void EqualizerAPO::APOProcess(UINT32 u32NumInputConnections,
 				engine.process(outputFrames, inputFrames, ppInputConnections[0]->u32ValidFrameCount);
 
 			ppOutputConnections[0]->u32ValidFrameCount = ppInputConnections[0]->u32ValidFrameCount;
-			ppOutputConnections[0]->u32BufferFlags = BUFFER_VALID;
+
+			if (ppInputConnections[0]->u32BufferFlags == BUFFER_SILENT)
+			{
+				unsigned outputFrameCount = ppOutputConnections[0]->u32ValidFrameCount * engine.getOutputChannelCount();
+				boolean silent = true;
+				for (unsigned i = 0; i < outputFrameCount; i++)
+				{
+					if (outputFrames[i] != 0.0)
+					{
+						silent = false;
+						break;
+					}
+				}
+				// BUFFER_SILENT seems to be important for some sound card drivers, so only use BUFFER_VALID if there really is audio
+				ppOutputConnections[0]->u32BufferFlags = silent ? BUFFER_SILENT : BUFFER_VALID;
+			}
+			else
+			{
+				ppOutputConnections[0]->u32BufferFlags = BUFFER_VALID;
+			}
 
 			break;
 		}
