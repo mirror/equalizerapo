@@ -46,6 +46,14 @@ void AnalysisPlotView::drawBackground(QPainter* painter, const QRectF& rect)
 		double hz = s->xToHz(x);
 		double db = gainIterator.gainAt(hz);
 		double y = s->dbToY(db);
+		if (y == -1)
+		{
+			if (db < 0)
+				y = sceneRect().bottom() + 1;
+			else
+				y = sceneRect().top() - 1;
+		}
+
 		if (db == lastDb)
 			y = floor(y) + 0.5;
 		lastDb = db;

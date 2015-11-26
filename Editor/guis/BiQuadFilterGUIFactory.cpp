@@ -27,15 +27,17 @@ BiQuadFilterGUIFactory::BiQuadFilterGUIFactory()
 
 QList<FilterTemplate> BiQuadFilterGUIFactory::createFilterTemplates()
 {
+	QStringList path(tr("Parametric filters"));
+
 	QList<FilterTemplate> list;
-	list.append(FilterTemplate(tr("Peaking filter"), "Filter: ON PK Fc 100 Hz Gain 0 dB Q 10.0", QStringList(tr("Parametric filters"))));
-	list.append(FilterTemplate(tr("Low-pass filter"), "Filter: ON LP Fc 100 Hz", QStringList(tr("Parametric filters"))));
-	list.append(FilterTemplate(tr("High-pass filter"), "Filter: ON LP Fc 100 Hz", QStringList(tr("Parametric filters"))));
-	list.append(FilterTemplate(tr("Band-pass filter"), "Filter: ON BP Fc 100 Hz Q 10.0", QStringList(tr("Parametric filters"))));
-	list.append(FilterTemplate(tr("Low-shelf filter"), "Filter: ON LS Fc 100 Hz Gain 0 dB", QStringList(tr("Parametric filters"))));
-	list.append(FilterTemplate(tr("High-shelf filter"), "Filter: ON HS Fc 100 Hz Gain 0 dB", QStringList(tr("Parametric filters"))));
-	list.append(FilterTemplate(tr("Notch filter"), "Filter: ON NO Fc 100 Hz", QStringList(tr("Parametric filters"))));
-	list.append(FilterTemplate(tr("All-pass filter"), "Filter: ON AP Fc 100 Hz Q 10.0", QStringList(tr("Parametric filters"))));
+	list.append(FilterTemplate(tr("Peaking filter"), "Filter: ON PK Fc 100 Hz Gain 0 dB Q 10", path));
+	list.append(FilterTemplate(tr("Low-pass filter"), "Filter: ON LP Fc 100 Hz", path));
+	list.append(FilterTemplate(tr("High-pass filter"), "Filter: ON LP Fc 100 Hz", path));
+	list.append(FilterTemplate(tr("Band-pass filter"), "Filter: ON BP Fc 100 Hz Q 10", path));
+	list.append(FilterTemplate(tr("Low-shelf filter"), "Filter: ON LS Fc 100 Hz Gain 0 dB", path));
+	list.append(FilterTemplate(tr("High-shelf filter"), "Filter: ON HS Fc 100 Hz Gain 0 dB", path));
+	list.append(FilterTemplate(tr("Notch filter"), "Filter: ON NO Fc 100 Hz", path));
+	list.append(FilterTemplate(tr("All-pass filter"), "Filter: ON AP Fc 100 Hz Q 10", path));
 	return list;
 }
 

@@ -89,7 +89,7 @@ MainWindow::MainWindow(QDir configDir, QWidget* parent)
 	ui->mainToolBar->addWidget(new QLabel(tr("Device: ")));
 
 	deviceComboBox = new QComboBox;
-	connect(deviceComboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(deviceSelected(int)));
+	connect(deviceComboBox, SIGNAL(activated(int)), this, SLOT(deviceSelected(int)));
 	ui->mainToolBar->addWidget(deviceComboBox);
 
 	spacer = new QWidget;
@@ -297,9 +297,7 @@ void MainWindow::load(QString path)
 	}
 
 	QFileInfo fileInfo(path);
-	FilterTable* filterTable = addTab(fileInfo.fileName(), QDir::toNativeSeparators(fileInfo.absoluteFilePath()));
-
-	filterTable->setLines(path, lines);
+	FilterTable* filterTable = addTab(fileInfo.fileName(), QDir::toNativeSeparators(fileInfo.absoluteFilePath()), path, lines);
 
 	connect(filterTable, SIGNAL(linesChanged()), this, SLOT(linesChanged()));
 
@@ -600,8 +598,7 @@ void MainWindow::on_actionSaveAs_triggered()
 
 void MainWindow::on_actionNew_triggered()
 {
-	FilterTable* filterTable = addTab(tr("Unsaved"), "");
-	filterTable->setLines("", QList<QString>());
+	FilterTable* filterTable = addTab(tr("Unsaved"), "", "", QList<QString>());
 
 	connect(filterTable, SIGNAL(linesChanged()), this, SLOT(linesChanged()));
 	ui->tabWidget->setCurrentIndex(ui->tabWidget->count() - 1);
@@ -808,7 +805,7 @@ void MainWindow::on_actionResetAllFileSpecificPreferences_triggered()
 	}
 }
 
-FilterTable* MainWindow::addTab(QString title, QString tooltip)
+FilterTable* MainWindow::addTab(QString title, QString tooltip, QString configPath, QList<QString> lines)
 {
 	QScrollArea* scrollArea = new QScrollArea(ui->tabWidget);
 	scrollArea->setWidgetResizable(true);
@@ -817,14 +814,15 @@ FilterTable* MainWindow::addTab(QString title, QString tooltip)
 	filterTable->setAcceptDrops(true);
 	filterTable->setFocusPolicy(Qt::WheelFocus);
 
-	int tabIndex = ui->tabWidget->addTab(scrollArea, title);
-	ui->tabWidget->setTabToolTip(tabIndex, tooltip);
-
 	DeviceAPOInfo* selectedDevice;
 	int channelMask;
 	getDeviceAndChannelMask(&selectedDevice, &channelMask);
 	filterTable->updateDeviceAndChannelMask(selectedDevice, channelMask);
 	filterTable->initialize(scrollArea, outputDevices, inputDevices);
+	filterTable->setLines(configPath, lines);
+
+	int tabIndex = ui->tabWidget->addTab(scrollArea, title);
+	ui->tabWidget->setTabToolTip(tabIndex, tooltip);
 
 	return filterTable;
 }
@@ -933,6 +931,32 @@ void MainWindow::loadPreferences()
 	if (stateValue.isValid())
 		restoreState(stateValue.toByteArray());
 	instantModeCheckBox->setChecked(settings.value("instantMode", true).toBool());
+	QString selectedDeviceGuid = settings.value("selectedDeviceGuid").toString();
+	if (!selectedDeviceGuid.isEmpty())
+	{
+		for (int i = 0; i < deviceComboBox->count(); i++)
+		{
+			DeviceAPOInfo* apoInfo = deviceComboBox->itemData(i).value<DeviceAPOInfo*>();
+			if (apoInfo != NULL)
+			{
+				if (QString::fromStdWString(apoInfo->deviceGuid).compare(selectedDeviceGuid, Qt::CaseInsensitive) == 0)
+				{
+					deviceComboBox->setCurrentIndex(i);
+					break;
+				}
+			}
+		}
+	}
+	deviceSelected(deviceComboBox->currentIndex());
+
+	int selectedChannelMask = settings.value("selectedChannelMask").toInt();
+	if (selectedChannelMask != 0)
+	{
+		int index = channelConfigurationComboBox->findData(selectedChannelMask);
+		if (index != -1)
+			channelConfigurationComboBox->setCurrentIndex(index);
+	}
+	channelConfigurationSelected(channelConfigurationComboBox->currentIndex());
 
 	ui->startFromComboBox->setCurrentIndex(settings.value("analysis/startFrom").toInt());
 	ui->analysisChannelComboBox->setCurrentText(settings.value("analysis/channel").toString());
@@ -981,6 +1005,10 @@ void MainWindow::savePreferences()
 	settings.setValue("geometry", saveGeometry());
 	settings.setValue("windowState", saveState());
 	settings.setValue("instantMode", instantModeCheckBox->isChecked());
+	DeviceAPOInfo* selectedDevice = deviceComboBox->currentData().value<DeviceAPOInfo*>();
+	settings.setValue("selectedDeviceGuid", selectedDevice != NULL ? QString::fromStdWString(selectedDevice->deviceGuid) : "");
+	int channelMask = channelConfigurationComboBox->currentData().toInt();
+	settings.setValue("selectedChannelMask", channelMask);
 
 	settings.setValue("analysis/startFrom", ui->startFromComboBox->currentIndex());
 	settings.setValue("analysis/channel", ui->analysisChannelComboBox->currentText());

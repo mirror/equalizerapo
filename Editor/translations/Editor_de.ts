@@ -99,54 +99,47 @@
 <context>
     <name>BiQuadFilterGUIFactory</name>
     <message>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="31"/>
+        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="33"/>
         <source>Peaking filter</source>
         <translation>Peaking-Filter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="31"/>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="32"/>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="33"/>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="34"/>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="35"/>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="36"/>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="37"/>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="38"/>
+        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="30"/>
         <source>Parametric filters</source>
         <translation>Parametrische Filter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="32"/>
+        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="34"/>
         <source>Low-pass filter</source>
         <translation>Tiefpassfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="33"/>
+        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="35"/>
         <source>High-pass filter</source>
         <translation>Hochpassfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="34"/>
+        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="36"/>
         <source>Band-pass filter</source>
         <translation>Bandpassfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="35"/>
+        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="37"/>
         <source>Low-shelf filter</source>
         <translation>Low Shelf-Filter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="36"/>
+        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="38"/>
         <source>High-shelf filter</source>
         <translation>High Shelf-Filter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="37"/>
+        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="39"/>
         <source>Notch filter</source>
         <translation>Notchfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="38"/>
+        <location filename="../guis/BiQuadFilterGUIFactory.cpp" line="40"/>
         <source>All-pass filter</source>
         <translation>Allpassfilter</translation>
     </message>
@@ -647,7 +640,7 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
 <context>
     <name>FilterTable</name>
     <message>
-        <location filename="../FilterTable.cpp" line="203"/>
+        <location filename="../FilterTable.cpp" line="204"/>
         <source>Add filter</source>
         <translation>Filter hinzufügen</translation>
     </message>

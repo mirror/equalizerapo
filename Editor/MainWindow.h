@@ -90,7 +90,7 @@ private slots:
 	void on_actionResetAllFileSpecificPreferences_triggered();
 
 private:
-	FilterTable* addTab(QString title, QString tooltip);
+	FilterTable* addTab(QString title, QString tooltip, QString configPath, QList<QString> lines);
 	void getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* channelMask);
 	bool askForClose(int tabIndex);
 	void startAnalysis();
