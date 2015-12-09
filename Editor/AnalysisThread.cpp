@@ -24,7 +24,6 @@
 
 AnalysisThread::AnalysisThread()
 {
-
 }
 
 AnalysisThread::~AnalysisThread()
@@ -245,7 +244,7 @@ void AnalysisThread::run()
 
 		double peakGain = -DBL_MAX;
 
-		for (int i = 0; i < frameCount; i++)
+		for (int i = 0; i < frameCount / 2; i++)
 		{
 			float sqrGain = freqData[i][0] * freqData[i][0] + freqData[i][1] * freqData[i][1];
 			if (sqrGain > peakGain)

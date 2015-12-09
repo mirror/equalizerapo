@@ -43,6 +43,7 @@ public:
 		bool useOriginalAPOPreMix;
 		bool useOriginalAPOPostMix;
 		InstallMode installMode;
+		bool allowSilentBufferModification;
 
 		InstallState()
 		{
@@ -51,6 +52,7 @@ public:
 			useOriginalAPOPreMix = false;
 			useOriginalAPOPostMix = false;
 			installMode = INSTALL_LFX_GFX;
+			allowSilentBufferModification = false;
 		}
 
 		bool operator!=(InstallState& other)

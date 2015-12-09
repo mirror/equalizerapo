@@ -308,23 +308,29 @@ void GraphicEQFilterGUI::on_actionImport_triggered()
 			if (file.open(QFile::ReadOnly))
 			{
 				QTextStream stream(&file);
-				QString text = stream.readAll();
-				if (!text.contains('.'))
-					text = text.replace(',', '.');
-				QRegularExpressionMatchIterator it = numberRegEx.globalMatch(text);
-				while (it.hasNext())
+				while (!stream.atEnd())
 				{
-					QRegularExpressionMatch match = it.next();
-					QString freqString = match.captured();
-					bool ok;
-					double freq = freqString.toDouble(&ok);
-					if (ok && it.hasNext())
+					QString text = stream.readLine();
+					if (text.startsWith('*'))
+						continue;
+
+					if (!text.contains('.'))
+						text = text.replace(',', '.');
+					QRegularExpressionMatchIterator it = numberRegEx.globalMatch(text);
+					while (it.hasNext())
 					{
-						match = it.next();
-						QString gainString = match.captured();
-						double gain = gainString.toDouble(&ok);
-						if (ok)
-							newNodes.push_back(FilterNode(freq, gain));
+						QRegularExpressionMatch match = it.next();
+						QString freqString = match.captured();
+						bool ok;
+						double freq = freqString.toDouble(&ok);
+						if (ok && it.hasNext())
+						{
+							match = it.next();
+							QString gainString = match.captured();
+							double gain = gainString.toDouble(&ok);
+							if (ok)
+								newNodes.push_back(FilterNode(freq, gain));
+						}
 					}
 				}
 			}

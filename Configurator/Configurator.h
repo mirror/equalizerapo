@@ -54,6 +54,7 @@ private:
 	HWND useOriginalAPOPreMix;
 	HWND useOriginalAPOPostMix;
 	HWND installModeComboBox;
+	HWND allowSilentBuffer;
 	HWND selectOneDeviceLabel;
 
 	std::wstring cmdLine;

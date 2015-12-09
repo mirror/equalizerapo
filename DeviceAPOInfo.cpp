@@ -39,6 +39,7 @@ using namespace std;
 #define childApoPath APP_REGPATH L"\\Child APOs"
 static const wchar_t* preMixChildGuidValueName = L"PreMixChild";
 static const wchar_t* postMixChildGuidValueName = L"PostMixChild";
+static const wchar_t* allowSilentBufferValueName = L"AllowSilentBufferModification";
 static const wchar_t* versionValueName = L"Version";
 static const wchar_t* connectionValueName = L"{a45c254e-df1c-4efd-8020-67d146a850e0},2";
 static const wchar_t* deviceValueName = L"{b3f8fa53-0004-438e-9003-51a46e139bfc},6";
@@ -229,6 +230,7 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid, wstring defaultDeviceGuid)
 	currentInstallState.installPostMix = !isInput;
 	currentInstallState.useOriginalAPOPreMix = true;
 	currentInstallState.useOriginalAPOPostMix = !isInput;
+	currentInstallState.allowSilentBufferModification = false;
 
 	if (!RegistryHelper::keyExists(keyPath + L"\\FxProperties"))
 	{
@@ -311,6 +313,9 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid, wstring defaultDeviceGuid)
 						currentInstallState.installMode = INSTALL_SFX_EFX;
 					else if (foundAt[SFX_INDEX] || foundAt[MFX_INDEX])
 						currentInstallState.installMode = INSTALL_SFX_MFX;
+
+					if (RegistryHelper::valueExists(childApoPath L"\\" + deviceGuid, allowSilentBufferValueName))
+						currentInstallState.allowSilentBufferModification = RegistryHelper::readValue(childApoPath L"\\" + deviceGuid, allowSilentBufferValueName) != L"false";
 				}
 				else
 				{
@@ -490,6 +495,7 @@ void DeviceAPOInfo::install()
 	RegistryHelper::writeValue(childApoPath L"\\" + deviceGuid, preMixChildGuidValueName, preMixValue);
 	RegistryHelper::writeValue(childApoPath L"\\" + deviceGuid, postMixChildGuidValueName, postMixValue);
 
+	RegistryHelper::writeValue(childApoPath L"\\" + deviceGuid, allowSilentBufferValueName, selectedInstallState.allowSilentBufferModification ? L"true" : L"false");
 	RegistryHelper::writeValue(childApoPath L"\\" + deviceGuid, versionValueName, installVersion);
 
 	if (selectedInstallState.installMode == INSTALL_LFX_GFX)

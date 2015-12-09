@@ -47,6 +47,8 @@ EqualizerAPO::EqualizerAPO(IUnknown* pUnkOuter)
 	else
 		this->pUnkOuter = reinterpret_cast<IUnknown*>(static_cast<INonDelegatingUnknown*>(this));
 
+	allowSilentBufferModification = false;
+
 	childAPO = NULL;
 	childRT = NULL;
 	childCfg = NULL;
@@ -142,6 +144,8 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 				childApoGuid = apoInfo.preMixChildGuid;
 			else
 				childApoGuid = apoInfo.postMixChildGuid;
+
+			allowSilentBufferModification = apoInfo.currentInstallState.allowSilentBufferModification;
 		}
 	}
 	catch (RegistryException e)
@@ -425,18 +429,26 @@ void EqualizerAPO::APOProcess(UINT32 u32NumInputConnections,
 
 			if (ppInputConnections[0]->u32BufferFlags == BUFFER_SILENT)
 			{
-				unsigned outputFrameCount = ppOutputConnections[0]->u32ValidFrameCount * engine.getOutputChannelCount();
-				boolean silent = true;
-				for (unsigned i = 0; i < outputFrameCount; i++)
+				if (allowSilentBufferModification)
 				{
-					if (outputFrames[i] != 0.0)
+					unsigned outputFrameCount = ppOutputConnections[0]->u32ValidFrameCount * engine.getOutputChannelCount();
+					boolean silent = true;
+					for (unsigned i = 0; i < outputFrameCount; i++)
 					{
-						silent = false;
-						break;
+						if (abs(outputFrames[i]) > 1e-10)
+						{
+							silent = false;
+							break;
+						}
 					}
+					// BUFFER_SILENT seems to be important for some sound card drivers, so only use BUFFER_VALID if there really is audio
+					ppOutputConnections[0]->u32BufferFlags = silent ? BUFFER_SILENT : BUFFER_VALID;
 				}
-				// BUFFER_SILENT seems to be important for some sound card drivers, so only use BUFFER_VALID if there really is audio
-				ppOutputConnections[0]->u32BufferFlags = silent ? BUFFER_SILENT : BUFFER_VALID;
+				else
+				{
+					memset(outputFrames, 0, ppOutputConnections[0]->u32ValidFrameCount * engine.getOutputChannelCount() * sizeof(float));
+					ppOutputConnections[0]->u32BufferFlags = BUFFER_SILENT;
+				}
 			}
 			else
 			{

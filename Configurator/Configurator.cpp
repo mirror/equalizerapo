@@ -57,6 +57,7 @@ void Configurator::onInitDialog(HWND hDlg)
 	useOriginalAPOPreMix = GetDlgItem(hDlg, IDC_USE_ORIGINAL_APO_PRE_MIX);
 	useOriginalAPOPostMix = GetDlgItem(hDlg, IDC_USE_ORIGINAL_APO_POST_MIX);
 	installModeComboBox = GetDlgItem(hDlg, IDC_INSTALL_MODE_COMBOBOX);
+	allowSilentBuffer = GetDlgItem(hDlg, IDC_ALLOW_SILENT_BUFFER);
 	selectOneDeviceLabel = GetDlgItem(hDlg, IDC_SELECT_ONE_DEVICE);
 
 	expandTroubleShooting(false);
@@ -120,6 +121,29 @@ void Configurator::onInitDialog(HWND hDlg)
 		ComboBox_AddString(installModeComboBox, stringBuf);
 	}
 	ComboBox_SetCurSel(installModeComboBox, 0);
+
+	LoadStringW(hInstance, IDS_ALLOW_SILENT_BUFFER, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+	SetWindowTextW(allowSilentBuffer, stringBuf);
+
+	LoadStringW(hInstance, IDS_ALLOW_SILENT_BUFFER_TOOLTIP, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+	HWND tooltip = CreateWindowEx(NULL, TOOLTIPS_CLASS, NULL,
+			WS_POPUP | TTS_ALWAYSTIP,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			CW_USEDEFAULT, CW_USEDEFAULT,
+			hDlg, NULL,
+			hInstance, NULL);
+
+	if (tooltip != NULL)
+	{
+		TOOLINFO toolInfo = {0};
+		toolInfo.cbSize = sizeof(toolInfo);
+		toolInfo.hwnd = hDlg;
+		toolInfo.uFlags = TTF_IDISHWND | TTF_SUBCLASS;
+		toolInfo.uId = (UINT_PTR)allowSilentBuffer;
+		toolInfo.lpszText = stringBuf;
+		SendMessage(tooltip, TTM_ADDTOOL, 0, (LPARAM)&toolInfo);
+		SendMessage(tooltip, TTM_SETMAXTIPWIDTH, 0, 400);
+	}
 
 	LoadStringW(hInstance, IDS_SELECT_ONE_DEVICE, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 	SetWindowTextW(selectOneDeviceLabel, stringBuf);
@@ -316,6 +340,7 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 	case IDC_USE_ORIGINAL_APO_PRE_MIX:
 	case IDC_USE_ORIGINAL_APO_POST_MIX:
 	case IDC_INSTALL_MODE_COMBOBOX:
+	case IDC_ALLOW_SILENT_BUFFER:
 		{
 			int index = TabCtrl_GetCurSel(categoryTabCtrl);
 			HWND deviceList = deviceLists[index];
@@ -350,6 +375,9 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 						break;
 					case IDC_INSTALL_MODE_COMBOBOX:
 						info.selectedInstallState.installMode = (DeviceAPOInfo::InstallMode)ComboBox_GetCurSel(installModeComboBox);
+						break;
+					case IDC_ALLOW_SILENT_BUFFER:
+						info.selectedInstallState.allowSilentBufferModification = Button_GetCheck(allowSilentBuffer) == BST_CHECKED;
 						break;
 					}
 
@@ -522,6 +550,7 @@ void Configurator::expandTroubleShooting(bool expand)
 	ShowWindow(useOriginalAPOPreMix, showCmd);
 	ShowWindow(useOriginalAPOPostMix, showCmd);
 	ShowWindow(installModeComboBox, showCmd);
+	ShowWindow(allowSilentBuffer, showCmd);
 	showCmd = expand && IsWindowEnabled(selectOneDeviceLabel) ? SW_SHOW : SW_HIDE;
 	ShowWindow(selectOneDeviceLabel, showCmd);
 
@@ -644,6 +673,7 @@ void Configurator::updateButtons(int listIndex)
 	EnableWindow(useOriginalAPOPreMix, enable && hasOriginalAPOPreMix && installState.installPreMix);
 	EnableWindow(useOriginalAPOPostMix, enable && !isInput && hasOriginalAPOPostMix && installState.installPostMix);
 	EnableWindow(installModeComboBox, enable);
+	EnableWindow(allowSilentBuffer, enable);
 	EnableWindow(selectOneDeviceLabel, !enable);
 
 	Button_SetCheck(installPreMix, installState.installPreMix);
@@ -653,6 +683,8 @@ void Configurator::updateButtons(int listIndex)
 
 	if (RegistryHelper::isWindowsVersionAtLeast(6, 3)) // Windows 8.1
 		ComboBox_SetCurSel(installModeComboBox, installState.installMode);
+
+	Button_SetCheck(allowSilentBuffer, installState.allowSilentBufferModification);
 
 	expandTroubleShooting(Button_GetCheck(toggleTroubleShooting) != 0);
 }

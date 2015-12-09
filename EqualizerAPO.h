@@ -72,6 +72,7 @@ private:
 	long refCount;
 	IUnknown* pUnkOuter;
 	FilterEngine engine;
+	bool allowSilentBufferModification;
 
 	void resetChild();
 
