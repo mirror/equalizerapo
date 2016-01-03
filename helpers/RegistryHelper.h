@@ -49,6 +49,7 @@ public:
 	static void deleteKey(std::wstring key);
 	static void makeWritable(std::wstring key);
 	static void takeOwnership(std::wstring key);
+	static ACCESS_MASK getFileAccessForUser(std::wstring path, unsigned long rid);
 	static std::vector<std::wstring> enumSubKeys(std::wstring key);
 	static bool keyExists(std::wstring key);
 	static bool valueExists(std::wstring key, std::wstring valuename);

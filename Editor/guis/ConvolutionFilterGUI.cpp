@@ -21,6 +21,7 @@
 #define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
 #include <sndfile.h>
 
+#include "helpers/RegistryHelper.h"
 #include "ConvolutionFilterGUI.h"
 #include "ui_ConvolutionFilterGUI.h"
 
@@ -102,27 +103,45 @@ void ConvolutionFilterGUI::updateFileInfo()
 		}
 		else
 		{
-			path = fileInfo.absoluteFilePath();
+			path = QDir::toNativeSeparators(fileInfo.absoluteFilePath());
 
-			SF_INFO info;
-			SNDFILE* file = sf_wchar_open(path.toStdWString().c_str(), SFM_READ, &info);
-			if (file == NULL)
+			ACCESS_MASK mask = GENERIC_READ;
+			try
 			{
-				error = tr("Unsupported file format");
+				mask = RegistryHelper::getFileAccessForUser(path.toStdWString(), SECURITY_LOCAL_SERVICE_RID);
+			}
+			catch (RegistryException e)
+			{
+				// ignore
+			}
+
+			if ((mask & GENERIC_READ) != GENERIC_READ && (mask & FILE_GENERIC_READ) != FILE_GENERIC_READ)
+			{
+				error = tr("The file is not readable for the audio service.\nChange the file permissions or copy the file to the config directory.");
 				labelsVisible = false;
 			}
 			else
 			{
-				int sampleRate = info.samplerate;
-				double length = info.frames * 1000.0 / sampleRate;
-
-				ui->labelLengthValue->setText(tr("%0 ms (%1 samples)").arg(length).arg(info.frames));
-				ui->labelSampleRateValue->setText(tr("%0 Hz").arg(sampleRate));
-				sf_close(file);
-
-				if (sampleRate != deviceSampleRate)
+				SF_INFO info;
+				SNDFILE* file = sf_wchar_open(path.toStdWString().c_str(), SFM_READ, &info);
+				if (file == NULL)
 				{
-					error = tr("The file sample rate does not match the device sample rate (%0 Hz)!\nSelect a different file or change the device configuration.").arg(deviceSampleRate);
+					error = tr("Unsupported file format");
+					labelsVisible = false;
+				}
+				else
+				{
+					int sampleRate = info.samplerate;
+					double length = info.frames * 1000.0 / sampleRate;
+
+					ui->labelLengthValue->setText(tr("%0 ms (%1 samples)").arg(length).arg(info.frames));
+					ui->labelSampleRateValue->setText(tr("%0 Hz").arg(sampleRate));
+					sf_close(file);
+
+					if (sampleRate != deviceSampleRate)
+					{
+						error = tr("The file sample rate does not match the device sample rate (%0 Hz)!\nSelect a different file or change the device configuration.").arg(deviceSampleRate);
+					}
 				}
 			}
 		}

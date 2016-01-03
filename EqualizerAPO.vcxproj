@@ -99,7 +99,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>muparserxd.lib;audioeng.lib;version.lib;wmcodecdspuuid.lib;AudioBaseProcessingObject.lib;audiomediatypecrt.lib;Shlwapi.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserxd.lib;audioeng.lib;version.lib;wmcodecdspuuid.lib;AudioBaseProcessingObject.lib;audiomediatypecrt.lib;Shlwapi.lib;authz.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>EqualizerAPO.def</ModuleDefinitionFile>
     </Link>
     <Midl>
@@ -116,7 +116,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>muparserxd.lib;audioeng.lib;version.lib;wmcodecdspuuid.lib;AudioBaseProcessingObject.lib;audiomediatypecrt.lib;Shlwapi.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserxd.lib;audioeng.lib;version.lib;wmcodecdspuuid.lib;AudioBaseProcessingObject.lib;audiomediatypecrt.lib;Shlwapi.lib;authz.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>EqualizerAPO.def</ModuleDefinitionFile>
     </Link>
     <Midl>
@@ -138,7 +138,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>muparserx.lib;audioeng.lib;version.lib;wmcodecdspuuid.lib;AudioBaseProcessingObject.lib;audiomediatypecrt.lib;Shlwapi.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserx.lib;audioeng.lib;version.lib;wmcodecdspuuid.lib;AudioBaseProcessingObject.lib;audiomediatypecrt.lib;Shlwapi.lib;authz.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>EqualizerAPO.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
@@ -157,7 +157,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>muparserx.lib;audioeng.lib;version.lib;wmcodecdspuuid.lib;AudioBaseProcessingObject.lib;audiomediatypecrt.lib;Shlwapi.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserx.lib;audioeng.lib;version.lib;wmcodecdspuuid.lib;AudioBaseProcessingObject.lib;audiomediatypecrt.lib;Shlwapi.lib;authz.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <ModuleDefinitionFile>EqualizerAPO.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>

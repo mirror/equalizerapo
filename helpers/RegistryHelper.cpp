@@ -22,6 +22,7 @@
 #include <sstream>
 #include <ObjBase.h>
 #include <aclapi.h>
+#include <authz.h>
 
 #include "StringHelper.h"
 #include "RegistryHelper.h"
@@ -408,6 +409,57 @@ void RegistryHelper::takeOwnership(wstring key)
 
 	FreeSid(sid);
 	LocalFree(sd);
+}
+
+ACCESS_MASK RegistryHelper::getFileAccessForUser(std::wstring path, unsigned long rid)
+{
+	ACCESS_MASK result;
+
+	PSECURITY_DESCRIPTOR sd;
+	if (GetNamedSecurityInfoW(path.c_str(), SE_FILE_OBJECT, DACL_SECURITY_INFORMATION | OWNER_SECURITY_INFORMATION
+		| GROUP_SECURITY_INFORMATION, NULL, NULL, NULL, NULL, &sd) != ERROR_SUCCESS)
+		throw RegistryException(L"Error in GetNamedSecurityInfoW while getting file access");
+
+	AUTHZ_RESOURCE_MANAGER_HANDLE manager;
+	if (!AuthzInitializeResourceManager(AUTHZ_RM_FLAG_NO_AUDIT, NULL, NULL, NULL, NULL, &manager))
+		throw RegistryException(L"Error in AuthzInitializeResourceManager while getting file access");
+
+	PSID sid = NULL;
+	SID_IDENTIFIER_AUTHORITY authority = SECURITY_NT_AUTHORITY;
+	if (!AllocateAndInitializeSid(&authority, 1, rid, 0, 0, 0, 0, 0, 0, 0, &sid))
+		throw RegistryException(L"Error in AllocateAndInitializeSid while getting file access");
+
+	LUID unusedId = {0};
+	AUTHZ_CLIENT_CONTEXT_HANDLE context;
+	if (!AuthzInitializeContextFromSid(0, sid, manager, NULL, unusedId, NULL, &context))
+		throw RegistryException(L"Error in AuthzInitializeContextFromSid while getting file access");
+
+	AUTHZ_ACCESS_REQUEST request = {0};
+
+	request.DesiredAccess = MAXIMUM_ALLOWED;
+	request.PrincipalSelfSid = NULL;
+	request.ObjectTypeList = NULL;
+	request.ObjectTypeListLength = 0;
+	request.OptionalArguments = NULL;
+
+	AUTHZ_ACCESS_REPLY reply = {0};
+	BYTE buf[1024];
+	RtlZeroMemory(buf, sizeof(buf));
+	reply.ResultListLength = 1;
+	reply.GrantedAccessMask = (ACCESS_MASK*)buf;
+	reply.Error = (DWORD*)(buf + sizeof(ACCESS_MASK));
+
+	if (!AuthzAccessCheck(0, context, &request, NULL, sd, NULL, 0, &reply, NULL))
+		throw RegistryException(L"Error in AuthzAccessCheck while getting file access");
+
+	result = *reply.GrantedAccessMask;
+
+	AuthzFreeContext(context);
+	FreeSid(sid);
+	AuthzFreeResourceManager(manager);
+	LocalFree(sd);
+
+	return result;
 }
 
 bool RegistryHelper::keyExists(wstring key)

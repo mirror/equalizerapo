@@ -293,7 +293,7 @@
     <message>
         <location filename="../guis/ConvolutionFilterGUI.ui" line="79"/>
         <location filename="../guis/ConvolutionFilterGUI.ui" line="137"/>
-        <location filename="../guis/ConvolutionFilterGUI.cpp" line="90"/>
+        <location filename="../guis/ConvolutionFilterGUI.cpp" line="91"/>
         <source>No file selected</source>
         <translation>Keine Datei gewählt</translation>
     </message>
@@ -303,41 +303,48 @@
         <translation>Länge:</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.cpp" line="57"/>
+        <location filename="../guis/ConvolutionFilterGUI.cpp" line="58"/>
         <source>Select impulse response file</source>
         <translation>Impulsantwort auswählen</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.cpp" line="59"/>
+        <location filename="../guis/ConvolutionFilterGUI.cpp" line="60"/>
         <source>Impulse response (*.wav *.flac *.ogg)</source>
         <translation>Impulsantwort (*.wav *.flac *.ogg)</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.cpp" line="100"/>
+        <location filename="../guis/ConvolutionFilterGUI.cpp" line="101"/>
         <source>File not found</source>
         <translation>Datei nicht gefunden</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.cpp" line="111"/>
+        <location filename="../guis/ConvolutionFilterGUI.cpp" line="120"/>
+        <source>The file is not readable for the audio service.
+Change the file permissions or copy the file to the config directory.</source>
+        <translation>Die Datei ist für den Audiodienst nicht lesbar.
+Ändern Sie die Dateiberechtigungen oder kopieren Sie die Datei in das config-Verzeichnis.</translation>
+    </message>
+    <message>
+        <location filename="../guis/ConvolutionFilterGUI.cpp" line="129"/>
         <source>Unsupported file format</source>
         <translation>Nicht unterstütztes Dateiformat</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.cpp" line="119"/>
+        <location filename="../guis/ConvolutionFilterGUI.cpp" line="137"/>
         <source>%0 ms (%1 samples)</source>
         <translation>%0 ms (%1 Samples)</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.cpp" line="120"/>
+        <location filename="../guis/ConvolutionFilterGUI.cpp" line="138"/>
         <source>%0 Hz</source>
         <translation>%0 Hz</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.cpp" line="125"/>
+        <location filename="../guis/ConvolutionFilterGUI.cpp" line="143"/>
         <source>The file sample rate does not match the device sample rate (%0 Hz)!
 Select a different file or change the device configuration.</source>
         <translation>Die Abtastrate der Datei stimmt nicht mit der Abtastrate des Geräts (%0 Hz) überein!
-Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</translation>
+Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</translation>
     </message>
 </context>
 <context>
@@ -773,18 +780,18 @@ Wählen Sie eine andere Datei or ändern Sie die Konfiguration des Geräts.</tra
     </message>
     <message>
         <location filename="../guis/GraphicEQFilterGUI.cpp" line="298"/>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="365"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="371"/>
         <source>Frequency response (*.csv)</source>
         <translation>Frequenzgang (*.csv)</translation>
     </message>
     <message>
         <location filename="../guis/GraphicEQFilterGUI.cpp" line="299"/>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="366"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="372"/>
         <source>All files (*.*)</source>
         <translation>Alle Dateien (*.*)</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="361"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="367"/>
         <source>Export frequency response</source>
         <translation>Frequenzgang exportieren</translation>
     </message>
@@ -1137,8 +1144,8 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="262"/>
-        <location filename="../MainWindow.cpp" line="344"/>
-        <location filename="../MainWindow.cpp" line="358"/>
+        <location filename="../MainWindow.cpp" line="342"/>
+        <location filename="../MainWindow.cpp" line="356"/>
         <source>Error</source>
         <translation>Fehler</translation>
     </message>
@@ -1148,23 +1155,23 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>Fehler beim Lesen der Konfigurationsdatei: %0</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="344"/>
+        <location filename="../MainWindow.cpp" line="342"/>
         <source>Error while writing configuration file: %0</source>
         <translation>Fehler beim Schreiben der Konfigurationsdatei: %0</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="358"/>
+        <location filename="../MainWindow.cpp" line="356"/>
         <source>Only %0/%1 bytes have been written!</source>
         <translation>Nur %0/%1 Bytes wurden geschrieben!</translation>
     </message>
     <message>
+        <location filename="../MainWindow.cpp" line="424"/>
         <location filename="../MainWindow.cpp" line="426"/>
-        <location filename="../MainWindow.cpp" line="428"/>
         <source>From device</source>
         <translation>Von Gerät</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="705"/>
+        <location filename="../MainWindow.cpp" line="702"/>
         <source>%0 dB</source>
         <translation>%0 dB</translation>
     </message>
@@ -1173,7 +1180,7 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samp.)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="708"/>
+        <location filename="../MainWindow.cpp" line="705"/>
         <source>%0 ms (%1 s.)</source>
         <translation>%0 ms (%1 S.)</translation>
     </message>
@@ -1182,46 +1189,46 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samples)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="710"/>
+        <location filename="../MainWindow.cpp" line="707"/>
         <source>%0 ms</source>
         <translation>%0 ms</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="713"/>
+        <location filename="../MainWindow.cpp" line="710"/>
         <source>%0 % (one core)</source>
         <translation>%0 % (ein Kern)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="751"/>
-        <location filename="../MainWindow.cpp" line="778"/>
-        <location filename="../MainWindow.cpp" line="797"/>
+        <location filename="../MainWindow.cpp" line="748"/>
+        <location filename="../MainWindow.cpp" line="775"/>
+        <location filename="../MainWindow.cpp" line="794"/>
         <source>Restart required</source>
         <translation>Neustart erforderlich</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="751"/>
-        <location filename="../MainWindow.cpp" line="778"/>
-        <location filename="../MainWindow.cpp" line="797"/>
+        <location filename="../MainWindow.cpp" line="748"/>
+        <location filename="../MainWindow.cpp" line="775"/>
+        <location filename="../MainWindow.cpp" line="794"/>
         <source>Configuration Editor will be restarted to apply the changed settings. Proceed?</source>
         <translation>Konfigurationseditor wird neugestartet, um die geänderten Einstellungen zu übernehmen. Fortsetzen?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="856"/>
+        <location filename="../MainWindow.cpp" line="854"/>
         <source>Unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="857"/>
+        <location filename="../MainWindow.cpp" line="855"/>
         <source>The configuration file %0 has unsaved changes.</source>
         <translation>Die Konfigurationsdatei %0 hat ungespeicherte Änderungen.</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="858"/>
+        <location filename="../MainWindow.cpp" line="856"/>
         <source>Do you want to save the changes before closing the file?</source>
         <translation>Möchten Sie die Änderungen speichern, bevor die Datei geschlossen wird?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="529"/>
+        <location filename="../MainWindow.cpp" line="527"/>
         <source>Open file</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -1231,18 +1238,18 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>Automatisch (%0)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="531"/>
-        <location filename="../MainWindow.cpp" line="584"/>
+        <location filename="../MainWindow.cpp" line="529"/>
+        <location filename="../MainWindow.cpp" line="582"/>
         <source>E-APO configurations (*.txt)</source>
         <translation>E-APO-Konfigurationen (*.txt)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="581"/>
+        <location filename="../MainWindow.cpp" line="579"/>
         <source>Save file as</source>
         <translation>Datei speichern unter</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="603"/>
+        <location filename="../MainWindow.cpp" line="601"/>
         <source>Unsaved</source>
         <translation>Ungespeichert</translation>
     </message>

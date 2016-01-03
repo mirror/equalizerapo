@@ -234,7 +234,7 @@ FORMS    += \
 	guis/StageFilterGUI.ui
 
 INCLUDEPATH += $$PWD/.. "C:/Program Files/libsndfile/include" "C:/Program Files/fftw3" "C:/Program Files/muparserx_v3_0_1/parser"
-LIBS += advapi32.lib version.lib ole32.lib Shlwapi.lib libsndfile-1.lib libfftw3f-3.lib
+LIBS += advapi32.lib version.lib ole32.lib Shlwapi.lib authz.lib libsndfile-1.lib libfftw3f-3.lib
 
 build_pass:CONFIG(debug, debug|release) {
 	LIBS += muparserxd.lib
