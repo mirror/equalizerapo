@@ -19,20 +19,20 @@ It is neither complete nor guaranteed to be free of errors.
 ## Compilation prerequisites
 The following software has been successfully used to compile Equalizer APO.
 
-1. Visual C++ 2010 Professional. The [Express edition](http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs#DownloadFamilies_4) should be sufficient, but does not contain a 64 bit compiler. The [Windows SDK](http://www.microsoft.com/en-us/download/details.aspx?id=8279) or [newer Visual Studio versions](http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs#DownloadFamilies_2) may contain one.
+1. [Visual Studio Community 2013](https://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx). Visual Studio 2015 is not used to compile Equalizer APO because it introduces changes to the C runtime library that make simple redistribution by bundling the DLLs much harder. The newer versions of Visual Studio already include the Windows Kit 8.1 or 10, so the installation of the WDK is no longer necessary.
 
-2. [Windows Driver Kit 7.1](http://www.microsoft.com/en-us/download/details.aspx?id=11800). Newer versions of the WDK should be usable as well, but might no longer support Windows Vista. The WDK 8.1 seems not to contain the APO header files.
+2. [libsndfile](http://www.mega-nerd.com/libsndfile/). There are installers for the 64 and 32 bit version, so no need to compile from source. Has to be installed to C:\Program Files\libsndfile and C:\Program Files (x86)\libsndfile, respectively.
 
-3. [libsndfile](http://www.mega-nerd.com/libsndfile/). There are installers for the 32 and 64 bit version, so no need to compile from source. This is currently only used for the Benchmark application.
+3. [FFTW](http://www.fftw.org/install/windows.html). The prebuilt 64/32 bit archives have to be extracted to C:\Program Files\fftw3 and C:\Program Files (x86)\fftw3, respectively. As mentioned on the linked page, the import libraries have to be created using the lib program of Visual Studio.
+4. [muParserX 3.0.1](https://code.google.com/p/muparserx/). Unfortunately, there are no prebuilt files, so compilation from source is needed. The source code has to be compiled to a static library muparserx.lib (muparserxd.lib for debug build) and the include and library path has to be added via a [user property page](http://social.msdn.microsoft.com/Forums/vstudio/en-US/a494abb8-3561-4ebe-9eb0-6f644a679862/visual-studio-2010-professional-how-to-add-include-directory-for-all-projects?forum=vcgeneral#7b5ab5f2-f793-4b0e-a18a-679948d12bdd). Please note that the version has to be 3.0.1 as an important feature was removed in 3.0.2 (semicolon). As version 3.0.1 is no longer available, it is now [attached](Developer%20documentation/attachment/muparserx_v3_0_1.zip) to this page including prebuilt static library files for MSVC2013. The zip file has to be extracted to C:\\Program Files.
 
-4. [TCLAP](http://tclap.sourceforge.net/). As this is a template library, only the source is needed, which will be compiled into the application. This library is also only used in the Benchmark application.
+5. [TCLAP](http://tclap.sourceforge.net/). As this is a template library, only the source is needed, which will be compiled into the application. The downloaded tar.gz file has to be extracted to C:\\Program Files. This library only used in the Benchmark application.
 
-5. [muParserX 3.0.1](https://code.google.com/p/muparserx/). Unfortunately, there are no prebuilt files, so compilation from source is needed. The source code has to be compiled to a static library muparserx.lib (muparserxd.lib for debug build) and the include and library path has to be added via a [user property page](http://social.msdn.microsoft.com/Forums/vstudio/en-US/a494abb8-3561-4ebe-9eb0-6f644a679862/visual-studio-2010-professional-how-to-add-include-directory-for-all-projects?forum=vcgeneral#7b5ab5f2-f793-4b0e-a18a-679948d12bdd). Please note that the version has to be 3.0.1 as an important feature was removed in 3.0.2 (semicolon). 
-
-6. [NSIS](http://nsis.sourceforge.net/). Needed to create the installer. Additionaly, the plugins [NSISpcre](http://nsis.sourceforge.net/NSISpcre_plug-in) and [AccessControl](http://nsis.sourceforge.net/AccessControl_plug-in) are needed.
+6. [Qt](http://www.qt.io/download-open-source/). The current 32 and 64 bit versions for MSVC2013 should be installed to C:\\Qt. Qt Creator is used instead of Visual Studio as IDE. The prebuilt versions can be used for development although Equalizer APO ships with custom-built variants with reduced dependencies. Currently only needed to build the Configuration Editor.
+7. [NSIS](http://nsis.sourceforge.net/). Needed to create the installer. Additionaly, the plugins [NSISpcre](http://nsis.sourceforge.net/NSISpcre_plug-in) and [AccessControl](http://nsis.sourceforge.net/AccessControl_plug-in) are needed.
 
 ## Source code organization
-The Equalizer APO project consists of four parts:
+The Equalizer APO project consists of five parts:
 
 * EqualizerAPO. This is the main project, which generates the Audio Processing Object DLL, EqualizerAPO.dll. It contains the boilerplate code for COM and implements the APO interfaces, calling the class ParametricEQ, which contains the actual filtering algorithm and is also used by the Benchmark project.
 
@@ -40,9 +40,11 @@ The Equalizer APO project consists of four parts:
 
 * Benchmark. A console program to test the audio processing implementation without actually installing it for an audio device. It can be handy when experimenting with new filter types or tuning existing ones, especially to evaluate the performance.
 
+* Editor. The Qt Creator project that builds the Configuration Editor.
+
 * Setup. Not a Visual Studio project, but a set of NSIS scripts and additional files that are used to create the installers.
 
-The file build.bat in the top-level directory uses msbuild to build all three Visual Studio projects for both 32 and 64 bit and then calls NSIS to create both installers.
+The file build.bat in the top-level directory uses msbuild to build all three Visual Studio projects for both 32 and 64 bit, Qt's build tools to build the Configuration Editor for 32 and 64 bit and then calls NSIS to create both installers.
 
 # APO development
 An APO (Audio Processing Object) is a user-space program module that is loaded by the Windows Audio Service to process the audio sample data before it is sent to the audio device driver. APOs are normally distributed and installed together with the audio driver and have to be signed to make sure that they don't circumvent any audio-related DRM measures. There are two kinds of APOs, GFX (global effect, applied after mixing the audio streams together) and LFX (local effect, applied before mixing). Only one GFX and one LFX APO can be registered for an output device and only one LFX APO can be registered for an input device. An APO is implemented as a COM object which is assigned a GUID under which it is registered in the system registry. More detailed information and code samples can be found in the documents [Custom Audio Effects in Windows Vista](http://msdn.microsoft.com/en-us/windows/hardware/gg463025.aspx) and [Reusing Windows Vista Audio System Effects](http://msdn.microsoft.com/en-us/library/windows/hardware/gg463044.aspx).

@@ -71,23 +71,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir);$(IncludePath);$(DDK_PATH)\inc\api;C:\Program Files\libsndfile\include;C:\Program Files (x86)\fftw3</IncludePath>
-    <LibraryPath>C:\Program Files (x86)\libsndfile\lib;C:\Program Files (x86)\fftw3;$(LibraryPath);$(DDK_PATH)\lib\win7\i386</LibraryPath>
+    <IncludePath>$(SolutionDir);$(IncludePath);C:\Program Files\libsndfile\include;C:\Program Files\muparserx_v3_0_1\parser;C:\Program Files (x86)\fftw3</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\libsndfile\lib;C:\Program Files\muparserx_v3_0_1\lib;C:\Program Files (x86)\fftw3;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir);$(IncludePath);$(DDK_PATH)\inc\api;C:\Program Files\libsndfile\include;C:\Program Files\fftw3</IncludePath>
-    <LibraryPath>C:\Program Files\libsndfile\lib;C:\Program Files\fftw3;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir);$(IncludePath);C:\Program Files\libsndfile\include;C:\Program Files\muparserx_v3_0_1\parser;C:\Program Files\fftw3</IncludePath>
+    <LibraryPath>C:\Program Files\libsndfile\lib;C:\Program Files\muparserx_v3_0_1\lib64;C:\Program Files\fftw3;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir);$(IncludePath);$(DDK_PATH)\inc\api;C:\Program Files\libsndfile\include;C:\Program Files (x86)\fftw3</IncludePath>
-    <LibraryPath>C:\Program Files (x86)\libsndfile\lib;C:\Program Files (x86)\fftw3;$(LibraryPath);$(DDK_PATH)\lib\win7\i386</LibraryPath>
+    <IncludePath>$(SolutionDir);$(IncludePath);C:\Program Files\libsndfile\include;C:\Program Files\muparserx_v3_0_1\parser;C:\Program Files (x86)\fftw3</IncludePath>
+    <LibraryPath>C:\Program Files (x86)\libsndfile\lib;C:\Program Files\muparserx_v3_0_1\lib;C:\Program Files (x86)\fftw3;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir);$(IncludePath);$(DDK_PATH)\inc\api;C:\Program Files\libsndfile\include;C:\Program Files\fftw3</IncludePath>
-    <LibraryPath>C:\Program Files\libsndfile\lib;C:\Program Files\fftw3;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir);$(IncludePath);C:\Program Files\libsndfile\include;C:\Program Files\muparserx_v3_0_1\parser;C:\Program Files\fftw3</IncludePath>
+    <LibraryPath>C:\Program Files\libsndfile\lib;C:\Program Files\muparserx_v3_0_1\lib64;C:\Program Files\fftw3;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
