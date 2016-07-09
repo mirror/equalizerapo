@@ -21,6 +21,7 @@
 #include <QWheelEvent>
 #include <QScrollBar>
 
+#include "Editor/helpers/DPIHelper.h"
 #include "FrequencyPlotItem.h"
 #include "FrequencyPlotView.h"
 
@@ -29,7 +30,7 @@ using namespace std;
 FrequencyPlotView::FrequencyPlotView(QWidget* parent)
 	: QGraphicsView(parent)
 {
-	setViewportMargins(32, 0, 0, 20);
+	setViewportMargins(DPIHelper::scale(32), 0, 0, DPIHelper::scale(20));
 	hRuler = new FrequencyPlotHRuler(this);
 	vRuler = new FrequencyPlotVRuler(this);
 	hRuler->setMouseTracking(true);
@@ -60,7 +61,7 @@ void FrequencyPlotView::drawBackground(QPainter* painter, const QRectF& drawRect
 	FrequencyPlotScene* s = scene();
 	QPointF topLeft = mapToScene(0, 0);
 	QPointF bottomRight = mapToScene(viewport()->width(), viewport()->height());
-	double dbStep = abs(s->yToDb(0) - s->yToDb(30));
+	double dbStep = abs(s->yToDb(0) - s->yToDb(DPIHelper::scale(30)));
 
 	double dbBase = pow(10, floor(log10(dbStep)));
 	if (dbStep >= 5 * dbBase)
@@ -176,6 +177,7 @@ void FrequencyPlotView::setScrollOffsets(int x, int y)
 
 void FrequencyPlotView::wheelEvent(QWheelEvent* event)
 {
+	event->accept();
 	int delta = event->angleDelta().y();
 	zoom(delta, delta, event->x(), event->y());
 }

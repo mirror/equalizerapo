@@ -112,7 +112,9 @@ SOURCES += main.cpp\
 	../parser/StringOperators.cpp \
 	AnalysisThread.cpp \
 	widgets/ExponentialSpinBox.cpp \
-	FilterTableMimeData.cpp
+	FilterTableMimeData.cpp \
+	helpers/DPIHelper.cpp \
+	CustomStyle.cpp
 
 HEADERS  += \
 	../helpers/LogHelper.h \
@@ -213,7 +215,9 @@ HEADERS  += \
 	../parser/StringOperators.h \
 	AnalysisThread.h \
 	widgets/ExponentialSpinBox.h \
-	FilterTableMimeData.h
+	FilterTableMimeData.h \
+	helpers/DPIHelper.h \
+	CustomStyle.h
 
 FORMS    += \
 	guis/PreampFilterGUI.ui \

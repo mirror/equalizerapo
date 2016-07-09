@@ -40,6 +40,7 @@
 #include "helpers/LogHelper.h"
 #include "helpers/ChannelHelper.h"
 #include "Editor/helpers/GUIChannelHelper.h"
+#include "Editor/helpers/DPIHelper.h"
 #include "version.h"
 #include "FilterTable.h"
 #include "MainWindow.h"
@@ -64,6 +65,7 @@ MainWindow::MainWindow(QDir configDir, QWidget* parent)
 	}
 
 	ui->setupUi(this);
+	resize(DPIHelper::scale(QSize(1024, 768)));
 
 	LogHelper::set(stderr, true, false, false);
 
@@ -961,12 +963,17 @@ void MainWindow::loadPreferences()
 	ui->startFromComboBox->setCurrentIndex(settings.value("analysis/startFrom").toInt());
 	ui->analysisChannelComboBox->setCurrentText(settings.value("analysis/channel").toString());
 	ui->resolutionSpinBox->setValue(settings.value("analysis/resolution", 65536).toInt());
-	double zoomX = settings.value("analysis/zoomX", 1.0).toDouble();
-	double zoomY = settings.value("analysis/zoomY", 1.0).toDouble();
-	if (zoomX != 1.0 || zoomY != 1.0)
-		analysisPlotScene->setZoom(zoomX, zoomY);
-	int scrollX = settings.value("analysis/scrollX", round(analysisPlotScene->hzToX(20))).toInt();
-	int scrollY = settings.value("analysis/scrollY", round(analysisPlotScene->dbToY(22))).toInt();
+	double zoomX = DPIHelper::scaleZoom(settings.value("analysis/zoomX", 1.0).toDouble());
+	double zoomY = DPIHelper::scaleZoom(settings.value("analysis/zoomY", 1.0).toDouble());
+	analysisPlotScene->setZoom(zoomX, zoomY);
+	bool ok;
+	int scrollX = DPIHelper::scale(settings.value("analysis/scrollX").toDouble(&ok));
+	if (!ok)
+		scrollX = round(analysisPlotScene->hzToX(20));
+	int scrollY = DPIHelper::scale(settings.value("analysis/scrollY").toDouble(&ok));
+	if (!ok)
+		scrollY = round(analysisPlotScene->dbToY(22));
+
 	ui->graphicsView->setScrollOffsets(scrollX, scrollY);
 
 	QVariant openFilesValue = settings.value("openFiles");
@@ -1013,13 +1020,13 @@ void MainWindow::savePreferences()
 	settings.setValue("analysis/startFrom", ui->startFromComboBox->currentIndex());
 	settings.setValue("analysis/channel", ui->analysisChannelComboBox->currentText());
 	settings.setValue("analysis/resolution", ui->resolutionSpinBox->value());
-	settings.setValue("analysis/zoomX", analysisPlotScene->getZoomX());
-	settings.setValue("analysis/zoomY", analysisPlotScene->getZoomY());
+	settings.setValue("analysis/zoomX", DPIHelper::invScaleZoom(analysisPlotScene->getZoomX()));
+	settings.setValue("analysis/zoomY", DPIHelper::invScaleZoom(analysisPlotScene->getZoomY()));
 	QScrollBar* hScrollBar = ui->graphicsView->horizontalScrollBar();
-	int value = hScrollBar->value();
+	double value = DPIHelper::invScale(hScrollBar->value());
 	settings.setValue("analysis/scrollX", value);
 	QScrollBar* vScrollBar = ui->graphicsView->verticalScrollBar();
-	value = vScrollBar->value();
+	value = DPIHelper::invScale(vScrollBar->value());
 	settings.setValue("analysis/scrollY", value);
 
 	QStringList fileList;

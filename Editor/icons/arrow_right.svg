@@ -15,9 +15,9 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    viewBox="0 0 24 15"
-   inkscape:export-filename="C:\Eigene Dateien\Entwickl\EqualizerAPO\trunk\Editor\icons\arrow_right.png"
-   inkscape:export-xdpi="90"
-   inkscape:export-ydpi="90"
+   inkscape:export-filename="C:\Eigene Dateien\Entwickl\EqualizerAPO\trunk\Editor\icons\arrow_right_48.png"
+   inkscape:export-xdpi="180"
+   inkscape:export-ydpi="180"
    sodipodi:docname="arrow_right.svg">
   <defs
      id="defs3346" />
@@ -29,16 +29,16 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="22.197802"
-     inkscape:cx="8.8534553"
+     inkscape:cx="-3.2423369"
      inkscape:cy="1.9902411"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
-     inkscape:window-width="1920"
-     inkscape:window-height="1018"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:window-width="2560"
+     inkscape:window-height="1365"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata3349">
@@ -48,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>

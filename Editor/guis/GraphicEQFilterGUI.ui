@@ -197,14 +197,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QToolBar" name="toolBar">
-       <property name="iconSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
-       </property>
-      </widget>
+      <widget class="QToolBar" name="toolBar"/>
      </item>
     </layout>
    </item>
@@ -212,7 +205,7 @@
   <action name="actionImport">
    <property name="icon">
     <iconset resource="../Editor.qrc">
-     <normaloff>:/icons/16x16/document-open.png</normaloff>:/icons/16x16/document-open.png</iconset>
+     <normaloff>:/icons/document-open.ico</normaloff>:/icons/document-open.ico</iconset>
    </property>
    <property name="text">
     <string>Import</string>
@@ -221,7 +214,7 @@
   <action name="actionExport">
    <property name="icon">
     <iconset resource="../Editor.qrc">
-     <normaloff>:/icons/16x16/document-save-as.png</normaloff>:/icons/16x16/document-save-as.png</iconset>
+     <normaloff>:/icons/document-save-as.ico</normaloff>:/icons/document-save-as.ico</iconset>
    </property>
    <property name="text">
     <string>Export</string>
@@ -230,7 +223,7 @@
   <action name="actionInvertResponse">
    <property name="icon">
     <iconset resource="../Editor.qrc">
-     <normaloff>:/icons/invert_response.png</normaloff>:/icons/invert_response.png</iconset>
+     <normaloff>:/icons/invert_response.ico</normaloff>:/icons/invert_response.ico</iconset>
    </property>
    <property name="text">
     <string>Invert response</string>
@@ -239,7 +232,7 @@
   <action name="actionNormalizeResponse">
    <property name="icon">
     <iconset resource="../Editor.qrc">
-     <normaloff>:/icons/normalize_response.png</normaloff>:/icons/normalize_response.png</iconset>
+     <normaloff>:/icons/normalize_response.ico</normaloff>:/icons/normalize_response.ico</iconset>
    </property>
    <property name="text">
     <string>Normalize response</string>
@@ -248,7 +241,7 @@
   <action name="actionResetResponse">
    <property name="icon">
     <iconset resource="../Editor.qrc">
-     <normaloff>:/icons/reset_response.png</normaloff>:/icons/reset_response.png</iconset>
+     <normaloff>:/icons/reset_response.ico</normaloff>:/icons/reset_response.ico</iconset>
    </property>
    <property name="text">
     <string>Reset response</string>

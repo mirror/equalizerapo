@@ -21,6 +21,7 @@
 #include <Ks.h>
 #include <KsMedia.h>
 
+#include "Editor/helpers/DPIHelper.h"
 #include "Editor/helpers/GUIChannelHelper.h"
 #include "ChannelFilterGUIDialog.h"
 #include "ui_ChannelFilterGUIDialog.h"
@@ -35,6 +36,7 @@ ChannelFilterGUIDialog::ChannelFilterGUIDialog(QWidget* parent, QStringList sele
 	ui(new Ui::ChannelFilterGUIDialog)
 {
 	ui->setupUi(this);
+	resize(DPIHelper::scale(QSize(355, 329)));
 
 	ui->centerCheckBox->setProperty(PROPERTY_POSITION, SPEAKER_FRONT_CENTER);
 	ui->leftCheckBox->setProperty(PROPERTY_POSITION, SPEAKER_FRONT_LEFT);

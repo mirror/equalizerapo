@@ -147,7 +147,7 @@
    </property>
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/list-add-green.png</normaloff>:/icons/16x16/list-add-green.png</iconset>
+     <normaloff>:/icons/list-add-green.ico</normaloff>:/icons/list-add-green.ico</iconset>
    </property>
    <property name="text">
     <string>Add</string>
@@ -156,7 +156,7 @@
   <action name="actionRemove">
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/list-remove-red.png</normaloff>:/icons/16x16/list-remove-red.png</iconset>
+     <normaloff>:/icons/list-remove-red.ico</normaloff>:/icons/list-remove-red.ico</iconset>
    </property>
    <property name="text">
     <string>Remove</string>
@@ -168,7 +168,7 @@
    </property>
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/accessories-text-editor.png</normaloff>:/icons/16x16/accessories-text-editor.png</iconset>
+     <normaloff>:/icons/accessories-text-editor.ico</normaloff>:/icons/accessories-text-editor.ico</iconset>
    </property>
    <property name="text">
     <string>Edit text</string>

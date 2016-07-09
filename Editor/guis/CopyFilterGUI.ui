@@ -56,7 +56,7 @@
      <widget class="QWidget" name="tab">
       <attribute name="icon">
        <iconset resource="../Editor.qrc">
-        <normaloff>:/icons/16x16/applications-graphics-rotated.png</normaloff>:/icons/16x16/applications-graphics-rotated.png</iconset>
+        <normaloff>:/icons/applications-graphics-rotated.ico</normaloff>:/icons/applications-graphics-rotated.ico</iconset>
       </attribute>
       <attribute name="title">
        <string/>
@@ -101,7 +101,7 @@
      <widget class="QWidget" name="tab_2">
       <attribute name="icon">
        <iconset resource="../Editor.qrc">
-        <normaloff>:/icons/16x16/format-justify-fill-rotated.png</normaloff>:/icons/16x16/format-justify-fill-rotated.png</iconset>
+        <normaloff>:/icons/format-justify-fill-rotated.ico</normaloff>:/icons/format-justify-fill-rotated.ico</iconset>
       </attribute>
       <attribute name="title">
        <string/>
@@ -138,8 +138,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>348</width>
-            <height>88</height>
+            <width>380</width>
+            <height>90</height>
            </rect>
           </property>
          </widget>

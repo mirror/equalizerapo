@@ -23,6 +23,7 @@
 #include <QPainter>
 #include <QLineEdit>
 
+#include "Editor/helpers/DPIHelper.h"
 #include "Editor/widgets/ResizingLineEdit.h"
 #include "CopyFilterGUIChannelItem.h"
 #include "CopyFilterGUIScene.h"
@@ -32,7 +33,6 @@ static const int maxArrowSize = 6;
 
 CopyFilterGUIConnectionItem::CopyFilterGUIConnectionItem()
 {
-
 }
 
 CopyFilterGUIConnectionItem::CopyFilterGUIConnectionItem(CopyFilterGUIChannelItem* source, CopyFilterGUIChannelItem* target, double factor, bool isDecibel)
@@ -52,7 +52,8 @@ QRectF CopyFilterGUIConnectionItem::boundingRect() const
 	QRectF rect = QGraphicsLineItem::boundingRect();
 
 	QPointF p2 = line().p2();
-	QRectF rect2 = QRectF(p2.x() - maxArrowSize, p2.y() - maxArrowSize, 2 * maxArrowSize, 2 * maxArrowSize);
+	int as = DPIHelper::scale(maxArrowSize);
+	QRectF rect2 = QRectF(p2.x() - as, p2.y() - as, 2 * as, 2 * as);
 
 	return rect.united(rect2);
 }
@@ -66,7 +67,7 @@ QPainterPath CopyFilterGUIConnectionItem::shape() const
 	double length = line().length();
 	if (length > 0)
 	{
-		double offset = min(length, maxArrowSize);
+		double offset = min(length, DPIHelper::scale(maxArrowSize));
 		QLineF unit = l.unitVector();
 		QLineF normal = l.normalVector().unitVector();
 		QPointF v(unit.dx(), unit.dy());
@@ -92,7 +93,7 @@ QPainterPath CopyFilterGUIConnectionItem::shape() const
 		if (factor != 1.0 || isDecibel)
 		{
 			QFont font;
-			font.setPixelSize(10);
+			font.setPixelSize(DPIHelper::scale(10));
 			QPointF center = (l.p1() + l.p2()) / 2;
 			QString text = QString("%1").arg(factor);
 			if (isDecibel)
@@ -130,7 +131,7 @@ void CopyFilterGUIConnectionItem::paint(QPainter* painter, const QStyleOptionGra
 		painter->drawLine(line());
 
 		double length = line().length();
-		double offset = min(length, maxArrowSize);
+		double offset = min(length, DPIHelper::scale(maxArrowSize));
 		QLineF unit = l.unitVector();
 		QLineF normal = l.normalVector().unitVector();
 		QPointF v(unit.dx(), unit.dy());
@@ -149,7 +150,7 @@ void CopyFilterGUIConnectionItem::paint(QPainter* painter, const QStyleOptionGra
 		if (factor != 1.0 || isDecibel)
 		{
 			QFont font = painter->font();
-			font.setPixelSize(10);
+			font.setPixelSize(DPIHelper::scale(10));
 			painter->setFont(font);
 			QPointF center = (l.p1() + l.p2()) / 2;
 			QString text = QString("%1").arg(factor);

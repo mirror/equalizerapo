@@ -22,6 +22,7 @@
 #include <QDir>
 #include <QCommandLineParser>
 #include <QSettings>
+#include "CustomStyle.h"
 #include "MainWindow.h"
 #include "helpers/RegistryHelper.h"
 
@@ -41,6 +42,7 @@ int main(int argc, char* argv[])
 	do
 	{
 		QApplication application(argc, argv);
+		application.setStyle(new CustomStyle(application.style()));
 
 		QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
 		QVariant languageValue = settings.value("language");

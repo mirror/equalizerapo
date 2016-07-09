@@ -1,27 +1,27 @@
 <RCC>
     <qresource prefix="/">
-        <file>icons/arrow_right.png</file>
-        <file>icons/16x16/document-open.png</file>
-        <file>icons/16x16/document-new.png</file>
-        <file>icons/16x16/document-save-as.png</file>
-        <file>icons/16x16/document-save.png</file>
-        <file>icons/16x16/edit-copy.png</file>
-        <file>icons/16x16/edit-cut.png</file>
-        <file>icons/16x16/edit-delete.png</file>
-        <file>icons/16x16/edit-paste.png</file>
-        <file>icons/16x16/accessories-text-editor.png</file>
-        <file>icons/16x16/list-add-green.png</file>
-        <file>icons/16x16/list-remove-red.png</file>
-        <file>icons/invert_response.png</file>
-        <file>icons/normalize_response.png</file>
-        <file>icons/power_off.png</file>
-        <file>icons/power_on.png</file>
-        <file>icons/16x16/applications-graphics-rotated.png</file>
-        <file>icons/16x16/format-justify-fill-rotated.png</file>
         <file>translations/Editor_de.qm</file>
         <file>translations/qtbase_de.qm</file>
-        <file>icons/16x16/go-up.png</file>
-        <file>icons/reset_response.png</file>
-        <file>icons/resize_corner.png</file>
+        <file>icons/document-open.ico</file>
+        <file>icons/document-save.ico</file>
+        <file>icons/accessories-text-editor.ico</file>
+        <file>icons/applications-graphics-rotated.ico</file>
+        <file>icons/document-new.ico</file>
+        <file>icons/document-save-as.ico</file>
+        <file>icons/edit-copy.ico</file>
+        <file>icons/edit-cut.ico</file>
+        <file>icons/edit-delete.ico</file>
+        <file>icons/edit-paste.ico</file>
+        <file>icons/format-justify-fill-rotated.ico</file>
+        <file>icons/go-up.ico</file>
+        <file>icons/list-add-green.ico</file>
+        <file>icons/list-remove-red.ico</file>
+        <file>icons/arrow_right.ico</file>
+        <file>icons/power_off.ico</file>
+        <file>icons/power_on.ico</file>
+        <file>icons/invert_response.ico</file>
+        <file>icons/normalize_response.ico</file>
+        <file>icons/reset_response.ico</file>
+        <file>icons/resize_corner.ico</file>
     </qresource>
 </RCC>

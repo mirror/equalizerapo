@@ -23,14 +23,15 @@
 #include <QTextStream>
 
 #include "helpers/GainIterator.h"
+#include "Editor/helpers/DPIHelper.h"
 #include "Editor/widgets/ResizeCorner.h"
 #include "Editor/FilterTable.h"
 #include "GraphicEQFilterGUIView.h"
 #include "GraphicEQFilterGUI.h"
 #include "ui_GraphicEQFilterGUI.h"
 
-static const int DEFAULT_TABLE_WIDTH = 119;
-static const int DEFAULT_VIEW_HEIGHT = 150;
+static const double DEFAULT_TABLE_WIDTH = 119;
+static const double DEFAULT_VIEW_HEIGHT = 150;
 
 using namespace std;
 
@@ -40,6 +41,10 @@ GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPa
 	: ui(new Ui::GraphicEQFilterGUI), configPath(configPath)
 {
 	ui->setupUi(this);
+	ui->tableWidget->horizontalHeader()->setMinimumSectionSize(DPIHelper::scale(10));
+	ui->tableWidget->horizontalHeader()->setDefaultSectionSize(DPIHelper::scale(10));
+	ui->tableWidget->verticalHeader()->setMinimumSectionSize(DPIHelper::scale(23));
+	ui->tableWidget->verticalHeader()->setDefaultSectionSize(DPIHelper::scale(23));
 
 	scene = new GraphicEQFilterGUIScene(ui->graphicsView);
 	ui->graphicsView->setScene(scene);
@@ -109,35 +114,39 @@ void GraphicEQFilterGUI::store(QString& command, QString& parameters)
 
 void GraphicEQFilterGUI::loadPreferences(const QVariantMap& prefs)
 {
-	ui->tableWidget->setFixedWidth(prefs.value("tableWidth", DEFAULT_TABLE_WIDTH).toInt());
-	ui->graphicsView->setFixedHeight(prefs.value("viewHeight", DEFAULT_VIEW_HEIGHT).toInt());
-	double zoomX = prefs.value("zoomX", 1.0).toDouble();
-	double zoomY = prefs.value("zoomY", 1.0).toDouble();
-	if (zoomX != 1.0 || zoomY != 1.0)
-		scene->setZoom(zoomX, zoomY);
-	int scrollX = prefs.value("scrollX", round(scene->hzToX(20))).toInt();
-	int scrollY = prefs.value("scrollY", round(scene->dbToY(22))).toInt();
+	ui->tableWidget->setFixedWidth(DPIHelper::scale(prefs.value("tableWidth", DEFAULT_TABLE_WIDTH).toDouble()));
+	ui->graphicsView->setFixedHeight(DPIHelper::scale(prefs.value("viewHeight", DEFAULT_VIEW_HEIGHT).toDouble()));
+	double zoomX = DPIHelper::scaleZoom(prefs.value("zoomX", 1.0).toDouble());
+	double zoomY = DPIHelper::scaleZoom(prefs.value("zoomY", 1.0).toDouble());
+	scene->setZoom(zoomX, zoomY);
+	bool ok;
+	int scrollX = DPIHelper::scale(prefs.value("scrollX").toDouble(&ok));
+	if (!ok)
+		scrollX = round(scene->hzToX(20));
+	int scrollY = DPIHelper::scale(prefs.value("scrollY").toDouble(&ok));
+	if (!ok)
+		scrollY = round(scene->dbToY(22));
 	ui->graphicsView->setScrollOffsets(scrollX, scrollY);
 }
 
 void GraphicEQFilterGUI::storePreferences(QVariantMap& prefs)
 {
-	if (ui->tableWidget->width() != DEFAULT_TABLE_WIDTH)
-		prefs.insert("tableWidth", ui->tableWidget->width());
-	if (ui->graphicsView->height() != DEFAULT_VIEW_HEIGHT)
-		prefs.insert("viewHeight", ui->graphicsView->height());
-	if (scene->getZoomX() != 1.0)
-		prefs.insert("zoomX", scene->getZoomX());
-	if (scene->getZoomY() != 1.0)
-		prefs.insert("zoomY", scene->getZoomY());
+	if (DPIHelper::invScale(ui->tableWidget->width()) != DEFAULT_TABLE_WIDTH)
+		prefs.insert("tableWidth", DPIHelper::invScale(ui->tableWidget->width()));
+	if (DPIHelper::invScale(ui->graphicsView->height()) != DEFAULT_VIEW_HEIGHT)
+		prefs.insert("viewHeight", DPIHelper::invScale(ui->graphicsView->height()));
+	if (DPIHelper::invScaleZoom(scene->getZoomX()) != 1.0)
+		prefs.insert("zoomX", DPIHelper::invScaleZoom(scene->getZoomX()));
+	if (DPIHelper::invScaleZoom(scene->getZoomY()) != 1.0)
+		prefs.insert("zoomY", DPIHelper::invScaleZoom(scene->getZoomY()));
 	QScrollBar* hScrollBar = ui->graphicsView->horizontalScrollBar();
 	int value = hScrollBar->value();
 	if (value != round(scene->hzToX(20)))
-		prefs.insert("scrollX", value);
+		prefs.insert("scrollX", DPIHelper::invScale(value));
 	QScrollBar* vScrollBar = ui->graphicsView->verticalScrollBar();
 	value = vScrollBar->value();
 	if (value != round(scene->dbToY(22)))
-		prefs.insert("scrollY", value);
+		prefs.insert("scrollY", DPIHelper::invScale(value));
 }
 
 void GraphicEQFilterGUI::insertRow(int index, double hz, double db)

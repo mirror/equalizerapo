@@ -19,6 +19,7 @@
 
 #include <QWheelEvent>
 
+#include "Editor/helpers/DPIHelper.h"
 #include "FrequencyPlotView.h"
 #include "FrequencyPlotScene.h"
 #include "FrequencyPlotVRuler.h"
@@ -37,7 +38,7 @@ void FrequencyPlotVRuler::paintEvent(QPaintEvent*)
 
 	QPointF topLeft = view->mapToScene(0, 0);
 	QPointF bottomRight = view->mapToScene(view->viewport()->width(), view->viewport()->height());
-	double dbStep = abs(s->yToDb(0) - s->yToDb(30));
+	double dbStep = abs(s->yToDb(0) - s->yToDb(DPIHelper::scale(30)));
 
 	double dbBase = pow(10, floor(log10(dbStep)));
 	if (dbStep >= 5 * dbBase)

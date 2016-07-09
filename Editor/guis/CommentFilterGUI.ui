@@ -49,8 +49,8 @@
    </property>
    <property name="icon">
     <iconset resource="../Editor.qrc">
-     <normaloff>:/icons/power_off.png</normaloff>
-     <normalon>:/icons/power_on.png</normalon>:/icons/power_off.png</iconset>
+     <normaloff>:/icons/power_off.ico</normaloff>
+     <normalon>:/icons/power_on.ico</normalon>:/icons/power_off.ico</iconset>
    </property>
    <property name="text">
     <string>Power on</string>

@@ -48,6 +48,7 @@
 #include "guis/IncludeFilterGUIFactory.h"
 #include "guis/GraphicEQFilterGUIFactory.h"
 #include "guis/ConvolutionFilterGUIFactory.h"
+#include "Editor/helpers/DPIHelper.h"
 #include "helpers/StringHelper.h"
 #include "helpers/LogHelper.h"
 #include "helpers/ChannelHelper.h"
@@ -61,9 +62,9 @@ FilterTable::FilterTable(MainWindow* mainWindow, QWidget* parent)
 {
 	gridLayout = new QGridLayout(this);
 
-	QPixmap pixmap(QStringLiteral(":/icons/arrow_right.png"));
+	QIcon icon(QStringLiteral(":/icons/arrow_right.ico"));
 	insertArrow = new QLabel(this);
-	insertArrow->setPixmap(pixmap);
+	insertArrow->setPixmap(icon.pixmap(DPIHelper::scale(QSize(24, 15))));
 	insertArrow->setVisible(false);
 
 	factories.append(new ExpressionFilterGUIFactory);
@@ -195,13 +196,13 @@ void FilterTable::updateGuis()
 	propagateChannels();
 
 	QToolBar* toolBar = new QToolBar;
-	toolBar->setIconSize(QSize(16, 16));
+	toolBar->setIconSize(DPIHelper::scale(QSize(16, 16)));
 
 	QWidget* spacer = new QWidget;
-	spacer->setFixedWidth(25);
+	spacer->setFixedWidth(DPIHelper::scale(25));
 	toolBar->addWidget(spacer);
 
-	QAction* addAction = new QAction(QIcon(":/icons/16x16/list-add-green.png"), tr("Add filter"), toolBar);
+	QAction* addAction = new QAction(QIcon(":/icons/list-add-green.ico"), tr("Add filter"), toolBar);
 	addAction->setCheckable(true);
 	connect(addAction, SIGNAL(triggered()), this, SLOT(addActionTriggered()));
 	toolBar->addAction(addAction);
@@ -887,6 +888,9 @@ bool FilterTable::eventFilter(QObject* obj, QEvent* event)
 	{
 		if (type == QEvent::Wheel)
 		{
+			QWheelEvent* wheelEvent = (QWheelEvent*)event;
+			scrollStartPoint = wheelEvent->globalPos();
+
 			QWidget* widget = qobject_cast<QWidget*>(obj);
 			if (widget != NULL)
 			{
@@ -901,7 +905,7 @@ bool FilterTable::eventFilter(QObject* obj, QEvent* event)
 		{
 			QMouseEvent* mouseEvent = (QMouseEvent*)event;
 
-			if ((mouseEvent->globalPos() - scrollStartPoint).manhattanLength() > QApplication::startDragDistance())
+			if ((mouseEvent->globalPos() - scrollStartPoint).manhattanLength() > DPIHelper::scale(30))
 				scrollingNow = false;
 		}
 	}

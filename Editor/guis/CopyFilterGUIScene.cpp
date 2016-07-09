@@ -23,6 +23,7 @@
 #include <QLineEdit>
 #include <QToolButton>
 
+#include "Editor/helpers/DPIHelper.h"
 #include "Editor/widgets/ResizingLineEdit.h"
 #include "CopyFilterGUIChannelItem.h"
 #include "CopyFilterGUIScene.h"
@@ -102,12 +103,13 @@ void CopyFilterGUIScene::load(const vector<wstring>& channelNames, vector<Assign
 	}
 
 	QToolButton* addButton = new QToolButton;
-	addButton->setIcon(QIcon(":/icons/16x16/list-add-green.png"));
+	addButton->setIcon(QIcon(":/icons/list-add-green.ico"));
 	connect(addButton, SIGNAL(clicked()), this, SLOT(addOutputChannel()));
 	addProxyItem = addWidget(addButton);
 	addProxyItem->setPos(getNextChannelPoint(lastOutputItem, true));
 
-	setSceneRect(itemsBoundingRect().marginsAdded(QMarginsF(2, 2, 2, 2)));
+	int margin = DPIHelper::scale(4);
+	setSceneRect(itemsBoundingRect().marginsAdded(QMarginsF(margin, margin, margin, margin)));
 }
 
 std::vector<Assignment> CopyFilterGUIScene::buildAssignments()

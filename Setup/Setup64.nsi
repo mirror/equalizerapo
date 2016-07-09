@@ -1,6 +1,6 @@
 
 !define BINPATH "..\x64\Release"
-!define BINPATH_EDITOR "..\build-Editor-Desktop_Qt_5_5_MSVC2013_64bit-Release\release"
+!define BINPATH_EDITOR "..\build-Editor-Desktop_Qt_5_7_MSVC2013_64bit-Release\release"
 !define LIBPATH "lib64"
 
 !include "Setup.nsi"

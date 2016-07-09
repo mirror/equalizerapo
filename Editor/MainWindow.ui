@@ -48,7 +48,7 @@
      <x>0</x>
      <y>0</y>
      <width>1024</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -562,7 +562,7 @@
   <action name="actionNew">
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/document-new.png</normaloff>:/icons/16x16/document-new.png</iconset>
+     <normaloff>:/icons/document-new.ico</normaloff>:/icons/document-new.ico</iconset>
    </property>
    <property name="text">
     <string>New</string>
@@ -574,7 +574,7 @@
   <action name="actionOpen">
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/document-open.png</normaloff>:/icons/16x16/document-open.png</iconset>
+     <normaloff>:/icons/document-open.ico</normaloff>:/icons/document-open.ico</iconset>
    </property>
    <property name="text">
     <string>Open</string>
@@ -589,7 +589,7 @@
   <action name="actionSave">
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/document-save.png</normaloff>:/icons/16x16/document-save.png</iconset>
+     <normaloff>:/icons/document-save.ico</normaloff>:/icons/document-save.ico</iconset>
    </property>
    <property name="text">
     <string>Save</string>
@@ -604,7 +604,7 @@
   <action name="actionSaveAs">
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/document-save-as.png</normaloff>:/icons/16x16/document-save-as.png</iconset>
+     <normaloff>:/icons/document-save-as.ico</normaloff>:/icons/document-save-as.ico</iconset>
    </property>
    <property name="text">
     <string>Save as...</string>
@@ -624,7 +624,7 @@
   <action name="actionCut">
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/edit-cut.png</normaloff>:/icons/16x16/edit-cut.png</iconset>
+     <normaloff>:/icons/edit-cut.ico</normaloff>:/icons/edit-cut.ico</iconset>
    </property>
    <property name="text">
     <string>Cut</string>
@@ -636,7 +636,7 @@
   <action name="actionCopy">
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/edit-copy.png</normaloff>:/icons/16x16/edit-copy.png</iconset>
+     <normaloff>:/icons/edit-copy.ico</normaloff>:/icons/edit-copy.ico</iconset>
    </property>
    <property name="text">
     <string>Copy</string>
@@ -648,7 +648,7 @@
   <action name="actionPaste">
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/edit-paste.png</normaloff>:/icons/16x16/edit-paste.png</iconset>
+     <normaloff>:/icons/edit-paste.ico</normaloff>:/icons/edit-paste.ico</iconset>
    </property>
    <property name="text">
     <string>Paste</string>
@@ -660,7 +660,7 @@
   <action name="actionDelete">
    <property name="icon">
     <iconset resource="Editor.qrc">
-     <normaloff>:/icons/16x16/edit-delete.png</normaloff>:/icons/16x16/edit-delete.png</iconset>
+     <normaloff>:/icons/edit-delete.ico</normaloff>:/icons/edit-delete.ico</iconset>
    </property>
    <property name="text">
     <string>Delete</string>

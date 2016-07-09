@@ -55,7 +55,7 @@ protected:
 private:
 	void updateSceneRect();
 
-	double zoomX = 1.0;
-	double zoomY = 1.0;
+	double zoomX;
+	double zoomY;
 	int bandCount = -1;
 };

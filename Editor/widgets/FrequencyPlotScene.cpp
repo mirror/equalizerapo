@@ -17,6 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "Editor/helpers/DPIHelper.h"
 #include "FrequencyPlotView.h"
 #include "FrequencyPlotScene.h"
 
@@ -37,6 +38,9 @@ vector<double> FrequencyPlotScene::bandsVar;
 FrequencyPlotScene::FrequencyPlotScene(QObject* parent)
 	: QGraphicsScene(parent)
 {
+	zoomX = DPIHelper::scaleZoom(1.0);
+	zoomY = DPIHelper::scaleZoom(1.0);
+
 	updateSceneRect();
 }
 
@@ -83,14 +87,17 @@ double FrequencyPlotScene::getZoomY() const
 
 void FrequencyPlotScene::setZoom(double zoomX, double zoomY)
 {
-	this->zoomX = zoomX;
-	this->zoomY = zoomY;
-	updateSceneRect();
-
-	for (QGraphicsItem* item : items())
+	if (zoomX != this->zoomX || zoomY != this->zoomY)
 	{
-		FrequencyPlotItem* plotItem = (FrequencyPlotItem*)item;
-		plotItem->updatePos();
+		this->zoomX = zoomX;
+		this->zoomY = zoomY;
+		updateSceneRect();
+
+		for (QGraphicsItem* item : items())
+		{
+			FrequencyPlotItem* plotItem = (FrequencyPlotItem*)item;
+			plotItem->updatePos();
+		}
 	}
 }
 

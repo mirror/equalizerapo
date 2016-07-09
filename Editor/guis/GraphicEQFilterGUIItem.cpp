@@ -19,6 +19,7 @@
 
 #include <QPainter>
 
+#include "Editor/helpers/DPIHelper.h"
 #include "GraphicEQFilterGUIScene.h"
 #include "GraphicEQFilterGUIItem.h"
 
@@ -33,7 +34,8 @@ GraphicEQFilterGUIItem::GraphicEQFilterGUIItem(int index, double hz, double db)
 
 QRectF GraphicEQFilterGUIItem::boundingRect() const
 {
-	return QRectF(-size / 2, -size / 2, size, size);
+	int s = DPIHelper::scale(size);
+	return QRectF(-s / 2, -s / 2, s, s);
 }
 
 QPainterPath GraphicEQFilterGUIItem::shape() const
@@ -55,7 +57,7 @@ void GraphicEQFilterGUIItem::paint(QPainter* painter, const QStyleOptionGraphics
 			painter->setPen(Qt::white);
 
 		QFont font;
-		font.setPixelSize(9);
+		font.setPixelSize(DPIHelper::scale(9));
 		font.setLetterSpacing(QFont::AbsoluteSpacing, -1);
 		QFontMetrics metrics(font);
 		painter->setFont(font);

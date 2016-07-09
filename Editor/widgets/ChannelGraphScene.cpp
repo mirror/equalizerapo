@@ -19,6 +19,7 @@
 
 #include <QGraphicsItem>
 
+#include "Editor/helpers/DPIHelper.h"
 #include "ChannelGraphScene.h"
 
 ChannelGraphScene::ChannelGraphScene(QWidget* parent)
@@ -32,8 +33,8 @@ QPointF ChannelGraphScene::getNextChannelPoint(QGraphicsItem* lastItem, bool out
 	if (lastItem != NULL)
 	{
 		QRectF lastRect = lastItem->sceneBoundingRect();
-		x = lastRect.left() + lastRect.width() + 1 + 10;
+		x = lastRect.left() + lastRect.width() + 1 + DPIHelper::scale(10);
 	}
 
-	return QPointF(x, output ? 50 : 0);
+	return QPointF(x, output ? DPIHelper::scale(50) : 0);
 }

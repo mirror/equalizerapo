@@ -17,14 +17,14 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+#include "Editor/helpers/DPIHelper.h"
 #include "CompactToolBar.h"
 
 CompactToolBar::CompactToolBar(QWidget* parent)
 	: QToolBar(parent)
 {
-	setMinimumHeight(1);
+	setMinimumHeight(DPIHelper::scale(33));
 	setOrientation(Qt::Vertical);
-	setIconSize(QSize(16, 16));
 }
 
 QSize CompactToolBar::sizeHint() const

@@ -203,7 +203,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Editor.qrc">
-          <normaloff>:/icons/16x16/list-remove-red.png</normaloff>:/icons/16x16/list-remove-red.png</iconset>
+          <normaloff>:/icons/list-remove-red.ico</normaloff>:/icons/list-remove-red.ico</iconset>
         </property>
        </widget>
       </item>
@@ -214,7 +214,7 @@
         </property>
         <property name="icon">
          <iconset resource="../Editor.qrc">
-          <normaloff>:/icons/16x16/list-add-green.png</normaloff>:/icons/16x16/list-add-green.png</iconset>
+          <normaloff>:/icons/list-add-green.ico</normaloff>:/icons/list-add-green.ico</iconset>
         </property>
        </widget>
       </item>

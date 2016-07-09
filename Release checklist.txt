@@ -4,4 +4,5 @@
 4. Upload EqualizerAPO32-x.exe, EqualizerAPO64-x.exe and EqualizerAPO-src-x.zip to new folder x
 5. Update readme.txt using subversion log
 6. Set EqualizerAPO64-x.exe as new default download
+7. Update URL for tool "Downloads" to https://sourceforge.net/projects/equalizerapo/files/x/
 7. Create tag of trunk in tags/x

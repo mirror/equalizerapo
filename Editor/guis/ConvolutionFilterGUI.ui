@@ -33,7 +33,7 @@
      </property>
      <property name="icon">
       <iconset resource="../Editor.qrc">
-       <normaloff>:/icons/16x16/document-open.png</normaloff>:/icons/16x16/document-open.png</iconset>
+       <normaloff>:/icons/document-open.ico</normaloff>:/icons/document-open.ico</iconset>
      </property>
     </widget>
    </item>

@@ -22,6 +22,7 @@
 #include <QPainter>
 #include <QScrollBar>
 
+#include "Editor/helpers/DPIHelper.h"
 #include "FilterTableRow.h"
 #include "ui_FilterTableRow.h"
 
@@ -30,6 +31,7 @@ FilterTableRow::FilterTableRow(FilterTable* table, int number, FilterTable::Item
 	ui(new Ui::FilterTableRow)
 {
 	ui->setupUi(this);
+	ui->labelNumber->setMinimumWidth(DPIHelper::scale(25));
 
 	this->table = table;
 	this->item = item;

@@ -91,7 +91,7 @@ void CopyFilterGUIForm::load(vector<Assignment> assignments)
 
 			QPushButton* addSummandButton = new QPushButton(this);
 			addSummandButton->setText(tr("Add summand"));
-			addSummandButton->setIcon(QIcon(":/icons/16x16/list-add-green.png"));
+			addSummandButton->setIcon(QIcon(":/icons/list-add-green.ico"));
 			gridLayout->addWidget(addSummandButton, row, 4);
 			connect(addSummandButton, SIGNAL(pressed()), this, SLOT(addSummand()));
 
@@ -100,7 +100,7 @@ void CopyFilterGUIForm::load(vector<Assignment> assignments)
 				removeButton->setText(tr("Remove assignment"));
 			else
 				removeButton->setText(tr("Remove summand"));
-			removeButton->setIcon(QIcon(":/icons/16x16/list-remove-red.png"));
+			removeButton->setIcon(QIcon(":/icons/list-remove-red.ico"));
 			gridLayout->addWidget(removeButton, row, 5);
 			connect(removeButton, SIGNAL(pressed()), this, SLOT(remove()));
 
@@ -113,7 +113,7 @@ void CopyFilterGUIForm::load(vector<Assignment> assignments)
 
 	QPushButton* addAssignmentButton = new QPushButton(this);
 	addAssignmentButton->setText(tr("Add assignment"));
-	addAssignmentButton->setIcon(QIcon(":/icons/16x16/list-add-green.png"));
+	addAssignmentButton->setIcon(QIcon(":/icons/list-add-green.ico"));
 	gridLayout->addWidget(addAssignmentButton, row++, 0, 1, 4);
 	connect(addAssignmentButton, SIGNAL(pressed()), this, SLOT(addAssignment()));
 }

@@ -20,6 +20,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 
+#include "Editor/helpers/DPIHelper.h"
 #include "ChannelGraphItem.h"
 
 static const float margin = 5;
@@ -43,8 +44,8 @@ QRectF ChannelGraphItem::boundingRect() const
 		// shift by 0.5 to have sharp lines
 		cachedRect.setLeft(0.5);
 		cachedRect.setTop(0.5);
-		cachedRect.setWidth(width + 2 * margin);
-		cachedRect.setHeight(height + 2 * margin);
+		cachedRect.setWidth(width + 2 * DPIHelper::scale(margin));
+		cachedRect.setHeight(height + 2 * DPIHelper::scale(margin));
 	}
 
 	return cachedRect;
@@ -62,6 +63,6 @@ void ChannelGraphItem::paint(QPainter* painter, QColor color)
 	gradient.setColorAt(0, QColor(255, 255, 255));
 	gradient.setColorAt(1, color);
 	painter->setBrush(gradient);
-	painter->drawRoundedRect(rect, margin, margin);
+	painter->drawRoundedRect(rect, DPIHelper::scale(margin), DPIHelper::scale(margin));
 	painter->drawText(rect.translated(1, -1), Qt::AlignCenter, name);
 }
