@@ -19,79 +19,79 @@
         <translation>Verstärkung:</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="38"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="44"/>
         <source>Peaking filter</source>
         <translation>Peaking-Filter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="39"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="45"/>
         <source>Low-pass filter</source>
         <translation>Tiefpassfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="40"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="46"/>
         <source>High-pass filter</source>
         <translation>Hochpassfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="41"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="47"/>
         <source>Band-pass filter</source>
         <translation>Bandpassfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="42"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="48"/>
         <source>Low-shelf filter</source>
         <translation>Low Shelf-Filter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="43"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="49"/>
         <source>High-shelf filter</source>
         <translation>High Shelf-Filter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="44"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="50"/>
         <source>Notch filter</source>
         <translation>Notchfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="45"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="51"/>
         <source>All-pass filter</source>
         <translation>Allpassfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="191"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="197"/>
         <source>Center frequency</source>
         <translation>Mittenfrequenz</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="193"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="199"/>
         <source>Corner frequency</source>
         <translation>Eckfrequenz</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="210"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="216"/>
         <source>Fixed Q</source>
         <translation>Festes Q</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="212"/>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="252"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="218"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="258"/>
         <source>Fixed S</source>
         <translation>Festes S</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="214"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="220"/>
         <source>Q factor</source>
         <translation>Q-Faktor</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="216"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="222"/>
         <source>Bandwidth</source>
         <translation>Bandbreite</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="218"/>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="253"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="224"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="259"/>
         <source>Slope</source>
         <translation>Steilheit</translation>
     </message>
@@ -469,7 +469,7 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
     <name>DelayFilterGUI</name>
     <message>
         <location filename="../guis/DelayFilterGUI.ui" line="32"/>
-        <location filename="../guis/DelayFilterGUI.cpp" line="53"/>
+        <location filename="../guis/DelayFilterGUI.cpp" line="55"/>
         <source> ms</source>
         <translation> ms</translation>
     </message>
@@ -489,7 +489,7 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation>Samples</translation>
     </message>
     <message>
-        <location filename="../guis/DelayFilterGUI.cpp" line="53"/>
+        <location filename="../guis/DelayFilterGUI.cpp" line="55"/>
         <source> samples</source>
         <translation> Samples</translation>
     </message>
@@ -592,37 +592,37 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation>Nur Geräte mit installiertem APO zeigen</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="37"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="39"/>
         <source>Connection</source>
         <translation>Anschluss</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="38"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="40"/>
         <source>Device</source>
         <translation>Gerät</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="39"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="41"/>
         <source>State</source>
         <translation>Status</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="41"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="43"/>
         <source>Playback devices</source>
         <translation>Wiedergabegeräte</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="43"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="45"/>
         <source>Capture devices</source>
         <translation>Aufnahmegeräte</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="53"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="55"/>
         <source>APO installed</source>
         <translation>APO installiert</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="55"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="57"/>
         <source>APO not installed</source>
         <translation>APO nicht installiert</translation>
     </message>
@@ -647,7 +647,7 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
 <context>
     <name>FilterTable</name>
     <message>
-        <location filename="../FilterTable.cpp" line="204"/>
+        <location filename="../FilterTable.cpp" line="205"/>
         <source>Add filter</source>
         <translation>Filter hinzufügen</translation>
     </message>
@@ -745,17 +745,17 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation>variabel</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="218"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="211"/>
         <source>Import</source>
         <translation>Importieren</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="227"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="220"/>
         <source>Export</source>
         <translation>Exportieren</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="236"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="229"/>
         <source>Invert response</source>
         <translation>Frequenzgang invertieren</translation>
     </message>
@@ -764,34 +764,34 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation type="vanished">Frequenzgang spiegeln</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="245"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="238"/>
         <source>Normalize response</source>
         <translation>Frequenzgang normalisieren</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.ui" line="254"/>
+        <location filename="../guis/GraphicEQFilterGUI.ui" line="247"/>
         <source>Reset response</source>
         <translation>Frequenzgang zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="295"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="304"/>
         <source>Import frequency response</source>
         <translation>Frequenzgang importieren</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="298"/>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="371"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="307"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="380"/>
         <source>Frequency response (*.csv)</source>
         <translation>Frequenzgang (*.csv)</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="299"/>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="372"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="308"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="381"/>
         <source>All files (*.*)</source>
         <translation>Alle Dateien (*.*)</translation>
     </message>
     <message>
-        <location filename="../guis/GraphicEQFilterGUI.cpp" line="367"/>
+        <location filename="../guis/GraphicEQFilterGUI.cpp" line="376"/>
         <source>Export frequency response</source>
         <translation>Frequenzgang exportieren</translation>
     </message>
@@ -824,29 +824,46 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
 <context>
     <name>IncludeFilterGUI</name>
     <message>
-        <location filename="../guis/IncludeFilterGUI.ui" line="32"/>
+        <location filename="../guis/IncludeFilterGUI.ui" line="70"/>
         <source>Include:</source>
         <translation>Einbinden:</translation>
     </message>
     <message>
-        <location filename="../guis/IncludeFilterGUI.ui" line="42"/>
+        <location filename="../guis/IncludeFilterGUI.ui" line="59"/>
         <source>Select file</source>
         <translation>Datei auswählen</translation>
     </message>
     <message>
-        <location filename="../guis/IncludeFilterGUI.ui" line="66"/>
+        <location filename="../guis/IncludeFilterGUI.ui" line="45"/>
         <source>Open file in editor</source>
         <translation>Datei im Editor öffnen</translation>
     </message>
     <message>
-        <location filename="../guis/IncludeFilterGUI.cpp" line="52"/>
+        <location filename="../guis/IncludeFilterGUI.cpp" line="55"/>
         <source>Include file</source>
         <translation>Datei einbinden</translation>
     </message>
     <message>
-        <location filename="../guis/IncludeFilterGUI.cpp" line="54"/>
+        <location filename="../guis/IncludeFilterGUI.cpp" line="57"/>
         <source>E-APO configurations (*.txt)</source>
         <translation>E-APO-Konfigurationen (*.txt)</translation>
+    </message>
+    <message>
+        <location filename="../guis/IncludeFilterGUI.cpp" line="100"/>
+        <source>No file selected</source>
+        <translation>Keine Datei gewählt</translation>
+    </message>
+    <message>
+        <location filename="../guis/IncludeFilterGUI.cpp" line="109"/>
+        <source>File not found</source>
+        <translation>Datei nicht gefunden</translation>
+    </message>
+    <message>
+        <location filename="../guis/IncludeFilterGUI.cpp" line="126"/>
+        <source>The file is not readable for the audio service.
+Change the file permissions or copy the file to the config directory.</source>
+        <translation>Die Datei ist für den Audiodienst nicht lesbar.
+Ändern Sie die Dateiberechtigungen oder kopieren Sie die Datei in das config-Verzeichnis.</translation>
     </message>
 </context>
 <context>
@@ -1053,32 +1070,32 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation>Alle dateispezifischen Einstellungen zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="73"/>
+        <location filename="../MainWindow.cpp" line="75"/>
         <source>Equalizer APO %0 Configuration Editor</source>
         <translation>Equalizer APO %0 Konfigurationseditor</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="79"/>
+        <location filename="../MainWindow.cpp" line="81"/>
         <source>Instant mode</source>
         <translation>Sofort-Modus</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="81"/>
+        <location filename="../MainWindow.cpp" line="83"/>
         <source>Changes are saved immediately</source>
         <translation>Änderungen werden sofort gespeichert</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="89"/>
+        <location filename="../MainWindow.cpp" line="91"/>
         <source>Device: </source>
         <translation>Gerät: </translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="99"/>
+        <location filename="../MainWindow.cpp" line="101"/>
         <source>Channel configuration: </source>
         <translation>Kanalkonfiguration: </translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="107"/>
+        <location filename="../MainWindow.cpp" line="109"/>
         <source>Default</source>
         <translation>Standard</translation>
     </message>
@@ -1091,17 +1108,17 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation type="vanished">Eingabegeräte:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="109"/>
+        <location filename="../MainWindow.cpp" line="111"/>
         <source>Playback devices:</source>
         <translation>Wiedergabegeräte:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="120"/>
+        <location filename="../MainWindow.cpp" line="122"/>
         <source>Capture devices:</source>
         <translation>Aufnahmegeräte:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="177"/>
+        <location filename="../MainWindow.cpp" line="179"/>
         <source>Registry problem</source>
         <translation>Registry-Problem</translation>
     </message>
@@ -1110,31 +1127,31 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation type="vanished">Ein Registrywert, der für den Betrieb von Equalizer APO erforderlich ist, ist nicht korrekt gesetzt. Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="177"/>
+        <location filename="../MainWindow.cpp" line="179"/>
         <source>A registry value that is required for the operation of Equalizer APO is not set correctly.
 Do you want to run the Configurator application to fix the problem?</source>
         <translation>Ein Registrywert, der für den Betrieb von Equalizer APO erforderlich ist, ist nicht korrekt gesetzt.
 Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="186"/>
+        <location filename="../MainWindow.cpp" line="188"/>
         <source>APO not installed to device</source>
         <translation>APO nicht für das Gerät installiert</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="186"/>
+        <location filename="../MainWindow.cpp" line="188"/>
         <source>Equalizer APO has not been installed to the selected device.
 Do you want to run the Configurator application to fix the problem?</source>
         <translation>Equalizer APO wurde nicht für das gewählte Gerät installiert.
 Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="217"/>
+        <location filename="../MainWindow.cpp" line="219"/>
         <source>Audio enhancements disabled</source>
         <translation>Signalverbesserungen deaktiviert</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="217"/>
+        <location filename="../MainWindow.cpp" line="219"/>
         <source>Audio enhancements are not enabled for the device
 %0 %1.
 Do you want to run the Configurator application to fix the problem?</source>
@@ -1143,35 +1160,35 @@ Do you want to run the Configurator application to fix the problem?</source>
 Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="262"/>
-        <location filename="../MainWindow.cpp" line="342"/>
-        <location filename="../MainWindow.cpp" line="356"/>
+        <location filename="../MainWindow.cpp" line="264"/>
+        <location filename="../MainWindow.cpp" line="344"/>
+        <location filename="../MainWindow.cpp" line="358"/>
         <source>Error</source>
         <translation>Fehler</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="262"/>
+        <location filename="../MainWindow.cpp" line="264"/>
         <source>Error while reading configuration file: %0</source>
         <translation>Fehler beim Lesen der Konfigurationsdatei: %0</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="342"/>
+        <location filename="../MainWindow.cpp" line="344"/>
         <source>Error while writing configuration file: %0</source>
         <translation>Fehler beim Schreiben der Konfigurationsdatei: %0</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="356"/>
+        <location filename="../MainWindow.cpp" line="358"/>
         <source>Only %0/%1 bytes have been written!</source>
         <translation>Nur %0/%1 Bytes wurden geschrieben!</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="424"/>
         <location filename="../MainWindow.cpp" line="426"/>
+        <location filename="../MainWindow.cpp" line="428"/>
         <source>From device</source>
         <translation>Von Gerät</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="702"/>
+        <location filename="../MainWindow.cpp" line="704"/>
         <source>%0 dB</source>
         <translation>%0 dB</translation>
     </message>
@@ -1180,7 +1197,7 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samp.)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="705"/>
+        <location filename="../MainWindow.cpp" line="707"/>
         <source>%0 ms (%1 s.)</source>
         <translation>%0 ms (%1 S.)</translation>
     </message>
@@ -1189,67 +1206,67 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samples)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="707"/>
+        <location filename="../MainWindow.cpp" line="709"/>
         <source>%0 ms</source>
         <translation>%0 ms</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="710"/>
+        <location filename="../MainWindow.cpp" line="712"/>
         <source>%0 % (one core)</source>
         <translation>%0 % (ein Kern)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="748"/>
-        <location filename="../MainWindow.cpp" line="775"/>
-        <location filename="../MainWindow.cpp" line="794"/>
+        <location filename="../MainWindow.cpp" line="750"/>
+        <location filename="../MainWindow.cpp" line="777"/>
+        <location filename="../MainWindow.cpp" line="796"/>
         <source>Restart required</source>
         <translation>Neustart erforderlich</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="748"/>
-        <location filename="../MainWindow.cpp" line="775"/>
-        <location filename="../MainWindow.cpp" line="794"/>
+        <location filename="../MainWindow.cpp" line="750"/>
+        <location filename="../MainWindow.cpp" line="777"/>
+        <location filename="../MainWindow.cpp" line="796"/>
         <source>Configuration Editor will be restarted to apply the changed settings. Proceed?</source>
         <translation>Konfigurationseditor wird neugestartet, um die geänderten Einstellungen zu übernehmen. Fortsetzen?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="854"/>
+        <location filename="../MainWindow.cpp" line="856"/>
         <source>Unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="855"/>
+        <location filename="../MainWindow.cpp" line="857"/>
         <source>The configuration file %0 has unsaved changes.</source>
         <translation>Die Konfigurationsdatei %0 hat ungespeicherte Änderungen.</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="856"/>
+        <location filename="../MainWindow.cpp" line="858"/>
         <source>Do you want to save the changes before closing the file?</source>
         <translation>Möchten Sie die Änderungen speichern, bevor die Datei geschlossen wird?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="527"/>
+        <location filename="../MainWindow.cpp" line="529"/>
         <source>Open file</source>
         <translation>Datei öffnen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="154"/>
+        <location filename="../MainWindow.cpp" line="156"/>
         <source>Automatic (%0)</source>
         <translation>Automatisch (%0)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="529"/>
-        <location filename="../MainWindow.cpp" line="582"/>
+        <location filename="../MainWindow.cpp" line="531"/>
+        <location filename="../MainWindow.cpp" line="584"/>
         <source>E-APO configurations (*.txt)</source>
         <translation>E-APO-Konfigurationen (*.txt)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="579"/>
+        <location filename="../MainWindow.cpp" line="581"/>
         <source>Save file as</source>
         <translation>Datei speichern unter</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="601"/>
+        <location filename="../MainWindow.cpp" line="603"/>
         <source>Unsaved</source>
         <translation>Ungespeichert</translation>
     </message>

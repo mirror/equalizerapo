@@ -27,9 +27,25 @@
 
 using namespace std;
 
+const int RECURSION_LIMIT = 100;
+
 void IncludeFilterFactory::initialize(FilterEngine* engine)
 {
 	this->engine = engine;
+}
+
+vector<IFilter*> IncludeFilterFactory::startOfConfiguration()
+{
+	recursionDepth = -1;
+
+	return vector<IFilter*>();
+}
+
+vector<IFilter*> IncludeFilterFactory::startOfFile(const wstring& configPath)
+{
+	recursionDepth++;
+
+	return vector<IFilter*>();
 }
 
 vector<IFilter*> IncludeFilterFactory::createFilter(const wstring& configPath, wstring& command, wstring& parameters)
@@ -56,9 +72,19 @@ vector<IFilter*> IncludeFilterFactory::createFilter(const wstring& configPath, w
 		else
 			includePath = value;
 
-		engine->loadConfigFile(includePath);
+		if (recursionDepth >= RECURSION_LIMIT)
+			LogF(L"Skipping include of %s as recursion limit of %d has been reached", value.c_str(), RECURSION_LIMIT);
+		else
+			engine->loadConfigFile(includePath);
 		command = L"";
 	}
+
+	return vector<IFilter*>();
+}
+
+std::vector<IFilter*> IncludeFilterFactory::endOfFile(const wstring& configPath)
+{
+	recursionDepth--;
 
 	return vector<IFilter*>();
 }

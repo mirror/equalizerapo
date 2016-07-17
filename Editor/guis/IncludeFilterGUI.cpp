@@ -19,6 +19,7 @@
 
 #include <QFileDialog>
 
+#include "helpers/RegistryHelper.h"
 #include "IncludeFilterGUI.h"
 #include "ui_IncludeFilterGUI.h"
 
@@ -28,6 +29,8 @@ IncludeFilterGUI::IncludeFilterGUI(FilterTable* filterTable, const QString& path
 	ui->setupUi(this);
 
 	ui->pathLineEdit->setText(path);
+
+	updateFileInfo();
 }
 
 IncludeFilterGUI::~IncludeFilterGUI()
@@ -61,6 +64,7 @@ void IncludeFilterGUI::on_selectFileToolButton_clicked()
 		if (relativePath.startsWith("../../"))
 			relativePath = absolutePath;
 		ui->pathLineEdit->setText(QDir::toNativeSeparators(relativePath));
+		updateFileInfo();
 
 		emit updateModel();
 	}
@@ -68,6 +72,8 @@ void IncludeFilterGUI::on_selectFileToolButton_clicked()
 
 void IncludeFilterGUI::on_pathLineEdit_editingFinished()
 {
+	updateFileInfo();
+
 	emit updateModel();
 }
 
@@ -82,4 +88,45 @@ void IncludeFilterGUI::on_openFileToolButton_clicked()
 
 		filterTable->openConfig(fileInfo.absoluteFilePath());
 	}
+}
+
+void IncludeFilterGUI::updateFileInfo()
+{
+	QString error = "";
+
+	QString path = ui->pathLineEdit->text();
+	if (path.length() == 0)
+	{
+		error = tr("No file selected");
+	}
+	else
+	{
+		QFileInfo fileInfo(filterTable->getConfigPath());
+		QDir configDir = fileInfo.absoluteDir();
+		fileInfo.setFile(configDir, path);
+		if (!fileInfo.exists())
+		{
+			error = tr("File not found");
+		}
+		else
+		{
+			path = QDir::toNativeSeparators(fileInfo.absoluteFilePath());
+
+			ACCESS_MASK mask = GENERIC_READ;
+			try
+			{
+				mask = RegistryHelper::getFileAccessForUser(path.toStdWString(), SECURITY_LOCAL_SERVICE_RID);
+			}
+			catch (RegistryException e)
+			{
+				// ignore
+			}
+
+			if ((mask & GENERIC_READ) != GENERIC_READ && (mask & FILE_GENERIC_READ) != FILE_GENERIC_READ)
+				error = tr("The file is not readable for the audio service.\nChange the file permissions or copy the file to the config directory.");
+		}
+	}
+
+	ui->errorLabel->setVisible(error.length() > 0);
+	ui->errorLabel->setText(error);
 }

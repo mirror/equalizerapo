@@ -42,6 +42,8 @@ private slots:
 	void on_openFileToolButton_clicked();
 
 private:
+	void updateFileInfo();
+
 	Ui::IncludeFilterGUI* ui;
 	FilterTable* filterTable;
 };
