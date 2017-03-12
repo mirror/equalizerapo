@@ -105,6 +105,8 @@
       <Filter>filters</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp" />
+    <ClCompile Include="AbstractAPOInfo.cpp" />
+    <ClCompile Include="VoicemeeterAPOInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClassFactory.h" />
@@ -216,6 +218,14 @@
       <Filter>filters</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="AbstractAPOInfo.h" />
+    <ClInclude Include="helpers\ScopeGuard.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\UncaughtExceptions.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="VoicemeeterAPOInfo.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="EqualizerAPO.rc" />

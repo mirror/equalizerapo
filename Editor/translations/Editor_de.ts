@@ -354,12 +354,12 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation type="vanished">Convolution (Faltung mit Impulsantwort)</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUIFactory.cpp" line="37"/>
+        <location filename="../guis/ConvolutionFilterGUIFactory.cpp" line="43"/>
         <source>Advanced filters</source>
         <translation>Fortgeschrittene Filter</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUIFactory.cpp" line="37"/>
+        <location filename="../guis/ConvolutionFilterGUIFactory.cpp" line="43"/>
         <source>Convolution (Convolution with impulse response)</source>
         <translation>Convolution (Faltung mit Impulsantwort)</translation>
     </message>
@@ -524,54 +524,63 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation>Ändern...</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="47"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="48"/>
         <source>Type</source>
         <translation>Typ</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="48"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="49"/>
         <source>Connection</source>
         <translation>Anschluss</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="49"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="50"/>
         <source>Device</source>
         <translation>Gerät</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="50"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="51"/>
         <source>State</source>
         <translation>Status</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="59"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="60"/>
         <source>All devices</source>
         <translation>Alle Geräte</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="77"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="87"/>
         <source>Capture</source>
         <translation>Aufnahme</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="79"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="89"/>
         <source>Playback</source>
         <translation>Wiedergabe</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="84"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="94"/>
         <source>APO installed</source>
         <translation>APO installiert</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="86"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="96"/>
         <source>APO not installed</source>
         <translation>APO nicht installiert</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUI.cpp" line="96"/>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="99"/>
+        <source>Voicemeeter was uninstalled</source>
+        <translation>Voicemeeter wurde deinstalliert</translation>
+    </message>
+    <message>
+        <location filename="../guis/DeviceFilterGUI.cpp" line="109"/>
+        <source>No device matched</source>
+        <translation>Kein Gerät passt zu</translation>
+    </message>
+    <message>
         <source>No device matched!</source>
-        <translation>Kein Gerät stimmt überein!</translation>
+        <translation type="vanished">Kein Gerät stimmt überein!</translation>
     </message>
 </context>
 <context>
@@ -592,39 +601,44 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation>Nur Geräte mit installiertem APO zeigen</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="39"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="40"/>
         <source>Connection</source>
         <translation>Anschluss</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="40"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="41"/>
         <source>Device</source>
         <translation>Gerät</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="41"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="42"/>
         <source>State</source>
         <translation>Status</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="43"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="44"/>
         <source>Playback devices</source>
         <translation>Wiedergabegeräte</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="45"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="46"/>
         <source>Capture devices</source>
         <translation>Aufnahmegeräte</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="55"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="56"/>
         <source>APO installed</source>
         <translation>APO installiert</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="57"/>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="58"/>
         <source>APO not installed</source>
         <translation>APO nicht installiert</translation>
+    </message>
+    <message>
+        <location filename="../guis/DeviceFilterGUIDialog.cpp" line="61"/>
+        <source>Voicemeeter was uninstalled</source>
+        <translation>Voicemeeter wurde deinstalliert</translation>
     </message>
 </context>
 <context>
@@ -634,12 +648,12 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
         <translation type="vanished">Device (Gerät auswählen)</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIFactory.cpp" line="37"/>
+        <location filename="../guis/DeviceFilterGUIFactory.cpp" line="39"/>
         <source>Control</source>
         <translation>Steuerung</translation>
     </message>
     <message>
-        <location filename="../guis/DeviceFilterGUIFactory.cpp" line="37"/>
+        <location filename="../guis/DeviceFilterGUIFactory.cpp" line="39"/>
         <source>Device (Select device)</source>
         <translation>Device (Gerät auswählen)</translation>
     </message>

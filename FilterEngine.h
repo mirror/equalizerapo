@@ -39,12 +39,13 @@ public:
 	~FilterEngine();
 
 	void setPreMix(bool preMix);
-	void setDeviceInfo(bool capture, bool postMixInstalled, const std::wstring& deviceName, const std::wstring& connectionName, const std::wstring& deviceGuid);
+	void setDeviceInfo(bool capture, bool postMixInstalled, const std::wstring& deviceName, const std::wstring& connectionName, const std::wstring& deviceGuid, const std::wstring& deviceString);
 	void initialize(float sampleRate, unsigned inputChannelCount, unsigned realChannelCount, unsigned outputChannelCount, unsigned channelMask, unsigned maxFrameCount, const std::wstring& customPath = L"");
 	void loadConfig(const std::wstring& customPath = L"");
 	void loadConfigFile(const std::wstring& path);
 	void watchRegistryKey(const std::wstring& key);
 	void process(float* output, float* input, unsigned frameCount);
+	void process(float** output, float** input, unsigned frameCount);
 
 	bool isPreMix() const {return preMix;}
 	bool isCapture() const {return capture;}
@@ -52,6 +53,7 @@ public:
 	std::wstring getDeviceName() const {return deviceName;}
 	std::wstring getConnectionName() const {return connectionName;}
 	std::wstring getDeviceGuid() const {return deviceGuid;}
+	std::wstring getDeviceString() const {return deviceString;}
 	unsigned getInputChannelCount() const {return inputChannelCount;}
 	unsigned getRealChannelCount() const {return realChannelCount;}
 	unsigned getOutputChannelCount() const {return outputChannelCount;}
@@ -73,6 +75,7 @@ private:
 	std::wstring deviceName;
 	std::wstring connectionName;
 	std::wstring deviceGuid;
+	std::wstring deviceString;
 	std::wstring configPath;
 	float sampleRate;
 	// number of input channels that originally existed before child APO processing

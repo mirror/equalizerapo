@@ -208,6 +208,12 @@
       <Filter>filters</Filter>
     </ClInclude>
     <ClInclude Include="..\stdafx.h" />
+    <ClInclude Include="..\helpers\ScopeGuard.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers\UncaughtExceptions.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="parser">

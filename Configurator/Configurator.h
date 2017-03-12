@@ -22,6 +22,7 @@
 #include "resource.h"
 #include <string>
 #include <vector>
+#include <memory>
 #include "DeviceAPOInfo.h"
 
 class Configurator
@@ -63,6 +64,6 @@ private:
 	void updateList(int listIndex, int itemIndex);
 	void updateButtons(int listIndex);
 
-	std::vector<DeviceAPOInfo> apoInfos[2];
+	std::vector<std::shared_ptr<AbstractAPOInfo> > apoInfos[2];
 	bool askForReboot = false;
 };

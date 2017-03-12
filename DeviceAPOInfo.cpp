@@ -23,6 +23,7 @@
 #include <shellapi.h>
 
 #include "DeviceAPOInfo.h"
+#include "VoicemeeterAPOInfo.h"
 
 #include "helpers/StringHelper.h"
 #include "helpers/RegistryHelper.h"
@@ -69,22 +70,26 @@ static const wchar_t* disableEnhancementsValueName = L"{1da5d803-d492-4edd-8c23-
 static const wchar_t* installVersion = L"2";
 static PROPERTYKEY guidPropertyKey = {{0x1da5d803, 0xd492, 0x4edd, 0x8c, 0x23, 0xe0, 0xc0, 0xff, 0xee, 0x7f, 0x0e}, 4};
 
-vector<DeviceAPOInfo> DeviceAPOInfo::loadAllInfos(bool input)
+vector<shared_ptr<AbstractAPOInfo> > DeviceAPOInfo::loadAllInfos(bool input)
 {
-	vector<DeviceAPOInfo> result;
+	vector<shared_ptr<AbstractAPOInfo> > result;
+
 	vector<wstring> deviceGuidStrings = RegistryHelper::enumSubKeys(input ? captureKeyPath : renderKeyPath);
 	wstring defaultDeviceGuid = getDefaultDevice(input);
 	for (vector<wstring>::iterator it = deviceGuidStrings.begin(); it != deviceGuidStrings.end(); it++)
 	{
 		wstring deviceGuidString = *it;
 
-		DeviceAPOInfo info;
-		if (info.load(deviceGuidString, defaultDeviceGuid))
+		shared_ptr<DeviceAPOInfo> info = make_shared<DeviceAPOInfo>();
+		if (info->load(deviceGuidString, defaultDeviceGuid))
 		{
-			info.selectedInstallState = info.currentInstallState;
-			result.push_back(info);
+			info->selectedInstallState = info->currentInstallState;
+			result.push_back(move(info));
 		}
 	}
+
+	if (!input)
+		VoicemeeterAPOInfo::prependInfos(result);
 
 	return result;
 }
@@ -170,12 +175,12 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid, wstring defaultDeviceGuid)
 	if (RegistryHelper::keyExists(renderKeyPath L"\\" + deviceGuid))
 	{
 		keyPath = renderKeyPath L"\\" + deviceGuid;
-		isInput = false;
+		input = false;
 	}
 	else
 	{
 		keyPath = captureKeyPath L"\\" + deviceGuid;
-		isInput = true;
+		input = true;
 	}
 
 	unsigned long deviceState = RegistryHelper::readDWORDValue(keyPath, L"DeviceState");
@@ -209,27 +214,27 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid, wstring defaultDeviceGuid)
 		channelMask = RegistryHelper::readDWORDValue(keyPath + L"\\Properties", channelMaskValueName);
 
 	if (defaultDeviceGuid == L"")
-		defaultDeviceGuid = getDefaultDevice(isInput);
+		defaultDeviceGuid = getDefaultDevice(input);
 
 	GUID guid1, guid2;
 	if (SUCCEEDED(CLSIDFromString(deviceGuid.c_str(), &guid1)) && SUCCEEDED(CLSIDFromString(defaultDeviceGuid.c_str(), &guid2)))
-		isDefaultDevice = (guid1 == guid2) != 0;
+		defaultDevice = (guid1 == guid2) != 0;
 	else
-		isDefaultDevice = false;
+		defaultDevice = false;
 
-	isEnhancementsDisabled = false;
+	enhancementsDisabled = false;
 	if (RegistryHelper::keyExists(keyPath + L"\\FxProperties") && RegistryHelper::valueExists(keyPath + L"\\FxProperties", disableEnhancementsValueName))
-		isEnhancementsDisabled = RegistryHelper::readDWORDValue(keyPath + L"\\FxProperties", disableEnhancementsValueName) != 0;
+		enhancementsDisabled = RegistryHelper::readDWORDValue(keyPath + L"\\FxProperties", disableEnhancementsValueName) != 0;
 
-	isInstalled = false;
+	installed = false;
 	currentInstallState.installMode = INSTALL_LFX_GFX;
 	version = L"0";
 	preMixChildGuid = L"";
 	postMixChildGuid = L"";
 	currentInstallState.installPreMix = true;
-	currentInstallState.installPostMix = !isInput;
+	currentInstallState.installPostMix = !input;
 	currentInstallState.useOriginalAPOPreMix = true;
-	currentInstallState.useOriginalAPOPostMix = !isInput;
+	currentInstallState.useOriginalAPOPostMix = !input;
 	currentInstallState.allowSilentBufferModification = false;
 
 	if (!RegistryHelper::keyExists(keyPath + L"\\FxProperties"))
@@ -271,7 +276,7 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid, wstring defaultDeviceGuid)
 
 		if (found)
 		{
-			isInstalled = true;
+			installed = true;
 
 			if (RegistryHelper::keyExists(childApoPath L"\\" + deviceGuid))
 			{
@@ -352,19 +357,19 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid, wstring defaultDeviceGuid)
 	return true;
 }
 
-bool DeviceAPOInfo::canBeUpgraded()
+bool DeviceAPOInfo::canBeUpgraded() const
 {
-	return isInstalled && version != installVersion;
+	return installed && version != installVersion;
 }
 
-bool DeviceAPOInfo::hasChanges()
+bool DeviceAPOInfo::hasChanges() const
 {
-	return isInstalled && selectedInstallState != currentInstallState;
+	return installed && selectedInstallState != currentInstallState;
 }
 
-bool DeviceAPOInfo::isExperimental()
+bool DeviceAPOInfo::isExperimental() const
 {
-	return !isInstalled && originalApoGuids[0] == APOGUID_NOKEY;
+	return !installed && originalApoGuids[0] == APOGUID_NOKEY;
 }
 
 wstring DeviceAPOInfo::getOriginalAPOPreMix()
@@ -438,7 +443,7 @@ void DeviceAPOInfo::install()
 	RegistryHelper::createKey(childApoPath L"\\" + deviceGuid);
 
 	wstring keyPath;
-	if (!isInput)
+	if (!input)
 		keyPath = renderKeyPath L"\\" + deviceGuid;
 	else
 		keyPath = captureKeyPath L"\\" + deviceGuid;
@@ -502,7 +507,7 @@ void DeviceAPOInfo::install()
 	{
 		if (selectedInstallState.installPreMix)
 			RegistryHelper::writeValue(keyPath + L"\\FxProperties", lfxGuidValueName, RegistryHelper::getGuidString(EQUALIZERAPO_PRE_MIX_GUID));
-		if (selectedInstallState.installPostMix && !isInput)
+		if (selectedInstallState.installPostMix && !input)
 			RegistryHelper::writeValue(keyPath + L"\\FxProperties", gfxGuidValueName, RegistryHelper::getGuidString(EQUALIZERAPO_POST_MIX_GUID));
 		if (RegistryHelper::valueExists(keyPath + L"\\FxProperties", sfxGuidValueName))
 			RegistryHelper::deleteValue(keyPath + L"\\FxProperties", sfxGuidValueName);
@@ -523,7 +528,7 @@ void DeviceAPOInfo::install()
 			if (!RegistryHelper::valueExists(keyPath + L"\\FxProperties", sfxProcessingModesValueName))
 				RegistryHelper::writeMultiValue(keyPath + L"\\FxProperties", sfxProcessingModesValueName, defaultProcessingModeValue);
 		}
-		if (selectedInstallState.installPostMix && !isInput)
+		if (selectedInstallState.installPostMix && !input)
 		{
 			RegistryHelper::writeValue(keyPath + L"\\FxProperties", mfxGuidValueName, RegistryHelper::getGuidString(EQUALIZERAPO_POST_MIX_GUID));
 			if (!RegistryHelper::valueExists(keyPath + L"\\FxProperties", mfxProcessingModesValueName))
@@ -544,7 +549,7 @@ void DeviceAPOInfo::install()
 				RegistryHelper::writeMultiValue(keyPath + L"\\FxProperties", sfxProcessingModesValueName, defaultProcessingModeValue);
 		}
 		// don't change mfx
-		if (selectedInstallState.installPostMix && !isInput)
+		if (selectedInstallState.installPostMix && !input)
 		{
 			RegistryHelper::writeValue(keyPath + L"\\FxProperties", efxGuidValueName, RegistryHelper::getGuidString(EQUALIZERAPO_POST_MIX_GUID));
 			if (!RegistryHelper::valueExists(keyPath + L"\\FxProperties", efxProcessingModesValueName))
@@ -560,7 +565,7 @@ void DeviceAPOInfo::install()
 void DeviceAPOInfo::uninstall()
 {
 	wstring keyPath;
-	if (!isInput)
+	if (!input)
 		keyPath = renderKeyPath L"\\" + deviceGuid;
 	else
 		keyPath = captureKeyPath L"\\" + deviceGuid;
@@ -593,4 +598,86 @@ void DeviceAPOInfo::uninstall()
 
 	if (RegistryHelper::keyEmpty(childApoPath))
 		RegistryHelper::deleteKey(childApoPath);
+}
+
+void DeviceAPOInfo::reinstall()
+{
+	uninstall();
+	load(deviceGuid);
+	install();
+}
+
+wstring DeviceAPOInfo::getConnectionName() const
+{
+	return connectionName;
+}
+
+wstring DeviceAPOInfo::getDeviceName() const
+{
+	return deviceName;
+}
+
+wstring DeviceAPOInfo::getDeviceGuid() const
+{
+	return deviceGuid;
+}
+
+wstring DeviceAPOInfo::getDeviceString() const
+{
+	return getConnectionName() + L" " + getDeviceName() + L" " + getDeviceGuid();
+}
+
+unsigned DeviceAPOInfo::getChannelCount() const
+{
+	return channelCount;
+}
+
+unsigned DeviceAPOInfo::getSampleRate() const
+{
+	return sampleRate;
+}
+
+unsigned long DeviceAPOInfo::getChannelMask() const
+{
+	return channelMask;
+}
+
+bool DeviceAPOInfo::isInput() const
+{
+	return input;
+}
+
+bool DeviceAPOInfo::isInstalled() const
+{
+	return installed;
+}
+
+bool DeviceAPOInfo::isEnhancementsDisabled() const
+{
+	return enhancementsDisabled;
+}
+
+bool DeviceAPOInfo::isDefaultDevice() const
+{
+	return defaultDevice;
+}
+
+const DeviceAPOInfo::InstallState& DeviceAPOInfo::getCurrentInstallState()
+{
+	return currentInstallState;
+}
+
+DeviceAPOInfo::InstallState& DeviceAPOInfo::getSelectedInstallState()
+{
+	return selectedInstallState;
+}
+
+wstring DeviceAPOInfo::getPreMixChildGuid()
+{
+	return preMixChildGuid;
+}
+
+wstring DeviceAPOInfo::getPostMixChildGuid()
+{
+	return postMixChildGuid;
 }

@@ -118,13 +118,14 @@ void FilterEngine::setPreMix(bool preMix)
 	this->preMix = preMix;
 }
 
-void FilterEngine::setDeviceInfo(bool capture, bool postMixInstalled, const wstring& deviceName, const wstring& connectionName, const wstring& deviceGuid)
+void FilterEngine::setDeviceInfo(bool capture, bool postMixInstalled, const wstring& deviceName, const wstring& connectionName, const wstring& deviceGuid, const wstring& deviceString)
 {
 	this->capture = capture;
 	this->postMixInstalled = postMixInstalled;
 	this->deviceName = deviceName;
 	this->connectionName = connectionName;
 	this->deviceGuid = deviceGuid;
+	this->deviceString = deviceString;
 }
 
 void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsigned realChannelCount, unsigned outputChannelCount, unsigned channelMask, unsigned maxFrameCount, const wstring& customPath)
@@ -268,7 +269,7 @@ void FilterEngine::loadConfigFile(const wstring& path)
 			DWORD error = GetLastError();
 			if (error != ERROR_SHARING_VIOLATION)
 			{
-				LogF(L"Error while reading configuration file: %s", StringHelper::getSystemErrorString(error).c_str());
+				LogF(L"Error while reading configuration file %s: %s", path.c_str(), StringHelper::getSystemErrorString(error).c_str());
 				return;
 			}
 
@@ -377,25 +378,53 @@ void FilterEngine::process(float* output, float* input, unsigned frameCount)
 		}
 	}
 
-	currentConfig->process(input, frameCount);
+	currentConfig->read(input, frameCount);
+	currentConfig->process(frameCount);
 
 	if (nextConfig != NULL)
 	{
-		nextConfig->process(input, frameCount);
-		float** currentSamples = currentConfig->getOutputSamples();
-		float** nextSamples = nextConfig->getOutputSamples();
+		nextConfig->read(input, frameCount);
+		nextConfig->process(frameCount);
+		transitionCounter = currentConfig->doTransition(nextConfig, frameCount, transitionCounter, transitionLength);
+	}
 
-		for (unsigned f = 0; f < frameCount; f++)
+	currentConfig->write(output, frameCount);
+
+	if (nextConfig != NULL && transitionCounter >= transitionLength)
+	{
+		previousConfig = currentConfig;
+		currentConfig = nextConfig;
+		nextConfig = NULL;
+		transitionCounter = 0;
+		ReleaseSemaphore(loadSemaphore, 1, NULL);
+	}
+}
+
+void FilterEngine::process(float** output, float** input, unsigned frameCount)
+{
+	if (currentConfig->isEmpty() && nextConfig == NULL)
+	{
+		// avoid double copying cost if no processing will happen anyway
+		if (realChannelCount == outputChannelCount)
 		{
-			float factor = 0.5f * (1.0f - cos(transitionCounter * (float)M_PI / transitionLength));
-			if (transitionCounter >= transitionLength)
-				factor = 1.0f;
+			if (input != output)
+			{
+				for (unsigned c = 0; c < realChannelCount; c++)
+					memcpy(output[c], input[c], frameCount * sizeof(float));
+			}
 
-			for (unsigned c = 0; c < outputChannelCount; c++)
-				currentSamples[c][f] = currentSamples[c][f] * (1 - factor) + nextSamples[c][f] * factor;
-
-			transitionCounter++;
+			return;
 		}
+	}
+
+	currentConfig->read(input, frameCount);
+	currentConfig->process(frameCount);
+
+	if (nextConfig != NULL)
+	{
+		nextConfig->read(input, frameCount);
+		nextConfig->process(frameCount);
+		transitionCounter = currentConfig->doTransition(nextConfig, frameCount, transitionCounter, transitionLength);
 	}
 
 	currentConfig->write(output, frameCount);

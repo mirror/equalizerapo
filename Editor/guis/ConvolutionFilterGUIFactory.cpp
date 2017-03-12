@@ -22,13 +22,19 @@
 #include "ConvolutionFilterGUI.h"
 #include "ConvolutionFilterGUIFactory.h"
 
+using namespace std;
+
 ConvolutionFilterGUIFactory::ConvolutionFilterGUIFactory()
 {
 }
 
 void ConvolutionFilterGUIFactory::initialize(FilterTable* filterTable)
 {
-	deviceSampleRate = filterTable->getSelectedDevice()->sampleRate;
+	shared_ptr<AbstractAPOInfo> selectedDevice = filterTable->getSelectedDevice();
+	if (selectedDevice != NULL)
+		deviceSampleRate = filterTable->getSelectedDevice()->getSampleRate();
+	else
+		deviceSampleRate = 0;
 }
 
 QList<FilterTemplate> ConvolutionFilterGUIFactory::createFilterTemplates()

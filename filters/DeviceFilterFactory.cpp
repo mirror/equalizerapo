@@ -30,7 +30,7 @@ using namespace std;
 #ifndef NO_FILTERENGINE
 void DeviceFilterFactory::initialize(FilterEngine* engine)
 {
-	deviceString = engine->getDeviceName() + L" " + engine->getConnectionName() + L" " + engine->getDeviceGuid();
+	deviceString = engine->getDeviceString();
 
 	mup::ParserX* parser = engine->getParser();
 	parser->DefineConst(L"deviceName", engine->getDeviceName());

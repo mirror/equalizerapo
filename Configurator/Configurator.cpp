@@ -25,6 +25,7 @@
 #include <ObjBase.h>
 #include "helpers/StringHelper.h"
 #include "helpers/RegistryHelper.h"
+#include "VoicemeeterAPOInfo.h"
 #include "Configurator.h"
 
 using namespace std;
@@ -176,26 +177,37 @@ void Configurator::onInitDialog(HWND hDlg)
 			wstring defaultDevice = StringHelper::toLowerCase(DeviceAPOInfo::getDefaultDevice(i == 1));
 
 			int itemCount = 0;
-			for (vector<DeviceAPOInfo>::iterator it = apoInfos[i].begin(); it != apoInfos[i].end(); it++)
+			for (shared_ptr<AbstractAPOInfo>& apoInfo : apoInfos[i])
 			{
-				wcsncpy_s(stringBuf, sizeof(stringBuf) / sizeof(wchar_t), it->connectionName.c_str(), _TRUNCATE);
+				wcsncpy_s(stringBuf, sizeof(stringBuf) / sizeof(wchar_t), apoInfo->getConnectionName().c_str(), _TRUNCATE);
 				item.iItem = itemCount;
 				item.lParam = itemCount;
 				ListView_InsertItem(deviceList, &item);
-				wcsncpy_s(stringBuf, sizeof(stringBuf) / sizeof(wchar_t), it->deviceName.c_str(), _TRUNCATE);
+				wcsncpy_s(stringBuf, sizeof(stringBuf) / sizeof(wchar_t), apoInfo->getDeviceName().c_str(), _TRUNCATE);
 				ListView_SetItemText(deviceList, itemCount, 1, stringBuf);
 
-				if (it->isInstalled)
+				VoicemeeterAPOInfo* voicemeeterInfo = dynamic_cast<VoicemeeterAPOInfo*>(apoInfo.get());
+				if (apoInfo->isInstalled())
 				{
-					ListView_SetCheckState(deviceList, itemCount, TRUE);
-					if (it->canBeUpgraded())
-						LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
-					else if (it->isEnhancementsDisabled)
-						LoadStringW(hInstance, IDS_ENHANCEMENTS_WILL_BE_ENABLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+					if (voicemeeterInfo != NULL && !voicemeeterInfo->isVoicemeeterInstalled())
+					{
+						ListView_SetCheckState(deviceList, itemCount, FALSE);
+						LoadStringW(hInstance, IDS_WILL_BE_UNINSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+					}
 					else
-						LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+					{
+						ListView_SetCheckState(deviceList, itemCount, TRUE);
+						if (apoInfo->canBeUpgraded())
+							LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+						else if (apoInfo->hasChanges())
+							LoadStringW(hInstance, IDS_WILL_BE_CHANGED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+						else if (apoInfo->isEnhancementsDisabled())
+							LoadStringW(hInstance, IDS_ENHANCEMENTS_WILL_BE_ENABLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+						else
+							LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+					}
 				}
-				else if (it->isExperimental())
+				else if (apoInfo->isExperimental())
 				{
 					LoadStringW(hInstance, IDS_CAN_BE_INSTALLED_EXPERIMENTAL, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 				}
@@ -204,7 +216,15 @@ void Configurator::onInitDialog(HWND hDlg)
 					LoadStringW(hInstance, IDS_CAN_BE_INSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 				}
 
-				if (it->isDefaultDevice)
+				if (voicemeeterInfo != NULL && !voicemeeterInfo->isVoicemeeterInstalled())
+				{
+					wstring statusText = stringBuf;
+					LoadStringW(hInstance, IDS_VOICEMEETER_WAS_UNINSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+					statusText = wstring(stringBuf) + L", " + statusText;
+
+					ListView_SetItemText(deviceList, itemCount, 2, const_cast<wchar_t*>(statusText.c_str()));
+				}
+				else if (apoInfo->isDefaultDevice())
 				{
 					wstring statusText = stringBuf;
 					LoadStringW(hInstance, IDS_DEFAULT_DEVICE, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
@@ -250,6 +270,8 @@ void Configurator::onLvnItemChanged(unsigned sourceId, LPNMLISTVIEW info)
 
 bool Configurator::onButtonClicked(unsigned sourceId)
 {
+	bool deviceUpdated = false;
+
 	switch (sourceId)
 	{
 	case IDOK:
@@ -268,16 +290,25 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 
 					try
 					{
-						DeviceAPOInfo info = apoInfos[index][item.lParam];
-						if (ListView_GetCheckState(deviceList, i) && !info.isInstalled)
-							info.install();
-						else if (!ListView_GetCheckState(deviceList, i) && info.isInstalled)
-							info.uninstall();
-						else if (ListView_GetCheckState(deviceList, i) && (info.canBeUpgraded() || info.hasChanges() || info.isEnhancementsDisabled))
+						shared_ptr<AbstractAPOInfo>& info = apoInfos[index][item.lParam];
+						DeviceAPOInfo* deviceInfo = dynamic_cast<DeviceAPOInfo*>(info.get());
+						if (ListView_GetCheckState(deviceList, i) && !info->isInstalled())
 						{
-							info.uninstall();
-							info.load(info.deviceGuid);
-							info.install();
+							info->install();
+							if (deviceInfo != NULL)
+								deviceUpdated = true;
+						}
+						else if (!ListView_GetCheckState(deviceList, i) && info->isInstalled())
+						{
+							info->uninstall();
+							if (deviceInfo != NULL)
+								deviceUpdated = true;
+						}
+						else if (ListView_GetCheckState(deviceList, i) && (info->canBeUpgraded() || info->hasChanges() || info->isEnhancementsDisabled()))
+						{
+							info->reinstall();
+							if (deviceInfo != NULL)
+								deviceUpdated = true;
 						}
 					}
 					catch (RegistryException e)
@@ -286,6 +317,8 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 					}
 				}
 			}
+
+			VoicemeeterAPOInfo::ensureVoicemeeterClientRunning();
 		}
 		break;
 	case IDC_COPY_DEVICE_COMMAND:
@@ -312,8 +345,8 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 					else
 						command += L"; ";
 
-					DeviceAPOInfo info = apoInfos[index][item.lParam];
-					command += StringHelper::replaceCharacters(info.deviceName + L" " + info.connectionName + L" " + info.deviceGuid, L";", L" ");
+					shared_ptr<AbstractAPOInfo>& info = apoInfos[index][item.lParam];
+					command += StringHelper::replaceCharacters(info->getDeviceString(), L";", L" ");
 				}
 			}
 
@@ -357,31 +390,34 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 
 				if (item.state & LVIS_SELECTED)
 				{
-					DeviceAPOInfo& info = apoInfos[index][item.lParam];
-
-					switch (sourceId)
+					shared_ptr<AbstractAPOInfo>& info = apoInfos[index][item.lParam];
+					DeviceAPOInfo* deviceInfo = dynamic_cast<DeviceAPOInfo*>(info.get());
+					if (deviceInfo != NULL)
 					{
-					case IDC_INSTALL_PRE_MIX:
-						info.selectedInstallState.installPreMix = Button_GetCheck(installPreMix) == BST_CHECKED;
-						break;
-					case IDC_INSTALL_POST_MIX:
-						info.selectedInstallState.installPostMix = Button_GetCheck(installPostMix) == BST_CHECKED;
-						break;
-					case IDC_USE_ORIGINAL_APO_PRE_MIX:
-						info.selectedInstallState.useOriginalAPOPreMix = Button_GetCheck(useOriginalAPOPreMix) == BST_CHECKED;
-						break;
-					case IDC_USE_ORIGINAL_APO_POST_MIX:
-						info.selectedInstallState.useOriginalAPOPostMix = Button_GetCheck(useOriginalAPOPostMix) == BST_CHECKED;
-						break;
-					case IDC_INSTALL_MODE_COMBOBOX:
-						info.selectedInstallState.installMode = (DeviceAPOInfo::InstallMode)ComboBox_GetCurSel(installModeComboBox);
-						break;
-					case IDC_ALLOW_SILENT_BUFFER:
-						info.selectedInstallState.allowSilentBufferModification = Button_GetCheck(allowSilentBuffer) == BST_CHECKED;
-						break;
-					}
+						switch (sourceId)
+						{
+						case IDC_INSTALL_PRE_MIX:
+							deviceInfo->getSelectedInstallState().installPreMix = Button_GetCheck(installPreMix) == BST_CHECKED;
+							break;
+						case IDC_INSTALL_POST_MIX:
+							deviceInfo->getSelectedInstallState().installPostMix = Button_GetCheck(installPostMix) == BST_CHECKED;
+							break;
+						case IDC_USE_ORIGINAL_APO_PRE_MIX:
+							deviceInfo->getSelectedInstallState().useOriginalAPOPreMix = Button_GetCheck(useOriginalAPOPreMix) == BST_CHECKED;
+							break;
+						case IDC_USE_ORIGINAL_APO_POST_MIX:
+							deviceInfo->getSelectedInstallState().useOriginalAPOPostMix = Button_GetCheck(useOriginalAPOPostMix) == BST_CHECKED;
+							break;
+						case IDC_INSTALL_MODE_COMBOBOX:
+							deviceInfo->getSelectedInstallState().installMode = (DeviceAPOInfo::InstallMode)ComboBox_GetCurSel(installModeComboBox);
+							break;
+						case IDC_ALLOW_SILENT_BUFFER:
+							deviceInfo->getSelectedInstallState().allowSilentBufferModification = Button_GetCheck(allowSilentBuffer) == BST_CHECKED;
+							break;
+						}
 
-					updateList(index, i);
+						updateList(index, i);
+					}
 				}
 			}
 
@@ -408,7 +444,7 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 			LoadStringW(hInstance, IDS_AFTERINSTALL, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 			MessageBoxW(hDlg, stringBuf, L"Info", MB_ICONINFORMATION | MB_OK);
 		}
-		else if (sourceId == IDOK && RegistryHelper::isWindowsVersionAtLeast(6, 3) // Windows 8.1
+		else if (sourceId == IDOK && deviceUpdated && RegistryHelper::isWindowsVersionAtLeast(6, 3) // Windows 8.1
 			|| askForReboot)
 		{
 			wchar_t captionBuf[255];
@@ -470,7 +506,6 @@ bool Configurator::isAnySelected()
 			item.iSubItem = 0;
 			item.mask = LVIF_PARAM;
 			ListView_GetItem(deviceList, &item);
-			DeviceAPOInfo apoInfo = apoInfos[index][item.lParam];
 			if (ListView_GetCheckState(deviceList, i) != 0)
 			{
 				anySelected = true;
@@ -497,9 +532,9 @@ bool Configurator::isChanged()
 			item.iSubItem = 0;
 			item.mask = LVIF_PARAM;
 			ListView_GetItem(deviceList, &item);
-			DeviceAPOInfo apoInfo = apoInfos[index][item.lParam];
-			if ((ListView_GetCheckState(deviceList, i) != 0) != apoInfo.isInstalled
-				|| ListView_GetCheckState(deviceList, i) && apoInfo.isInstalled && (apoInfo.canBeUpgraded() || apoInfo.hasChanges() || apoInfo.isEnhancementsDisabled))
+			shared_ptr<AbstractAPOInfo>& apoInfo = apoInfos[index][item.lParam];
+			if ((ListView_GetCheckState(deviceList, i) != 0) != apoInfo->isInstalled()
+				|| ListView_GetCheckState(deviceList, i) && apoInfo->isInstalled() && (apoInfo->canBeUpgraded() || apoInfo->hasChanges() || apoInfo->isEnhancementsDisabled()))
 			{
 				changed = true;
 				break;
@@ -525,8 +560,8 @@ bool Configurator::hasUpgrades()
 			item.iSubItem = 0;
 			item.mask = LVIF_PARAM;
 			ListView_GetItem(deviceList, &item);
-			DeviceAPOInfo apoInfo = apoInfos[index][item.lParam];
-			if (ListView_GetCheckState(deviceList, i) && apoInfo.isInstalled && (apoInfo.canBeUpgraded() || apoInfo.isEnhancementsDisabled))
+			shared_ptr<AbstractAPOInfo>& apoInfo = apoInfos[index][item.lParam];
+			if (ListView_GetCheckState(deviceList, i) && apoInfo->isInstalled() && (apoInfo->canBeUpgraded() || apoInfo->isEnhancementsDisabled()))
 			{
 				hasUpgrades = true;
 				break;
@@ -586,27 +621,36 @@ void Configurator::updateList(int listIndex, int itemIndex)
 
 	if (apoInfos[listIndex].size() == itemCount)
 	{
-		DeviceAPOInfo apoInfo = apoInfos[listIndex][itemIndex];
+		shared_ptr<AbstractAPOInfo>& apoInfo = apoInfos[listIndex][itemIndex];
 		bool checked = ListView_GetCheckState(deviceList, itemIndex) != 0;
 		wchar_t stringBuf[255];
-		if (checked && !apoInfo.isInstalled)
+		if (checked && !apoInfo->isInstalled())
 			LoadStringW(hInstance, IDS_WILL_BE_INSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
-		else if (!checked && apoInfo.isInstalled)
+		else if (!checked && apoInfo->isInstalled())
 			LoadStringW(hInstance, IDS_WILL_BE_UNINSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
-		else if (apoInfo.isInstalled && apoInfo.canBeUpgraded())
+		else if (apoInfo->isInstalled() && apoInfo->canBeUpgraded())
 			LoadStringW(hInstance, IDS_WILL_BE_UPGRADED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
-		else if (apoInfo.isInstalled && apoInfo.hasChanges())
+		else if (apoInfo->isInstalled() && apoInfo->hasChanges())
 			LoadStringW(hInstance, IDS_WILL_BE_CHANGED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
-		else if (apoInfo.isInstalled && apoInfo.isEnhancementsDisabled)
+		else if (apoInfo->isInstalled() && apoInfo->isEnhancementsDisabled())
 			LoadStringW(hInstance, IDS_ENHANCEMENTS_WILL_BE_ENABLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
-		else if (apoInfo.isInstalled)
+		else if (apoInfo->isInstalled())
 			LoadStringW(hInstance, IDS_ALREADY_INSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
-		else if (apoInfo.isExperimental())
+		else if (apoInfo->isExperimental())
 			LoadStringW(hInstance, IDS_CAN_BE_INSTALLED_EXPERIMENTAL, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 		else
 			LoadStringW(hInstance, IDS_CAN_BE_INSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 
-		if (apoInfo.isDefaultDevice)
+		VoicemeeterAPOInfo* voicemeeterInfo = dynamic_cast<VoicemeeterAPOInfo*>(apoInfo.get());
+		if (voicemeeterInfo != NULL && !voicemeeterInfo->isVoicemeeterInstalled())
+		{
+			wstring statusText = stringBuf;
+			LoadStringW(hInstance, IDS_VOICEMEETER_WAS_UNINSTALLED, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+			statusText = wstring(stringBuf) + L", " + statusText;
+
+			ListView_SetItemText(deviceList, itemCount, 2, const_cast<wchar_t*>(statusText.c_str()));
+		}
+		else if (apoInfo->isDefaultDevice())
 		{
 			wstring statusText = stringBuf;
 			LoadStringW(hInstance, IDS_DEFAULT_DEVICE, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
@@ -658,11 +702,15 @@ void Configurator::updateButtons(int listIndex)
 		{
 			enable = ListView_GetCheckState(deviceList, selectedIndex) != 0;
 
-			DeviceAPOInfo apoInfo = apoInfos[listIndex][selectedIndex];
-			isInput = apoInfo.isInput;
-			hasOriginalAPOPreMix = apoInfo.getOriginalAPOPreMix() != L"";
-			hasOriginalAPOPostMix = apoInfo.getOriginalAPOPostMix() != L"";
-			installState = apoInfo.selectedInstallState;
+			shared_ptr<AbstractAPOInfo>& apoInfo = apoInfos[listIndex][selectedIndex];
+			DeviceAPOInfo* deviceApoInfo = dynamic_cast<DeviceAPOInfo*>(apoInfo.get());
+			if (deviceApoInfo != NULL)
+			{
+				isInput = deviceApoInfo->isInput();
+				hasOriginalAPOPreMix = deviceApoInfo->getOriginalAPOPreMix() != L"";
+				hasOriginalAPOPostMix = deviceApoInfo->getOriginalAPOPostMix() != L"";
+				installState = deviceApoInfo->getSelectedInstallState();
+			}
 		}
 	}
 
@@ -709,14 +757,14 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 	{
 		for (int index = 0; index <= 1; index++)
 		{
-			vector<DeviceAPOInfo> apoInfos = DeviceAPOInfo::loadAllInfos(index == 1);
+			vector<shared_ptr<AbstractAPOInfo> > apoInfos = DeviceAPOInfo::loadAllInfos(index == 1);
 
-			for (vector<DeviceAPOInfo>::iterator it = apoInfos.begin(); it != apoInfos.end(); it++)
+			for (shared_ptr<AbstractAPOInfo>& apoInfo : apoInfos)
 			{
 				try
 				{
-					if (it->isInstalled)
-						it->uninstall();
+					if (apoInfo->isInstalled())
+						apoInfo->uninstall();
 				}
 				catch (RegistryException e)
 				{
@@ -725,6 +773,8 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 				}
 			}
 		}
+
+		VoicemeeterAPOInfo::ensureVoicemeeterClientRunning();
 	}
 	else
 	{

@@ -12,10 +12,12 @@
     <ClCompile Include="..\helpers\RegistryHelper.cpp">
       <Filter>helpers</Filter>
     </ClCompile>
+    <ClCompile Include="..\stdafx.cpp" />
     <ClCompile Include="..\helpers\StringHelper.cpp">
       <Filter>helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\stdafx.cpp" />
+    <ClCompile Include="..\AbstractAPOInfo.cpp" />
+    <ClCompile Include="..\VoicemeeterAPOInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\DeviceAPOInfo.h" />
@@ -33,10 +35,18 @@
     <ClInclude Include="..\helpers\RegistryHelper.h">
       <Filter>helpers</Filter>
     </ClInclude>
+    <ClInclude Include="..\stdafx.h" />
     <ClInclude Include="..\helpers\StringHelper.h">
       <Filter>helpers</Filter>
     </ClInclude>
-    <ClInclude Include="..\stdafx.h" />
+    <ClInclude Include="..\AbstractAPOInfo.h" />
+    <ClInclude Include="..\VoicemeeterAPOInfo.h" />
+    <ClInclude Include="..\helpers\ScopeGuard.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers\UncaughtExceptions.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Configurator.rc" />

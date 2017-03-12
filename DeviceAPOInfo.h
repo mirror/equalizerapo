@@ -21,12 +21,14 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+#include "AbstractAPOInfo.h"
 
 #define APOGUID_NULL L"{00000000-0000-0000-0000-000000000000}"
 #define APOGUID_NOKEY L"!KEY"
 #define APOGUID_NOVALUE L"!VALUE"
 
-class DeviceAPOInfo
+class DeviceAPOInfo : public AbstractAPOInfo
 {
 public:
 	enum InstallMode
@@ -55,33 +57,50 @@ public:
 			allowSilentBufferModification = false;
 		}
 
-		bool operator!=(InstallState& other)
+		bool operator!=(const InstallState& other) const
 		{
 			return memcmp(this, &other, sizeof(InstallState)) != 0;
 		}
 	};
 
-	static std::vector<DeviceAPOInfo> loadAllInfos(bool input);
+	static std::vector<std::shared_ptr<AbstractAPOInfo> > loadAllInfos(bool input);
 	static std::wstring getDefaultDevice(bool input, int role = 1);
 	static bool checkProtectedAudioDG(bool fix);
 	static bool checkAPORegistration(bool fix);
 	bool load(const std::wstring& deviceGuid, std::wstring defaultDeviceGuid = L"");
-	bool canBeUpgraded();
-	bool hasChanges();
-	bool isExperimental();
+	bool canBeUpgraded() const override;
+	bool hasChanges() const override;
+	bool isExperimental() const override;
 	std::wstring getOriginalAPOPreMix();
 	std::wstring getOriginalAPOPostMix();
-	void install();
-	void uninstall();
+	void install() override;
+	void uninstall() override;
+	void reinstall() override;
+	std::wstring getConnectionName() const override;
+	std::wstring getDeviceName() const override;
+	std::wstring getDeviceGuid() const override;
+	std::wstring getDeviceString() const override;
+	unsigned getChannelCount() const override;
+	unsigned getSampleRate() const override;
+	unsigned long getChannelMask() const override;
+	bool isInput() const override;
+	bool isInstalled() const override;
+	bool isEnhancementsDisabled() const override;
+	bool isDefaultDevice() const override;
+	const InstallState& getCurrentInstallState();
+	InstallState& getSelectedInstallState();
+	std::wstring getPreMixChildGuid();
+	std::wstring getPostMixChildGuid();
 
+private:
 	std::wstring deviceName;
 	std::wstring connectionName;
 	std::wstring deviceGuid;
 	unsigned channelCount;
 	unsigned sampleRate;
 	unsigned long channelMask;
-	bool isDefaultDevice;
-	bool isEnhancementsDisabled;
+	bool defaultDevice;
+	bool enhancementsDisabled;
 
 	// used for creating child APO
 	std::wstring preMixChildGuid;
@@ -90,8 +109,8 @@ public:
 	// used for uninstallation
 	std::wstring originalApoGuids[5];
 
-	bool isInput;
-	bool isInstalled;
+	bool input;
+	bool installed;
 	std::wstring version;
 	InstallState currentInstallState;
 	// selection in GUI

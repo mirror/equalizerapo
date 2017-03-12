@@ -19,17 +19,22 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\AbstractAPOInfo.h" />
     <ClInclude Include="..\DeviceAPOInfo.h" />
     <ClInclude Include="..\helpers\LogHelper.h" />
     <ClInclude Include="..\helpers\MemoryHelper.h" />
     <ClInclude Include="..\helpers\PrecisionTimer.h" />
     <ClInclude Include="..\helpers\RegistryHelper.h" />
+    <ClInclude Include="..\helpers\ScopeGuard.h" />
     <ClInclude Include="..\helpers\StringHelper.h" />
+    <ClInclude Include="..\helpers\UncaughtExceptions.h" />
     <ClInclude Include="..\stdafx.h" />
+    <ClInclude Include="..\VoicemeeterAPOInfo.h" />
     <ClInclude Include="Configurator.h" />
     <ClInclude Include="Resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\AbstractAPOInfo.cpp" />
     <ClCompile Include="..\DeviceAPOInfo.cpp" />
     <ClCompile Include="..\helpers\LogHelper.cpp" />
     <ClCompile Include="..\helpers\MemoryHelper.cpp" />
@@ -41,6 +46,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="..\VoicemeeterAPOInfo.cpp" />
     <ClCompile Include="Configurator.cpp" />
   </ItemGroup>
   <ItemGroup>

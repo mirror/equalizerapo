@@ -162,6 +162,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AbstractAPOInfo.h" />
     <ClInclude Include="ClassFactory.h" />
     <ClInclude Include="DeviceAPOInfo.h" />
     <ClInclude Include="EqualizerAPO.h" />
@@ -195,7 +196,9 @@
     <ClInclude Include="helpers\MemoryHelper.h" />
     <ClInclude Include="helpers\PrecisionTimer.h" />
     <ClInclude Include="helpers\RegistryHelper.h" />
+    <ClInclude Include="helpers\ScopeGuard.h" />
     <ClInclude Include="helpers\StringHelper.h" />
+    <ClInclude Include="helpers\UncaughtExceptions.h" />
     <ClInclude Include="IFilter.h" />
     <ClInclude Include="IFilterFactory.h" />
     <ClInclude Include="libHybridConv-0.1.1\libHybridConv_eapo.h" />
@@ -205,8 +208,10 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="version.h" />
+    <ClInclude Include="VoicemeeterAPOInfo.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AbstractAPOInfo.cpp" />
     <ClCompile Include="ClassFactory.cpp" />
     <ClCompile Include="DeviceAPOInfo.cpp" />
     <ClCompile Include="DllMain.cpp" />
@@ -252,6 +257,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="VoicemeeterAPOInfo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="EqualizerAPO.def" />

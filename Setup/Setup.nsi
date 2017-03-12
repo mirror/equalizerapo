@@ -115,10 +115,12 @@ Section "Install" SecInstall
   !insertmacro RenameAndDelete "$INSTDIR\msvcr100.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcp120.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcr120.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\VoicemeeterClient.exe"
     
   File "${BINPATH}\EqualizerAPO.dll"
   File "${BINPATH}\Configurator.exe"
   File "${BINPATH}\Benchmark.exe"
+  File "${BINPATH}\VoicemeeterClient.exe"
   
   File "${BINPATH_EDITOR}\Editor.exe"
   
@@ -227,6 +229,7 @@ Section "-un.Uninstall"
   
   Delete "$INSTDIR\Editor.exe"
   
+  Delete "$INSTDIR\VoicemeeterClient.exe"
   Delete "$INSTDIR\Benchmark.exe"
   Delete "$INSTDIR\Configurator.exe"
   Delete /REBOOTOK "$INSTDIR\EqualizerAPO.dll"

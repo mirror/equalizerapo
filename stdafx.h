@@ -17,3 +17,4 @@
 #include <Shlwapi.h>
 #include <Ks.h>
 #include <KsMedia.h>
+#include "helpers/ScopeGuard.h"

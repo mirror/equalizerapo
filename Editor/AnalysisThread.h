@@ -32,7 +32,7 @@ class AnalysisThread : public QThread
 public:
 	AnalysisThread();
 	~AnalysisThread();
-	void setParameters(DeviceAPOInfo* device, int channelMask, int channelIndex, QString configPath, int frameCount);
+	void setParameters(std::shared_ptr<AbstractAPOInfo> device, int channelMask, int channelIndex, QString configPath, int frameCount);
 	void beginGetResult();
 	void endGetResult();
 
@@ -57,7 +57,7 @@ private:
 	bool quit = false;
 
 	// input
-	DeviceAPOInfo device;
+	std::shared_ptr<AbstractAPOInfo> device;
 	int channelMask;
 	int channelIndex;
 	QString configPath;

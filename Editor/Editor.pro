@@ -114,7 +114,9 @@ SOURCES += main.cpp\
 	widgets/ExponentialSpinBox.cpp \
 	FilterTableMimeData.cpp \
 	helpers/DPIHelper.cpp \
-	CustomStyle.cpp
+	CustomStyle.cpp \
+	../AbstractAPOInfo.cpp \
+	../VoicemeeterAPOInfo.cpp
 
 HEADERS  += \
 	../helpers/LogHelper.h \
@@ -217,7 +219,9 @@ HEADERS  += \
 	widgets/ExponentialSpinBox.h \
 	FilterTableMimeData.h \
 	helpers/DPIHelper.h \
-	CustomStyle.h
+	CustomStyle.h \
+	../AbstractAPOInfo.h \
+	../VoicemeeterAPOInfo.h
 
 FORMS    += \
 	guis/PreampFilterGUI.ui \
@@ -238,7 +242,7 @@ FORMS    += \
 	guis/StageFilterGUI.ui
 
 INCLUDEPATH += $$PWD/.. "C:/Program Files/libsndfile/include" "C:/Program Files/fftw3" "C:/Program Files/muparserx_v3_0_1/parser"
-LIBS += advapi32.lib version.lib ole32.lib Shlwapi.lib authz.lib libsndfile-1.lib libfftw3f-3.lib
+LIBS += user32.lib advapi32.lib version.lib ole32.lib Shlwapi.lib authz.lib libsndfile-1.lib libfftw3f-3.lib
 
 build_pass:CONFIG(debug, debug|release) {
 	LIBS += muparserxd.lib
@@ -256,6 +260,6 @@ RESOURCES += \
 	Editor.qrc
 TRANSLATIONS += translations/Editor_de.ts
 
-RC_ICONS = icons/accessories-text-editor.ico
+RC_FILE = Editor.rc
 
 DISTFILES += ../uncrustify.cfg

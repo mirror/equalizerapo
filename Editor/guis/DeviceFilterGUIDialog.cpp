@@ -22,6 +22,7 @@
 #include "ui_DeviceFilterGUIDialog.h"
 
 #include <filters/DeviceFilterFactory.h>
+#include <VoicemeeterAPOInfo.h>
 
 using namespace std;
 
@@ -44,26 +45,28 @@ DeviceFilterGUIDialog::DeviceFilterGUIDialog(DeviceFilterGUI* gui, DeviceFilterG
 	outputNode->setExpanded(true);
 	QTreeWidgetItem* inputNode = new QTreeWidgetItem(ui->treeWidget, QStringList(tr("Capture devices")));
 	inputNode->setExpanded(true);
-	const QList<DeviceAPOInfo>& devices = factory->getDevices();
-	for (const DeviceAPOInfo& apoInfo : devices)
+	const QList<shared_ptr<AbstractAPOInfo> >& devices = factory->getDevices();
+	for (const shared_ptr<AbstractAPOInfo>& apoInfo : devices)
 	{
 		QStringList values;
-		values.append(QString::fromStdWString(apoInfo.connectionName));
-		values.append(QString::fromStdWString(apoInfo.deviceName));
+		values.append(QString::fromStdWString(apoInfo->getConnectionName()));
+		values.append(QString::fromStdWString(apoInfo->getDeviceName()));
 		QString state;
-		if (apoInfo.isInstalled)
+		if (apoInfo->isInstalled())
 			state = tr("APO installed");
 		else
 			state = tr("APO not installed");
+		VoicemeeterAPOInfo* voicemeeterInfo = dynamic_cast<VoicemeeterAPOInfo*>(apoInfo.get());
+		if (voicemeeterInfo != NULL && !voicemeeterInfo->isVoicemeeterInstalled())
+			state += ", " + tr("Voicemeeter was uninstalled");
 		values.append(state);
-		QTreeWidgetItem* item = new QTreeWidgetItem(apoInfo.isInput ? inputNode : outputNode, values);
+		QTreeWidgetItem* item = new QTreeWidgetItem(apoInfo->isInput() ? inputNode : outputNode, values);
 
-		wstring deviceString = apoInfo.connectionName + L" " + apoInfo.deviceName + L" " + apoInfo.deviceGuid;
-		bool matches = !all && DeviceFilterFactory::matchDevice(deviceString, pattern.toStdWString());
+		bool matches = !all && DeviceFilterFactory::matchDevice(apoInfo->getDeviceString(), pattern.toStdWString());
 		item->setCheckState(0, matches ? Qt::Checked : Qt::Unchecked);
-		item->setData(0, Qt::UserRole, QVariant::fromValue(&apoInfo));
-		item->setHidden(!matches && !apoInfo.isInstalled && ui->showOnlyInstalledCheckBox->isChecked());
-		if (!apoInfo.isInstalled)
+		item->setData(0, Qt::UserRole, QVariant::fromValue(apoInfo));
+		item->setHidden(!matches && !apoInfo->isInstalled() && ui->showOnlyInstalledCheckBox->isChecked());
+		if (!apoInfo->isInstalled())
 			for (int i = 0; i < ui->treeWidget->columnCount(); i++)
 				item->setForeground(i, QBrush(Qt::gray));
 	}
@@ -96,9 +99,8 @@ QString DeviceFilterGUIDialog::getPattern()
 				{
 					if (pattern != "")
 						pattern += "; ";
-					const DeviceAPOInfo* apoInfo = item->data(0, Qt::UserRole).value<const DeviceAPOInfo*>();
-					wstring deviceString = apoInfo->connectionName + L" " + apoInfo->deviceName + L" " + apoInfo->deviceGuid;
-					pattern += QString::fromStdWString(deviceString);
+					shared_ptr<AbstractAPOInfo> apoInfo = item->data(0, Qt::UserRole).value<shared_ptr<AbstractAPOInfo> >();
+					pattern += QString::fromStdWString(apoInfo->getDeviceString());
 				}
 			}
 		}
@@ -120,8 +122,8 @@ void DeviceFilterGUIDialog::on_showOnlyInstalledCheckBox_toggled(bool checked)
 		for (int j = 0; j < groupItem->childCount(); j++)
 		{
 			QTreeWidgetItem* item = groupItem->child(j);
-			const DeviceAPOInfo* apoInfo = item->data(0, Qt::UserRole).value<const DeviceAPOInfo*>();
-			item->setHidden(item->checkState(0) != Qt::Checked && !apoInfo->isInstalled && checked);
+			shared_ptr<AbstractAPOInfo> apoInfo = item->data(0, Qt::UserRole).value<shared_ptr<AbstractAPOInfo> >();
+			item->setHidden(item->checkState(0) != Qt::Checked && !apoInfo->isInstalled() && checked);
 		}
 	}
 

@@ -21,6 +21,7 @@
 #include "DeviceFilterGUI.h"
 #include "DeviceFilterGUIDialog.h"
 #include <filters/DeviceFilterFactory.h>
+#include <VoicemeeterAPOInfo.h>
 #include "ui_DeviceFilterGUI.h"
 
 using namespace std;
@@ -63,27 +64,39 @@ void DeviceFilterGUI::load(const QString& parameters)
 	}
 	else
 	{
-		const QList<DeviceAPOInfo>& devices = factory->getDevices();
-		for (const DeviceAPOInfo& apoInfo : devices)
+		const QList<shared_ptr<AbstractAPOInfo> >& devices = factory->getDevices();
+		bool anyInstalled = false;
+		for (const shared_ptr<AbstractAPOInfo>& apoInfo : devices)
 		{
-			if (!apoInfo.isInstalled)
+			if (apoInfo->isInstalled() && DeviceFilterFactory::matchDevice(apoInfo->getDeviceString(), pattern.toStdWString()))
+			{
+				anyInstalled = true;
+				break;
+			}
+		}
+
+		for (const shared_ptr<AbstractAPOInfo>& apoInfo : devices)
+		{
+			if (anyInstalled && !apoInfo->isInstalled())
 				continue;
 
-			wstring deviceString = apoInfo.connectionName + L" " + apoInfo.deviceName + L" " + apoInfo.deviceGuid;
-			if (DeviceFilterFactory::matchDevice(deviceString, pattern.toStdWString()))
+			if (DeviceFilterFactory::matchDevice(apoInfo->getDeviceString(), pattern.toStdWString()))
 			{
 				QStringList values;
-				if (apoInfo.isInput)
+				if (apoInfo->isInput())
 					values.append(tr("Capture"));
 				else
 					values.append(tr("Playback"));
-				values.append(QString::fromStdWString(apoInfo.connectionName));
-				values.append(QString::fromStdWString(apoInfo.deviceName));
+				values.append(QString::fromStdWString(apoInfo->getConnectionName()));
+				values.append(QString::fromStdWString(apoInfo->getDeviceName()));
 				QString state;
-				if (apoInfo.isInstalled)
+				if (apoInfo->isInstalled())
 					state = tr("APO installed");
 				else
 					state = tr("APO not installed");
+				VoicemeeterAPOInfo* voicemeeterInfo = dynamic_cast<VoicemeeterAPOInfo*>(apoInfo.get());
+				if (voicemeeterInfo != NULL && !voicemeeterInfo->isVoicemeeterInstalled())
+					state += ", " + tr("Voicemeeter was uninstalled");
 				values.append(state);
 				lastItem = new QTreeWidgetItem(ui->treeWidget, values);
 			}
@@ -93,7 +106,7 @@ void DeviceFilterGUI::load(const QString& parameters)
 		{
 			QStringList values;
 			values.append("");
-			values.append(tr("No device matched!"));
+			values.append(tr("No device matched") + " \"" + pattern.trimmed() + "\"");
 			values.append("");
 
 			QTreeWidgetItem* item = new QTreeWidgetItem(ui->treeWidget, values);

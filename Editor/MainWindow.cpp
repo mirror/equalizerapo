@@ -51,15 +51,15 @@ using namespace std;
 MainWindow::MainWindow(QDir configDir, QWidget* parent)
 	: QMainWindow(parent), ui(new Ui::MainWindow), configDir(configDir)
 {
-	outputDevices = QList<DeviceAPOInfo>::fromVector(QVector<DeviceAPOInfo>::fromStdVector(DeviceAPOInfo::loadAllInfos(false)));
-	inputDevices = QList<DeviceAPOInfo>::fromVector(QVector<DeviceAPOInfo>::fromStdVector(DeviceAPOInfo::loadAllInfos(true)));
+	outputDevices = QList<shared_ptr<AbstractAPOInfo> >::fromVector(QVector<shared_ptr<AbstractAPOInfo> >::fromStdVector(DeviceAPOInfo::loadAllInfos(false)));
+	inputDevices = QList<shared_ptr<AbstractAPOInfo> >::fromVector(QVector<shared_ptr<AbstractAPOInfo> >::fromStdVector(DeviceAPOInfo::loadAllInfos(true)));
 
 	defaultOutputDevice = NULL;
-	for (DeviceAPOInfo& apoInfo : outputDevices)
+	for (shared_ptr<AbstractAPOInfo>& apoInfo : outputDevices)
 	{
-		if (apoInfo.isDefaultDevice)
+		if (apoInfo->isDefaultDevice())
 		{
-			defaultOutputDevice = &apoInfo;
+			defaultOutputDevice = apoInfo;
 			break;
 		}
 	}
@@ -106,7 +106,7 @@ MainWindow::MainWindow(QDir configDir, QWidget* parent)
 
 	QStandardItemModel* model = qobject_cast<QStandardItemModel*>(deviceComboBox->model());
 	if (defaultOutputDevice != NULL)
-		deviceComboBox->addItem(tr("Default") + " (" + QString::fromStdWString(defaultOutputDevice->connectionName) + " - " + QString::fromStdWString(defaultOutputDevice->deviceName) + ")", NULL);
+		deviceComboBox->addItem(tr("Default") + " (" + QString::fromStdWString(defaultOutputDevice->getConnectionName()) + " - " + QString::fromStdWString(defaultOutputDevice->getDeviceName()) + ")", NULL);
 
 	deviceComboBox->addItem(tr("Playback devices:"));
 	QStandardItem* item = model->item(model->rowCount() - 1);
@@ -115,18 +115,18 @@ MainWindow::MainWindow(QDir configDir, QWidget* parent)
 	item->setFont(font);
 	item->setSelectable(false);
 
-	for (DeviceAPOInfo& apoInfo : outputDevices)
-		if (apoInfo.isInstalled)
-			deviceComboBox->addItem(QString::fromStdWString(apoInfo.connectionName) + " - " + QString::fromStdWString(apoInfo.deviceName), QVariant::fromValue(&apoInfo));
+	for (shared_ptr<AbstractAPOInfo>& apoInfo : outputDevices)
+		if (apoInfo->isInstalled())
+			deviceComboBox->addItem(QString::fromStdWString(apoInfo->getConnectionName()) + " - " + QString::fromStdWString(apoInfo->getDeviceName()), QVariant::fromValue(apoInfo));
 
 	deviceComboBox->addItem(tr("Capture devices:"));
 	item = model->item(model->rowCount() - 1);
 	item->setFont(font);
 	item->setSelectable(false);
 
-	for (DeviceAPOInfo& apoInfo : inputDevices)
-		if (apoInfo.isInstalled)
-			deviceComboBox->addItem(QString::fromStdWString(apoInfo.connectionName) + " - " + QString::fromStdWString(apoInfo.deviceName), QVariant::fromValue(&apoInfo));
+	for (shared_ptr<AbstractAPOInfo>& apoInfo : inputDevices)
+		if (apoInfo->isInstalled())
+			deviceComboBox->addItem(QString::fromStdWString(apoInfo->getConnectionName()) + " - " + QString::fromStdWString(apoInfo->getDeviceName()), QVariant::fromValue(apoInfo));
 
 	connect(channelConfigurationComboBox, SIGNAL(activated(int)), this, SLOT(channelConfigurationSelected(int)));
 
@@ -183,7 +183,7 @@ void MainWindow::doChecks()
 		}
 	}
 
-	if (!defaultOutputDevice->isInstalled)
+	if (defaultOutputDevice != NULL && !defaultOutputDevice->isInstalled())
 	{
 		if (QMessageBox::warning(this, tr("APO not installed to device"), tr("Equalizer APO has not been installed to the selected device.\nDo you want to run the Configurator application to fix the problem?"), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 		{
@@ -192,23 +192,23 @@ void MainWindow::doChecks()
 		}
 	}
 
-	DeviceAPOInfo* disabledApoInfo = NULL;
-	for (DeviceAPOInfo& apoInfo : outputDevices)
+	AbstractAPOInfo* disabledApoInfo = NULL;
+	for (shared_ptr<AbstractAPOInfo>& apoInfo : outputDevices)
 	{
-		if (apoInfo.isInstalled && apoInfo.isEnhancementsDisabled)
+		if (apoInfo->isInstalled() && apoInfo->isEnhancementsDisabled())
 		{
-			disabledApoInfo = &apoInfo;
+			disabledApoInfo = apoInfo.get();
 			break;
 		}
 	}
 
 	if (disabledApoInfo == NULL)
 	{
-		for (DeviceAPOInfo& apoInfo : inputDevices)
+		for (shared_ptr<AbstractAPOInfo>& apoInfo : inputDevices)
 		{
-			if (apoInfo.isInstalled && apoInfo.isEnhancementsDisabled)
+			if (apoInfo->isInstalled() && apoInfo->isEnhancementsDisabled())
 			{
-				disabledApoInfo = &apoInfo;
+				disabledApoInfo = apoInfo.get();
 				break;
 			}
 		}
@@ -216,7 +216,7 @@ void MainWindow::doChecks()
 
 	if (disabledApoInfo != NULL)
 	{
-		if (QMessageBox::warning(this, tr("Audio enhancements disabled"), tr("Audio enhancements are not enabled for the device\n%0 %1.\nDo you want to run the Configurator application to fix the problem?").arg(QString::fromStdWString(disabledApoInfo->connectionName)).arg(QString::fromStdWString(disabledApoInfo->deviceName)), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
+		if (QMessageBox::warning(this, tr("Audio enhancements disabled"), tr("Audio enhancements are not enabled for the device\n%0 %1.\nDo you want to run the Configurator application to fix the problem?").arg(QString::fromStdWString(disabledApoInfo->getConnectionName())).arg(QString::fromStdWString(disabledApoInfo->getDeviceName())), QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes)
 		{
 			runConfigurator();
 			return;
@@ -402,7 +402,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::deviceSelected(int index)
 {
-	DeviceAPOInfo* apoInfo = deviceComboBox->itemData(index).value<DeviceAPOInfo*>();
+	shared_ptr<AbstractAPOInfo> apoInfo = deviceComboBox->itemData(index).value<shared_ptr<AbstractAPOInfo> >();
 	if (apoInfo == NULL)
 		apoInfo = defaultOutputDevice;
 
@@ -415,7 +415,7 @@ void MainWindow::deviceSelected(int index)
 		const GUIChannelHelper::ChannelConfigurationInfo* selectedInfo = NULL;
 		for (const GUIChannelHelper::ChannelConfigurationInfo& info : infos)
 		{
-			if (info.channelMask == apoInfo->channelMask)
+			if (info.channelMask == apoInfo->getChannelMask())
 			{
 				selectedInfo = &info;
 				break;
@@ -425,7 +425,7 @@ void MainWindow::deviceSelected(int index)
 		if (selectedInfo != NULL)
 			channelConfigurationComboBox->addItem(tr("From device") + " (" + selectedInfo->name + ")", 0);
 		else
-			channelConfigurationComboBox->addItem(tr("From device") + " (" + apoInfo->channelCount + " channels)", 0);
+			channelConfigurationComboBox->addItem(tr("From device") + " (" + apoInfo->getChannelCount() + " channels)", 0);
 	}
 
 	for (const GUIChannelHelper::ChannelConfigurationInfo& info : infos)
@@ -436,7 +436,7 @@ void MainWindow::deviceSelected(int index)
 
 void MainWindow::channelConfigurationSelected(int index)
 {
-	DeviceAPOInfo* selectedDevice;
+	shared_ptr<AbstractAPOInfo> selectedDevice;
 	int channelMask;
 	getDeviceAndChannelMask(&selectedDevice, &channelMask);
 
@@ -451,8 +451,8 @@ void MainWindow::channelConfigurationSelected(int index)
 
 	if (selectedDevice != NULL)
 	{
-		unsigned channelCount = selectedDevice->channelCount;
-		if (channelMask != 0 && channelMask != selectedDevice->channelMask)
+		unsigned channelCount = selectedDevice->getChannelCount();
+		if (channelMask != 0 && channelMask != selectedDevice->getChannelMask())
 		{
 			channelCount = 0;
 			for (int i = 0; i < 31; i++)
@@ -816,7 +816,7 @@ FilterTable* MainWindow::addTab(QString title, QString tooltip, QString configPa
 	filterTable->setAcceptDrops(true);
 	filterTable->setFocusPolicy(Qt::WheelFocus);
 
-	DeviceAPOInfo* selectedDevice;
+	shared_ptr<AbstractAPOInfo> selectedDevice;
 	int channelMask;
 	getDeviceAndChannelMask(&selectedDevice, &channelMask);
 	filterTable->updateDeviceAndChannelMask(selectedDevice, channelMask);
@@ -829,19 +829,19 @@ FilterTable* MainWindow::addTab(QString title, QString tooltip, QString configPa
 	return filterTable;
 }
 
-void MainWindow::getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* channelMask)
+void MainWindow::getDeviceAndChannelMask(shared_ptr<AbstractAPOInfo>* selectedDevice, int* channelMask)
 {
-	*selectedDevice = deviceComboBox->currentData().value<DeviceAPOInfo*>();
+	*selectedDevice = deviceComboBox->currentData().value<shared_ptr<AbstractAPOInfo> >();
 	if (*selectedDevice == NULL)
 		*selectedDevice = defaultOutputDevice;
 
 	*channelMask = channelConfigurationComboBox->currentData().toInt();
 	if (*channelMask == 0 && selectedDevice != NULL)
 	{
-		*channelMask = (*selectedDevice)->channelMask;
+		*channelMask = (*selectedDevice)->getChannelMask();
 
 		if (*channelMask == 0)
-			*channelMask = ChannelHelper::getDefaultChannelMask((*selectedDevice)->channelCount);
+			*channelMask = ChannelHelper::getDefaultChannelMask((*selectedDevice)->getChannelCount());
 	}
 }
 
@@ -894,7 +894,7 @@ bool MainWindow::askForClose(int tabIndex)
 
 void MainWindow::startAnalysis()
 {
-	DeviceAPOInfo* selectedDevice;
+	shared_ptr<AbstractAPOInfo> selectedDevice;
 
 	int channelMask;
 	getDeviceAndChannelMask(&selectedDevice, &channelMask);
@@ -933,15 +933,15 @@ void MainWindow::loadPreferences()
 	if (stateValue.isValid())
 		restoreState(stateValue.toByteArray());
 	instantModeCheckBox->setChecked(settings.value("instantMode", true).toBool());
-	QString selectedDeviceGuid = settings.value("selectedDeviceGuid").toString();
-	if (!selectedDeviceGuid.isEmpty())
+	QString selectedDevice = settings.value("selectedDevice").toString();
+	if (!selectedDevice.isEmpty())
 	{
 		for (int i = 0; i < deviceComboBox->count(); i++)
 		{
-			DeviceAPOInfo* apoInfo = deviceComboBox->itemData(i).value<DeviceAPOInfo*>();
+			shared_ptr<AbstractAPOInfo> apoInfo = deviceComboBox->itemData(i).value<shared_ptr<AbstractAPOInfo> >();
 			if (apoInfo != NULL)
 			{
-				if (QString::fromStdWString(apoInfo->deviceGuid).compare(selectedDeviceGuid, Qt::CaseInsensitive) == 0)
+				if (QString::fromStdWString(apoInfo->getDeviceString()).compare(selectedDevice, Qt::CaseInsensitive) == 0)
 				{
 					deviceComboBox->setCurrentIndex(i);
 					break;
@@ -1012,8 +1012,8 @@ void MainWindow::savePreferences()
 	settings.setValue("geometry", saveGeometry());
 	settings.setValue("windowState", saveState());
 	settings.setValue("instantMode", instantModeCheckBox->isChecked());
-	DeviceAPOInfo* selectedDevice = deviceComboBox->currentData().value<DeviceAPOInfo*>();
-	settings.setValue("selectedDeviceGuid", selectedDevice != NULL ? QString::fromStdWString(selectedDevice->deviceGuid) : "");
+	shared_ptr<AbstractAPOInfo> selectedDevice = deviceComboBox->currentData().value<shared_ptr<AbstractAPOInfo> >();
+	settings.setValue("selectedDevice", selectedDevice != NULL ? QString::fromStdWString(selectedDevice->getDeviceString()) : "");
 	int channelMask = channelConfigurationComboBox->currentData().toInt();
 	settings.setValue("selectedChannelMask", channelMask);
 

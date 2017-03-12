@@ -91,7 +91,7 @@ private slots:
 
 private:
 	FilterTable* addTab(QString title, QString tooltip, QString configPath, QList<QString> lines);
-	void getDeviceAndChannelMask(DeviceAPOInfo** selectedDevice, int* channelMask);
+	void getDeviceAndChannelMask(std::shared_ptr<AbstractAPOInfo>* selectedDevice, int* channelMask);
 	bool askForClose(int tabIndex);
 	void startAnalysis();
 	void loadPreferences();
@@ -104,9 +104,9 @@ private:
 	QCheckBox* instantModeCheckBox;
 	QComboBox* deviceComboBox;
 	QComboBox* channelConfigurationComboBox;
-	QList<DeviceAPOInfo> outputDevices;
-	QList<DeviceAPOInfo> inputDevices;
-	DeviceAPOInfo* defaultOutputDevice;
+	QList<std::shared_ptr<AbstractAPOInfo> > outputDevices;
+	QList<std::shared_ptr<AbstractAPOInfo> > inputDevices;
+	std::shared_ptr<AbstractAPOInfo> defaultOutputDevice;
 	AnalysisPlotScene* analysisPlotScene;
 	AnalysisThread* analysisThread;
 	bool restart = false;
@@ -115,4 +115,4 @@ private:
 	QStringList recentFiles;
 };
 
-Q_DECLARE_METATYPE(DeviceAPOInfo*)
+Q_DECLARE_METATYPE(std::shared_ptr<AbstractAPOInfo>)

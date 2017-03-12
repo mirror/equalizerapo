@@ -1,6 +1,6 @@
 /*
     This file is part of EqualizerAPO, a system-wide equalizer.
-    Copyright (C) 2015  Jonas Thedering
+    Copyright (C) 2017  Jonas Thedering
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,34 +17,9 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#pragma once
+#include "stdafx.h"
+#include "AbstractAPOInfo.h"
 
-#include <QDialog>
-
-#include "DeviceFilterGUI.h"
-#include "DeviceFilterGUIFactory.h"
-
-namespace Ui {
-class DeviceFilterGUIDialog;
-}
-
-class DeviceFilterGUIDialog : public QDialog
+AbstractAPOInfo::~AbstractAPOInfo()
 {
-	Q_OBJECT
-
-public:
-	explicit DeviceFilterGUIDialog(DeviceFilterGUI* gui, DeviceFilterGUIFactory* factory, const QString& pattern);
-	~DeviceFilterGUIDialog();
-
-	QString getPattern();
-
-private slots:
-	void on_allDevicesCheckBox_toggled(bool checked);
-
-	void on_showOnlyInstalledCheckBox_toggled(bool checked);
-
-private:
-	Ui::DeviceFilterGUIDialog* ui;
-};
-
-Q_DECLARE_METATYPE(std::shared_ptr<AbstractAPOInfo>)
+}

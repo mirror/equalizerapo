@@ -12,6 +12,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Configurator", "Configurato
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Benchmark", "Benchmark\Benchmark.vcxproj", "{D4474852-5724-4253-95C6-7A6DC424F194}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoicemeeterClient", "VoicemeeterClient\VoicemeeterClient.vcxproj", "{10F1DD37-EA50-46C2-810D-D01A1A0D4D2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -44,6 +46,14 @@ Global
 		{D4474852-5724-4253-95C6-7A6DC424F194}.Release|Win32.Build.0 = Release|Win32
 		{D4474852-5724-4253-95C6-7A6DC424F194}.Release|x64.ActiveCfg = Release|x64
 		{D4474852-5724-4253-95C6-7A6DC424F194}.Release|x64.Build.0 = Release|x64
+		{10F1DD37-EA50-46C2-810D-D01A1A0D4D2F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{10F1DD37-EA50-46C2-810D-D01A1A0D4D2F}.Debug|Win32.Build.0 = Debug|Win32
+		{10F1DD37-EA50-46C2-810D-D01A1A0D4D2F}.Debug|x64.ActiveCfg = Debug|x64
+		{10F1DD37-EA50-46C2-810D-D01A1A0D4D2F}.Debug|x64.Build.0 = Debug|x64
+		{10F1DD37-EA50-46C2-810D-D01A1A0D4D2F}.Release|Win32.ActiveCfg = Release|Win32
+		{10F1DD37-EA50-46C2-810D-D01A1A0D4D2F}.Release|Win32.Build.0 = Release|Win32
+		{10F1DD37-EA50-46C2-810D-D01A1A0D4D2F}.Release|x64.ActiveCfg = Release|x64
+		{10F1DD37-EA50-46C2-810D-D01A1A0D4D2F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

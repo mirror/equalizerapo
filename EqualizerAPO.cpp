@@ -138,14 +138,14 @@ HRESULT EqualizerAPO::Initialize(UINT32 cbDataSize, BYTE* pbyData)
 		DeviceAPOInfo apoInfo;
 		if (apoInfo.load(deviceGuid))
 		{
-			engine.setDeviceInfo(apoInfo.isInput, apoInfo.currentInstallState.installPostMix, apoInfo.deviceName, apoInfo.connectionName, apoInfo.deviceGuid);
+			engine.setDeviceInfo(apoInfo.isInput(), apoInfo.getCurrentInstallState().installPostMix, apoInfo.getDeviceName(), apoInfo.getConnectionName(), apoInfo.getDeviceGuid(), apoInfo.getDeviceString());
 
 			if (apoGuid == EQUALIZERAPO_PRE_MIX_GUID)
-				childApoGuid = apoInfo.preMixChildGuid;
+				childApoGuid = apoInfo.getPreMixChildGuid();
 			else
-				childApoGuid = apoInfo.postMixChildGuid;
+				childApoGuid = apoInfo.getPostMixChildGuid();
 
-			allowSilentBufferModification = apoInfo.currentInstallState.allowSilentBufferModification;
+			allowSilentBufferModification = apoInfo.getCurrentInstallState().allowSilentBufferModification;
 		}
 	}
 	catch (RegistryException e)

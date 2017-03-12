@@ -34,8 +34,8 @@ public:
 	QList<FilterTemplate> createFilterTemplates() override;
 	IFilterGUI* createFilterGUI(QString& command, QString& parameters) override;
 
-	const QList<DeviceAPOInfo>& getDevices() const;
+	const QList<std::shared_ptr<AbstractAPOInfo> >& getDevices() const;
 
 private:
-	QList<DeviceAPOInfo> devices;
+	QList<std::shared_ptr<AbstractAPOInfo> > devices;
 };

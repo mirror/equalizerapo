@@ -83,7 +83,7 @@ FilterTable::FilterTable(MainWindow* mainWindow, QWidget* parent)
 	QApplication::instance()->installEventFilter(this);
 }
 
-void FilterTable::initialize(QScrollArea* scrollArea, const QList<DeviceAPOInfo>& outputDevices, const QList<DeviceAPOInfo>& inputDevices)
+void FilterTable::initialize(QScrollArea* scrollArea, const QList<shared_ptr<AbstractAPOInfo> >& outputDevices, const QList<shared_ptr<AbstractAPOInfo> >& inputDevices)
 {
 	this->scrollArea = scrollArea;
 	this->outputDevices = outputDevices;
@@ -93,7 +93,7 @@ void FilterTable::initialize(QScrollArea* scrollArea, const QList<DeviceAPOInfo>
 		factory->initialize(this);
 }
 
-void FilterTable::updateDeviceAndChannelMask(DeviceAPOInfo* selectedDevice, int channelMask)
+void FilterTable::updateDeviceAndChannelMask(shared_ptr<AbstractAPOInfo> selectedDevice, int channelMask)
 {
 	this->selectedDevice = selectedDevice;
 	this->selectedChannelMask = channelMask;
@@ -222,7 +222,9 @@ void FilterTable::updateGuis()
 
 void FilterTable::propagateChannels()
 {
-	vector<wstring> channelNames = ChannelHelper::getChannelNames(selectedDevice->channelCount, selectedChannelMask);
+	vector<wstring> channelNames;
+	if (selectedDevice != NULL)
+		channelNames = ChannelHelper::getChannelNames(selectedDevice->getChannelCount(), selectedChannelMask);
 
 	for (Item* item : items)
 	{
@@ -1009,17 +1011,17 @@ const QSet<FilterTable::Item*>& FilterTable::getSelectedItems() const
 	return selected;
 }
 
-const QList<DeviceAPOInfo>& FilterTable::getOutputDevices() const
+const QList<shared_ptr<AbstractAPOInfo> >& FilterTable::getOutputDevices() const
 {
 	return outputDevices;
 }
 
-const QList<DeviceAPOInfo>& FilterTable::getInputDevices() const
+const QList<shared_ptr<AbstractAPOInfo> >& FilterTable::getInputDevices() const
 {
 	return inputDevices;
 }
 
-DeviceAPOInfo* FilterTable::getSelectedDevice() const
+shared_ptr<AbstractAPOInfo> FilterTable::getSelectedDevice() const
 {
 	return selectedDevice;
 }

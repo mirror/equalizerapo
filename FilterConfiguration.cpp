@@ -75,7 +75,7 @@ FilterConfiguration::~FilterConfiguration()
 }
 
 #pragma AVRT_CODE_BEGIN
-void FilterConfiguration::process(float* input, unsigned frameCount)
+void FilterConfiguration::read(float* input, unsigned frameCount)
 {
 #define DEINTERLEAVE_MACRO(ccount)\
 	{\
@@ -107,7 +107,16 @@ void FilterConfiguration::process(float* input, unsigned frameCount)
 	default:
 		DEINTERLEAVE_MACRO(realChannelCount)
 	}
+}
 
+void FilterConfiguration::read(float** input, unsigned frameCount)
+{
+	for (unsigned c = 0; c < realChannelCount; c++)
+		memcpy(allSamples[c], input[c], frameCount * sizeof(float));
+}
+
+void FilterConfiguration::process(unsigned frameCount)
+{
 	for (unsigned c = realChannelCount; c < allChannelCount; c++)
 		memset(allSamples[c], 0, frameCount * sizeof(float));
 
@@ -142,6 +151,26 @@ void FilterConfiguration::process(float* input, unsigned frameCount)
 	}
 }
 
+unsigned FilterConfiguration::doTransition(FilterConfiguration* nextConfig, unsigned frameCount, unsigned transitionCounter, unsigned transitionLength)
+{
+	float** currentSamples = allSamples;
+	float** nextSamples = nextConfig->allSamples;
+
+	for (unsigned f = 0; f < frameCount; f++)
+	{
+		float factor = 0.5f * (1.0f - cos(transitionCounter * (float)M_PI / transitionLength));
+		if (transitionCounter >= transitionLength)
+			factor = 1.0f;
+
+		for (unsigned c = 0; c < outputChannelCount; c++)
+			currentSamples[c][f] = currentSamples[c][f] * (1 - factor) + nextSamples[c][f] * factor;
+
+		transitionCounter++;
+	}
+
+	return transitionCounter;
+}
+
 void FilterConfiguration::write(float* output, unsigned frameCount)
 {
 #define INTERLEAVE_MACRO(ccount)\
@@ -172,6 +201,12 @@ void FilterConfiguration::write(float* output, unsigned frameCount)
 	default:
 		INTERLEAVE_MACRO(outputChannelCount)
 	}
+}
+
+void FilterConfiguration::write(float** output, unsigned frameCount)
+{
+	for (unsigned i = 0; i < outputChannelCount; i++)
+		memcpy(output[i], allSamples[i], frameCount * sizeof(float));
 }
 #pragma AVRT_CODE_END
 

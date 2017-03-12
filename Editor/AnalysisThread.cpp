@@ -22,6 +22,8 @@
 #include "FilterEngine.h"
 #include "AnalysisThread.h"
 
+using namespace std;
+
 AnalysisThread::AnalysisThread()
 {
 }
@@ -50,10 +52,10 @@ AnalysisThread::~AnalysisThread()
 		fftwf_destroy_plan(planForward);
 }
 
-void AnalysisThread::setParameters(DeviceAPOInfo* device, int channelMask, int channelIndex, QString configPath, int frameCount)
+void AnalysisThread::setParameters(shared_ptr<AbstractAPOInfo> device, int channelMask, int channelIndex, QString configPath, int frameCount)
 {
 	QMutexLocker mutexLocker(&mutex);
-	this->device = *device;
+	this->device = device;
 	this->channelMask = channelMask;
 	this->channelIndex = channelIndex;
 	this->configPath = configPath;
@@ -125,7 +127,7 @@ void AnalysisThread::run()
 			break;
 		}
 
-		DeviceAPOInfo device = this->device;
+		shared_ptr<AbstractAPOInfo> device = this->device;
 		int channelMask = this->channelMask;
 		int channelIndex = this->channelIndex;
 		QString configPath = this->configPath;
@@ -136,8 +138,8 @@ void AnalysisThread::run()
 		QElapsedTimer timer;
 		timer.start();
 
-		unsigned channelCount = device.channelCount;
-		if (channelMask != 0 && channelMask != device.channelMask)
+		unsigned channelCount = device->getChannelCount();
+		if (channelMask != 0 && channelMask != device->getChannelMask())
 		{
 			channelCount = 0;
 			for (int i = 0; i < 31; i++)
@@ -148,11 +150,11 @@ void AnalysisThread::run()
 			}
 		}
 
-		unsigned sampleRate = device.sampleRate;
+		unsigned sampleRate = device->getSampleRate();
 
 		qint64 startTime = timer.nsecsElapsed();
 		FilterEngine engine;
-		engine.setDeviceInfo(device.isInput, true, device.deviceName, device.connectionName, device.deviceGuid);
+		engine.setDeviceInfo(device->isInput(), true, device->getDeviceName(), device->getConnectionName(), device->getDeviceGuid(), device->getDeviceString());
 		engine.initialize(sampleRate, channelCount, channelCount, channelCount, channelMask, frameCount, configPath.toStdWString());
 		double initializationTime = (timer.nsecsElapsed() - startTime) / 1e6;
 
