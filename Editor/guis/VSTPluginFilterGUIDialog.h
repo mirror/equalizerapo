@@ -19,30 +19,31 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include "FilterEngine.h"
-#include "VoicemeeterRemote.h"
+#include <QDialog>
+#include <QCheckBox>
+#include "helpers/VSTPluginInstance.h"
 
-class VoicemeeterClient
+namespace Ui {
+class VSTPluginFilterGUIDialog;
+}
+
+class VSTPluginFilterGUIDialog : public QDialog
 {
-public:
-	VoicemeeterClient(const std::vector<std::wstring>& outputs);
-	~VoicemeeterClient();
-	void start();
-	void stop();
+	Q_OBJECT
 
-	void handle(long nCommand, void* lpData, long nnn);
-	bool restart = false;
+public:
+	explicit VSTPluginFilterGUIDialog(QWidget* parent, VSTPluginInstance* effect, bool autoApply);
+	~VSTPluginFilterGUIDialog();
+
+	QPushButton* getApplyButton();
+	QCheckBox* getAutoApplyCheckBox();
+
+	void onSizeWindow(int w, int h);
+
+private slots:
+	void on_autoApplyCheckBox_clicked(bool checked);
 
 private:
-	bool isBufferSilent(float** sampleData, long sampleCount);
-
-	unsigned long mainThreadId;
-	T_VBVMR_INTERFACE vmr;
-	std::vector<FilterEngine*> engines;
-	std::vector<int> idleSampleCounts;
-	bool loggedIn = false;
-	bool banana = false;
-	std::vector<std::wstring> outputs;
+	Ui::VSTPluginFilterGUIDialog* ui;
+	VSTPluginInstance* effect;
 };

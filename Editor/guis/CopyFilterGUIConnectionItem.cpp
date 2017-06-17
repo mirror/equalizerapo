@@ -175,8 +175,9 @@ void CopyFilterGUIConnectionItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent
 	if (isDecibel)
 		text += " dB";
 
-	ResizingLineEdit* lineEdit = new ResizingLineEdit("");
+	ResizingLineEdit* lineEdit = new ResizingLineEdit(text, true);
 	connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(lineEditEditingFinished()));
+	connect(lineEdit, SIGNAL(editingCanceled()), this, SLOT(lineEditEditingCanceled()));
 	QGraphicsProxyWidget* proxyItem = scene()->addWidget(lineEdit);
 	QLineF l = line();
 	QPointF center = (l.p1() + l.p2()) / 2;
@@ -231,6 +232,14 @@ void CopyFilterGUIConnectionItem::lineEditEditingFinished()
 	lineEdit->deleteLater();
 
 	emit((CopyFilterGUIScene*)scene())->updateModel();
+}
+
+void CopyFilterGUIConnectionItem::lineEditEditingCanceled()
+{
+	QLineEdit* lineEdit = qobject_cast<QLineEdit*>(QObject::sender());
+
+	lineEdit->setVisible(false);
+	lineEdit->deleteLater();
 }
 
 CopyFilterGUIChannelItem* CopyFilterGUIConnectionItem::getSource() const

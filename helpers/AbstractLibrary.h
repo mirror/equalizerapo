@@ -20,29 +20,26 @@
 #pragma once
 
 #include <string>
-#include <vector>
-#include "FilterEngine.h"
-#include "VoicemeeterRemote.h"
 
-class VoicemeeterClient
+class AbstractLibrary
 {
 public:
-	VoicemeeterClient(const std::vector<std::wstring>& outputs);
-	~VoicemeeterClient();
-	void start();
-	void stop();
+	static const int FILE_NOT_FOUND = -1;
+	static const int LOADING_FAILED = -2;
+	static const int FUNCTIONS_MISSING = -3;
+	static const int WRONG_ARCHITECTURE = -4;
 
-	void handle(long nCommand, void* lpData, long nnn);
-	bool restart = false;
+	virtual ~AbstractLibrary();
+
+	int initialize();
+	virtual std::wstring getLibPath() = 0;
+
+protected:
+	virtual bool loadFunctions() = 0;
+	virtual int customInitialize();
+
+	HMODULE module = NULL;
 
 private:
-	bool isBufferSilent(float** sampleData, long sampleCount);
-
-	unsigned long mainThreadId;
-	T_VBVMR_INTERFACE vmr;
-	std::vector<FilterEngine*> engines;
-	std::vector<int> idleSampleCounts;
-	bool loggedIn = false;
-	bool banana = false;
-	std::vector<std::wstring> outputs;
+	unsigned short getFileArchitecture(const std::wstring& filePath);
 };

@@ -96,7 +96,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>muparserxd.lib;version.lib;Shlwapi.lib;authz.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserxd.lib;version.lib;Shlwapi.lib;authz.lib;crypt32.lib;dbghelp.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -109,7 +109,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>muparserxd.lib;version.lib;Shlwapi.lib;authz.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserxd.lib;version.lib;Shlwapi.lib;authz.lib;crypt32.lib;dbghelp.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,7 +127,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>muparserx.lib;version.lib;Shlwapi.lib;authz.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserx.lib;version.lib;Shlwapi.lib;authz.lib;crypt32.lib;dbghelp.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -145,7 +145,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>muparserx.lib;version.lib;Shlwapi.lib;authz.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>muparserx.lib;version.lib;Shlwapi.lib;authz.lib;crypt32.lib;dbghelp.lib;libsndfile-1.lib;libfftw3f-3.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -175,6 +175,9 @@
     <ClInclude Include="..\filters\PreampFilter.h" />
     <ClInclude Include="..\filters\PreampFilterFactory.h" />
     <ClInclude Include="..\filters\StageFilterFactory.h" />
+    <ClInclude Include="..\filters\VSTPluginFilter.h" />
+    <ClInclude Include="..\filters\VSTPluginFilterFactory.h" />
+    <ClInclude Include="..\helpers\AbstractLibrary.h" />
     <ClInclude Include="..\helpers\ChannelHelper.h" />
     <ClInclude Include="..\helpers\GainIterator.h" />
     <ClInclude Include="..\helpers\LogHelper.h" />
@@ -183,6 +186,8 @@
     <ClInclude Include="..\helpers\ScopeGuard.h" />
     <ClInclude Include="..\helpers\StringHelper.h" />
     <ClInclude Include="..\helpers\UncaughtExceptions.h" />
+    <ClInclude Include="..\helpers\VSTPluginInstance.h" />
+    <ClInclude Include="..\helpers\VSTPluginLibrary.h" />
     <ClInclude Include="..\IFilter.h" />
     <ClInclude Include="..\IFilterFactory.h" />
     <ClInclude Include="..\libHybridConv-0.1.1\libHybridConv_eapo.h" />
@@ -220,12 +225,17 @@
     <ClCompile Include="..\filters\PreampFilter.cpp" />
     <ClCompile Include="..\filters\PreampFilterFactory.cpp" />
     <ClCompile Include="..\filters\StageFilterFactory.cpp" />
+    <ClCompile Include="..\filters\VSTPluginFilter.cpp" />
+    <ClCompile Include="..\filters\VSTPluginFilterFactory.cpp" />
+    <ClCompile Include="..\helpers\AbstractLibrary.cpp" />
     <ClCompile Include="..\helpers\ChannelHelper.cpp" />
     <ClCompile Include="..\helpers\GainIterator.cpp" />
     <ClCompile Include="..\helpers\LogHelper.cpp" />
     <ClCompile Include="..\helpers\MemoryHelper.cpp" />
     <ClCompile Include="..\helpers\RegistryHelper.cpp" />
     <ClCompile Include="..\helpers\StringHelper.cpp" />
+    <ClCompile Include="..\helpers\VSTPluginInstance.cpp" />
+    <ClCompile Include="..\helpers\VSTPluginLibrary.cpp" />
     <ClCompile Include="..\IFilter.cpp" />
     <ClCompile Include="..\libHybridConv-0.1.1\libHybridConv_eapo.cpp" />
     <ClCompile Include="..\parser\RegexFunctions.cpp" />
@@ -242,6 +252,9 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="VoicemeeterClient.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\EqualizerAPO.licenseheader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -116,7 +116,15 @@ SOURCES += main.cpp\
 	helpers/DPIHelper.cpp \
 	CustomStyle.cpp \
 	../AbstractAPOInfo.cpp \
-	../VoicemeeterAPOInfo.cpp
+	../VoicemeeterAPOInfo.cpp \
+	../helpers/AbstractLibrary.cpp \
+	../helpers/VSTPluginLibrary.cpp \
+	guis/VSTPluginFilterGUI.cpp \
+	guis/VSTPluginFilterGUIFactory.cpp \
+	guis/VSTPluginFilterGUIDialog.cpp \
+	../filters/VSTPluginFilter.cpp \
+	../filters/VSTPluginFilterFactory.cpp \
+	../helpers/VSTPluginInstance.cpp
 
 HEADERS  += \
 	../helpers/LogHelper.h \
@@ -221,7 +229,15 @@ HEADERS  += \
 	helpers/DPIHelper.h \
 	CustomStyle.h \
 	../AbstractAPOInfo.h \
-	../VoicemeeterAPOInfo.h
+	../VoicemeeterAPOInfo.h \
+	../helpers/AbstractLibrary.h \
+	../helpers/VSTPluginLibrary.h \
+	guis/VSTPluginFilterGUI.h \
+	guis/VSTPluginFilterGUIFactory.h \
+	guis/VSTPluginFilterGUIDialog.h \
+	../filters/VSTPluginFilter.h \
+	../filters/VSTPluginFilterFactory.h \
+	../helpers/VSTPluginInstance.h
 
 FORMS    += \
 	guis/PreampFilterGUI.ui \
@@ -239,10 +255,12 @@ FORMS    += \
 	guis/GraphicEQFilterGUI.ui \
 	guis/ConvolutionFilterGUI.ui \
 	MainWindow.ui \
-	guis/StageFilterGUI.ui
+	guis/StageFilterGUI.ui \
+	guis/VSTPluginFilterGUI.ui \
+	guis/VSTPluginFilterGUIDialog.ui
 
 INCLUDEPATH += $$PWD/.. "C:/Program Files/libsndfile/include" "C:/Program Files/fftw3" "C:/Program Files/muparserx_v3_0_1/parser"
-LIBS += user32.lib advapi32.lib version.lib ole32.lib Shlwapi.lib authz.lib libsndfile-1.lib libfftw3f-3.lib
+LIBS += user32.lib advapi32.lib version.lib ole32.lib Shlwapi.lib authz.lib crypt32.lib dbghelp.lib libsndfile-1.lib libfftw3f-3.lib
 
 build_pass:CONFIG(debug, debug|release) {
 	LIBS += muparserxd.lib

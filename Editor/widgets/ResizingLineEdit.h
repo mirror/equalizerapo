@@ -19,17 +19,20 @@
 
 #pragma once
 
-#include <QLineEdit>
+#include "EscapableLineEdit.h"
 
-class ResizingLineEdit : public QLineEdit
+class ResizingLineEdit : public EscapableLineEdit
 {
 	Q_OBJECT
 public:
 	explicit ResizingLineEdit(QWidget* parent = 0);
-	explicit ResizingLineEdit(const QString& text, QWidget* parent = 0);
+	explicit ResizingLineEdit(const QString& text, bool forceWidth, QWidget* parent = 0);
 
 	QSize sizeHint() const override;
 
 private slots:
 	void readjustSize();
+
+private:
+	bool forceWidth = false;
 };

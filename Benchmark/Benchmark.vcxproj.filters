@@ -102,6 +102,21 @@
       <Filter>filters</Filter>
     </ClCompile>
     <ClCompile Include="..\stdafx.cpp" />
+    <ClCompile Include="..\helpers\AbstractLibrary.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filters\VSTPluginFilter.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\filters\VSTPluginFilterFactory.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\helpers\VSTPluginLibrary.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\helpers\VSTPluginInstance.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\FilterEngine.h" />
@@ -214,6 +229,21 @@
     <ClInclude Include="..\helpers\UncaughtExceptions.h">
       <Filter>helpers</Filter>
     </ClInclude>
+    <ClInclude Include="..\helpers\AbstractLibrary.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filters\VSTPluginFilter.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\filters\VSTPluginFilterFactory.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers\VSTPluginLibrary.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\helpers\VSTPluginInstance.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="parser">
@@ -228,5 +258,8 @@
     <Filter Include="libHybridConv-0.1.1">
       <UniqueIdentifier>{35b3b6f1-e4df-4214-bd4c-fa058942e547}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\EqualizerAPO.licenseheader" />
   </ItemGroup>
 </Project>

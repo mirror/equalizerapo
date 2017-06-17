@@ -35,4 +35,5 @@ public:
 	static std::vector<std::wstring> split(const std::wstring& s, wchar_t splitChar, bool skipEmpty = true);
 	static std::wstring join(const std::vector<std::wstring>& strings, const std::wstring& separator);
 	static std::wstring getSystemErrorString(long status);
+	static std::vector<std::wstring> splitQuoted(const std::wstring& s, wchar_t splitChar, wchar_t quoteChar = '"');
 };

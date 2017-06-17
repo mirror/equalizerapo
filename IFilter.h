@@ -32,7 +32,7 @@ public:
 
 	// request to get all channel names instead of selection
 	virtual bool getAllChannels() {return false;}
-	// request that output and input do not point to the same memory locations
+	// return false to request that output and input do not point to the same memory locations
 	virtual bool getInPlace() {return true;}
 	// request that the channelNames returned by initialize become the new selection
 	virtual bool getSelectChannels() {return false;}

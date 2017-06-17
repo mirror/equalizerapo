@@ -162,8 +162,9 @@ std::vector<Assignment> CopyFilterGUIScene::buildAssignments()
 
 void CopyFilterGUIScene::addOutputChannel()
 {
-	ResizingLineEdit* lineEdit = new ResizingLineEdit("");
+	ResizingLineEdit* lineEdit = new ResizingLineEdit("", true);
 	connect(lineEdit, SIGNAL(editingFinished()), this, SLOT(lineEditEditingFinished()));
+	connect(lineEdit, SIGNAL(editingCanceled()), this, SLOT(lineEditEditingCanceled()));
 	QGraphicsProxyWidget* proxyItem = addWidget(lineEdit);
 	QPointF point = getNextChannelPoint(lastOutputItem, true);
 	QRectF rect;
@@ -183,13 +184,25 @@ void CopyFilterGUIScene::lineEditEditingFinished()
 		return;
 
 	QString text = lineEdit->text();
+	if (text != "")
+	{
+		CopyFilterGUIChannelItem* item = new CopyFilterGUIChannelItem(text, true);
+		item->setPos(getNextChannelPoint(lastOutputItem, true));
+		addItem(item);
+		lastOutputItem = item;
 
-	CopyFilterGUIChannelItem* item = new CopyFilterGUIChannelItem(text, true);
-	item->setPos(getNextChannelPoint(lastOutputItem, true));
-	addItem(item);
-	lastOutputItem = item;
+		addProxyItem->setPos(getNextChannelPoint(lastOutputItem, true));
+	}
+	addProxyItem->setVisible(true);
 
-	addProxyItem->setPos(getNextChannelPoint(lastOutputItem, true));
+	lineEdit->setVisible(false);
+	lineEdit->deleteLater();
+}
+
+void CopyFilterGUIScene::lineEditEditingCanceled()
+{
+	QLineEdit* lineEdit = qobject_cast<QLineEdit*>(QObject::sender());
+
 	addProxyItem->setVisible(true);
 
 	lineEdit->setVisible(false);

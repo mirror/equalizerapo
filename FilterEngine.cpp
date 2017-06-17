@@ -53,6 +53,7 @@
 #include "filters/IncludeFilterFactory.h"
 #include "filters/ConvolutionFilterFactory.h"
 #include "filters/GraphicEQFilterFactory.h"
+#include "filters/VSTPluginFilterFactory.h"
 
 using namespace std;
 using namespace mup;
@@ -87,6 +88,7 @@ FilterEngine::FilterEngine()
 	factories.push_back(new CopyFilterFactory());
 	factories.push_back(new ConvolutionFilterFactory());
 	factories.push_back(new GraphicEQFilterFactory());
+	factories.push_back(new VSTPluginFilterFactory());
 }
 
 FilterEngine::~FilterEngine()

@@ -107,6 +107,21 @@
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="AbstractAPOInfo.cpp" />
     <ClCompile Include="VoicemeeterAPOInfo.cpp" />
+    <ClCompile Include="helpers\AbstractLibrary.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="filters\VSTPluginFilter.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="filters\VSTPluginFilterFactory.cpp">
+      <Filter>filters</Filter>
+    </ClCompile>
+    <ClCompile Include="helpers\VSTPluginLibrary.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="helpers\VSTPluginInstance.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClassFactory.h" />
@@ -226,6 +241,24 @@
       <Filter>helpers</Filter>
     </ClInclude>
     <ClInclude Include="VoicemeeterAPOInfo.h" />
+    <ClInclude Include="helpers\AbstractLibrary.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\aeffectx.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="filters\VSTPluginFilter.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="filters\VSTPluginFilterFactory.h">
+      <Filter>filters</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\VSTPluginLibrary.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\VSTPluginInstance.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="EqualizerAPO.rc" />
@@ -233,6 +266,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="EqualizerAPO.def" />
+    <None Include="EqualizerAPO.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="filters">

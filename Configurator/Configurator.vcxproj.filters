@@ -54,6 +54,7 @@
   <ItemGroup>
     <None Include="Configurator.ico" />
     <None Include="small.ico" />
+    <None Include="..\EqualizerAPO.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="Configurator.exe.manifest" />

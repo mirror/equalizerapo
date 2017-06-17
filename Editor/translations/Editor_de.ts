@@ -281,24 +281,24 @@
         <translation>Faltung mit Impulsantwort:</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.ui" line="66"/>
+        <location filename="../guis/ConvolutionFilterGUI.ui" line="73"/>
         <source>File information</source>
         <translation>Dateiinformationen</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.ui" line="72"/>
+        <location filename="../guis/ConvolutionFilterGUI.ui" line="79"/>
         <source>Sample rate:</source>
         <translation>Abtastrate:</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.ui" line="79"/>
-        <location filename="../guis/ConvolutionFilterGUI.ui" line="137"/>
+        <location filename="../guis/ConvolutionFilterGUI.ui" line="86"/>
+        <location filename="../guis/ConvolutionFilterGUI.ui" line="144"/>
         <location filename="../guis/ConvolutionFilterGUI.cpp" line="91"/>
         <source>No file selected</source>
         <translation>Keine Datei gewählt</translation>
     </message>
     <message>
-        <location filename="../guis/ConvolutionFilterGUI.ui" line="130"/>
+        <location filename="../guis/ConvolutionFilterGUI.ui" line="137"/>
         <source>Length:</source>
         <translation>Länge:</translation>
     </message>
@@ -661,7 +661,7 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
 <context>
     <name>FilterTable</name>
     <message>
-        <location filename="../FilterTable.cpp" line="205"/>
+        <location filename="../FilterTable.cpp" line="214"/>
         <source>Add filter</source>
         <translation>Filter hinzufügen</translation>
     </message>
@@ -838,12 +838,12 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
 <context>
     <name>IncludeFilterGUI</name>
     <message>
-        <location filename="../guis/IncludeFilterGUI.ui" line="70"/>
+        <location filename="../guis/IncludeFilterGUI.ui" line="77"/>
         <source>Include:</source>
         <translation>Einbinden:</translation>
     </message>
     <message>
-        <location filename="../guis/IncludeFilterGUI.ui" line="59"/>
+        <location filename="../guis/IncludeFilterGUI.ui" line="66"/>
         <source>Select file</source>
         <translation>Datei auswählen</translation>
     </message>
@@ -1198,11 +1198,12 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
     <message>
         <location filename="../MainWindow.cpp" line="426"/>
         <location filename="../MainWindow.cpp" line="428"/>
+        <location filename="../MainWindow.cpp" line="432"/>
         <source>From device</source>
         <translation>Von Gerät</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="704"/>
+        <location filename="../MainWindow.cpp" line="710"/>
         <source>%0 dB</source>
         <translation>%0 dB</translation>
     </message>
@@ -1211,7 +1212,7 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samp.)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="707"/>
+        <location filename="../MainWindow.cpp" line="713"/>
         <source>%0 ms (%1 s.)</source>
         <translation>%0 ms (%1 S.)</translation>
     </message>
@@ -1220,46 +1221,46 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samples)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="709"/>
+        <location filename="../MainWindow.cpp" line="715"/>
         <source>%0 ms</source>
         <translation>%0 ms</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="712"/>
+        <location filename="../MainWindow.cpp" line="718"/>
         <source>%0 % (one core)</source>
         <translation>%0 % (ein Kern)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="750"/>
-        <location filename="../MainWindow.cpp" line="777"/>
-        <location filename="../MainWindow.cpp" line="796"/>
+        <location filename="../MainWindow.cpp" line="759"/>
+        <location filename="../MainWindow.cpp" line="786"/>
+        <location filename="../MainWindow.cpp" line="805"/>
         <source>Restart required</source>
         <translation>Neustart erforderlich</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="750"/>
-        <location filename="../MainWindow.cpp" line="777"/>
-        <location filename="../MainWindow.cpp" line="796"/>
+        <location filename="../MainWindow.cpp" line="759"/>
+        <location filename="../MainWindow.cpp" line="786"/>
+        <location filename="../MainWindow.cpp" line="805"/>
         <source>Configuration Editor will be restarted to apply the changed settings. Proceed?</source>
         <translation>Konfigurationseditor wird neugestartet, um die geänderten Einstellungen zu übernehmen. Fortsetzen?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="856"/>
+        <location filename="../MainWindow.cpp" line="865"/>
         <source>Unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="857"/>
+        <location filename="../MainWindow.cpp" line="866"/>
         <source>The configuration file %0 has unsaved changes.</source>
         <translation>Die Konfigurationsdatei %0 hat ungespeicherte Änderungen.</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="858"/>
+        <location filename="../MainWindow.cpp" line="867"/>
         <source>Do you want to save the changes before closing the file?</source>
         <translation>Möchten Sie die Änderungen speichern, bevor die Datei geschlossen wird?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="529"/>
+        <location filename="../MainWindow.cpp" line="535"/>
         <source>Open file</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -1269,20 +1270,108 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>Automatisch (%0)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="531"/>
-        <location filename="../MainWindow.cpp" line="584"/>
+        <location filename="../MainWindow.cpp" line="537"/>
+        <location filename="../MainWindow.cpp" line="590"/>
         <source>E-APO configurations (*.txt)</source>
         <translation>E-APO-Konfigurationen (*.txt)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="581"/>
+        <location filename="../MainWindow.cpp" line="587"/>
         <source>Save file as</source>
         <translation>Datei speichern unter</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="603"/>
+        <location filename="../MainWindow.cpp" line="609"/>
         <source>Unsaved</source>
         <translation>Ungespeichert</translation>
+    </message>
+</context>
+<context>
+    <name>MathAudioFilterGUI</name>
+    <message>
+        <source>Open panel</source>
+        <translation type="vanished">Panel öffnen</translation>
+    </message>
+    <message>
+        <source>Status information</source>
+        <translation type="vanished">Statusinformationen</translation>
+    </message>
+    <message>
+        <source>File %1 not found.</source>
+        <translation type="vanished">Datei %1 nicht gefunden.</translation>
+    </message>
+    <message>
+        <source>Library %1 could not be loaded.</source>
+        <translation type="vanished">Bibliothek %1 konnte nicht geladen werden.</translation>
+    </message>
+    <message>
+        <source>Library %1 does not contain needed functions.</source>
+        <translation type="vanished">Bibliothek %1 enthält nicht die benötigten Funktionen.</translation>
+    </message>
+    <message>
+        <source>Library %1 could not be initialized.</source>
+        <translation type="vanished">Bibliothek %1 konnte nicht initialisiert werden.</translation>
+    </message>
+    <message>
+        <source>Get library from &lt;a href=&quot;%1&quot;&gt;download page&lt;/a&gt; and&lt;br&gt;extract %2-bit version of %3 into &lt;a href=&quot;%4&quot;&gt;plugins&lt;/a&gt; directory.</source>
+        <translation type="vanished">Bibliothek von der &lt;a href=&quot;%1&quot;&gt;Downloadseite&lt;/a&gt; laden und&lt;br&gt;die %2-bit-Version von %3 in das Verzeichnis &lt;a href=&quot;%4&quot;&gt;plugins&lt;/a&gt; extrahieren.</translation>
+    </message>
+    <message>
+        <source>Library loaded successfully. Version: %1</source>
+        <translation type="vanished">Bibliothek erfolgreich geladen. Version: %1</translation>
+    </message>
+    <message>
+        <source>For updates, get new version from &lt;a href=&quot;%1&quot;&gt;download page&lt;/a&gt;, close Configuration Editor and&lt;br&gt;extract %2-bit version of %3 into &lt;a href=&quot;%4&quot;&gt;plugins&lt;/a&gt; directory.</source>
+        <translation type="vanished">Für Updates, neue Version von der &lt;a href=&quot;%1&quot;&gt;Downloadseite&lt;/a&gt; laden, den Konfigurationseditor schließen und&lt;br&gt;die %2-bit-Version von %3 in das Verzeichnis &lt;a href=&quot;%4&quot;&gt;plugins&lt;/a&gt; extrahieren.</translation>
+    </message>
+</context>
+<context>
+    <name>MathAudioFilterGUIFactory</name>
+    <message>
+        <source>Plugins</source>
+        <translation type="vanished">Plugins</translation>
+    </message>
+</context>
+<context>
+    <name>MathAudioHeadphoneEQFilterGUI</name>
+    <message>
+        <source>Open panel</source>
+        <translation type="vanished">Panel öffnen</translation>
+    </message>
+    <message>
+        <source>Status information</source>
+        <translation type="vanished">Statusinformationen</translation>
+    </message>
+    <message>
+        <source>File %1 not found.</source>
+        <translation type="vanished">Datei %1 nicht gefunden.</translation>
+    </message>
+    <message>
+        <source>Library %1 could not be loaded.</source>
+        <translation type="vanished">Bibliothek %1 konnte nicht geladen werden.</translation>
+    </message>
+    <message>
+        <source>Library %1 does not contain needed functions.</source>
+        <translation type="vanished">Bibliothek %1 enthält nicht die benötigten Funktionen.</translation>
+    </message>
+    <message>
+        <source>Get library from &lt;a href=&quot;%1&quot;&gt;download page&lt;/a&gt; and&lt;br&gt;extract %2-bit version of %3 into &lt;a href=&quot;%4&quot;&gt;plugins&lt;/a&gt; directory.</source>
+        <translation type="vanished">Bibliothek von der &lt;a href=&quot;%1&quot;&gt;Downloadseite&lt;/a&gt; laden und&lt;br&gt;die %2-bit-Version von %3 in das Verzeichnis &lt;a href=&quot;%4&quot;&gt;plugins&lt;/a&gt; extrahieren.</translation>
+    </message>
+    <message>
+        <source>Library loaded successfully.</source>
+        <translation type="vanished">Bibliothek erfolgreich geladen.</translation>
+    </message>
+    <message>
+        <source>For updates, get new version from &lt;a href=&quot;%1&quot;&gt;download page&lt;/a&gt;, close Configuration Editor and&lt;br&gt;extract %2-bit version of %3 into &lt;a href=&quot;%4&quot;&gt;plugins&lt;/a&gt; directory.</source>
+        <translation type="vanished">Für Updates, neue Version von der &lt;a href=&quot;%1&quot;&gt;Downloadseite&lt;/a&gt; laden, den Konfigurationseditor schließen und&lt;br&gt;die %2-bit-Version von %3 in das Verzeichnis &lt;a href=&quot;%4&quot;&gt;plugins&lt;/a&gt; extrahieren.</translation>
+    </message>
+</context>
+<context>
+    <name>MathAudioHeadphoneEQFilterGUIFactory</name>
+    <message>
+        <source>Plugins</source>
+        <translation type="vanished">Plugins</translation>
     </message>
 </context>
 <context>
@@ -1372,6 +1461,115 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <location filename="../guis/StageFilterGUIFactory.cpp" line="26"/>
         <source>Control</source>
         <translation>Steuerung</translation>
+    </message>
+</context>
+<context>
+    <name>VSTPluginFilterGUI</name>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.ui" line="84"/>
+        <source>Options</source>
+        <translation>Optionen</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.ui" line="44"/>
+        <source>Open panel</source>
+        <translation>Panel öffnen</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.ui" line="57"/>
+        <source>VST plugin:</source>
+        <translation>VST-Plugin:</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.ui" line="171"/>
+        <source>Embed</source>
+        <translation>Einbetten</translation>
+    </message>
+    <message>
+        <source>No file selected</source>
+        <translation type="vanished">Keine Datei gewählt</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="162"/>
+        <source>No file selected.</source>
+        <translation>Keine Datei gewählt.</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="175"/>
+        <source>File not found.</source>
+        <translation>Datei nicht gefunden.</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="178"/>
+        <source>Library could not be loaded.</source>
+        <translation>Bibliothek konnte nicht geladen werden.</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="181"/>
+        <source>Library does not contain needed functions.</source>
+        <translation>Bibliothek enthält benötigte Funktionen nicht.</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="189"/>
+        <source>Library has the wrong architecture. Only %1-bit libraries are supported.</source>
+        <translation>Bibliothek hat die falsche Architektur. Nur %1-bit-Bibliotheken werden unterstützt.</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="210"/>
+        <source>Plugin crashed during initialization.</source>
+        <translation>Plugin ist bei der Initialisierung abgestürzt.</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="271"/>
+        <source>Select VST plugin</source>
+        <translation>VST-Plugin wählen</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="273"/>
+        <source>VST plugins (*.dll)</source>
+        <translation>VST-Plugins (*.dll)</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="320"/>
+        <source>Plugin crashed when opening panel.</source>
+        <translation>Plugin ist beim Öffnen des Panels abgestürzt.</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="418"/>
+        <source>The library is not readable by the audio service.
+Change the file permissions or copy the file to the plugins directory.</source>
+        <translation>Die Bibliothek ist für den Audiodienst nicht lesbar.
+Ändern Sie die Dateiberechtigungen oder kopieren Sie die Datei in das plugins-Verzeichnis.</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="469"/>
+        <source>The plugin seemingly accesses these files not readable by the audio service:
+%0
+Change the file permissions or copy the files to the config directory.</source>
+        <translation>Das Plugin scheint auf diese für den Audiodienst nicht lesbaren Dateien zuzugreifen:
+%0
+Ändern Sie die Dateiberechtigungen oder kopieren Sie die Dateien in das config-Verzeichnis.</translation>
+    </message>
+</context>
+<context>
+    <name>VSTPluginFilterGUIDialog</name>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUIDialog.ui" line="20"/>
+        <source>Apply automatically</source>
+        <translation>Automatisch anwenden</translation>
+    </message>
+</context>
+<context>
+    <name>VSTPluginFilterGUIFactory</name>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUIFactory.cpp" line="32"/>
+        <source>VST plugin</source>
+        <translation>VST-Plugin</translation>
+    </message>
+    <message>
+        <location filename="../guis/VSTPluginFilterGUIFactory.cpp" line="32"/>
+        <source>Plugins</source>
+        <translation>Plugins</translation>
     </message>
 </context>
 </TS>

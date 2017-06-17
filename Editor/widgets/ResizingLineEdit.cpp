@@ -20,15 +20,15 @@
 #include "ResizingLineEdit.h"
 
 ResizingLineEdit::ResizingLineEdit(QWidget* parent)
-	: QLineEdit(parent)
+	: EscapableLineEdit(parent)
 {
 	connect(this, SIGNAL(textChanged(QString)), this, SLOT(readjustSize()));
 
 	readjustSize();
 }
 
-ResizingLineEdit::ResizingLineEdit(const QString& text, QWidget* parent)
-	: QLineEdit(text, parent)
+ResizingLineEdit::ResizingLineEdit(const QString& text, bool forceWidth, QWidget* parent)
+	: EscapableLineEdit(text, parent), forceWidth(forceWidth)
 {
 	connect(this, SIGNAL(textChanged(QString)), this, SLOT(readjustSize()));
 
@@ -50,5 +50,8 @@ QSize ResizingLineEdit::sizeHint() const
 
 void ResizingLineEdit::readjustSize()
 {
-	setFixedWidth(sizeHint().width());
+	if (forceWidth)
+		setFixedWidth(sizeHint().width());
+	else
+		setMinimumWidth(sizeHint().width());
 }

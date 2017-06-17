@@ -145,6 +145,7 @@ Section "Install" SecInstall
   File "Configuration reference (online).url"
   
   CreateDirectory "$INSTDIR\config"
+  CreateDirectory "$INSTDIR\plugins"
   
   SetOverwrite off
   File /oname=config\config.txt "config\config.txt"

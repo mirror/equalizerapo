@@ -53,6 +53,7 @@
     <ResourceCompile Include="Configurator.rc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\EqualizerAPO.licenseheader" />
     <None Include="Configurator.ico" />
     <None Include="small.ico" />
   </ItemGroup>

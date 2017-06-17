@@ -26,6 +26,7 @@ class EscapableLineEdit : public QLineEdit
 	Q_OBJECT
 public:
 	explicit EscapableLineEdit(QWidget* parent = 0);
+	explicit EscapableLineEdit(const QString& text, QWidget* parent = 0);
 
 signals:
 	void editingCanceled();

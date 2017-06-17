@@ -109,6 +109,8 @@ void LogHelper::log(const char* file, int line, const void* caller, bool trace, 
 
 	if (presetFP == NULL)
 		fclose(fp);
+	else
+		fflush(fp);
 }
 
 void LogHelper::reset()

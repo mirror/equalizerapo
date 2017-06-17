@@ -162,77 +162,78 @@ int main(int argc, char** argv)
 
 		PrecisionTimer timer;
 		timer.start();
-
-		FilterEngine engine;
-		wstring deviceName = StringHelper::toWString(devicenameArg.getValue(), CP_ACP);
-		wstring connectionName = StringHelper::toWString(connectionnameArg.getValue(), CP_ACP);
-		wstring deviceGuid = StringHelper::toWString(guidArg.getValue(), CP_ACP);
-		engine.setDeviceInfo(false, true, deviceName, connectionName, deviceGuid, deviceName + L" " + connectionName + L" " + deviceGuid);
-		engine.initialize((float)sampleRate, channelCount, channelCount, channelCount, channelMask, batchsize);
-
-		double initTime = timer.stop();
-		if (!verbose)
-			printf("\nLoading configuration took %g ms\n", initTime * 1000.0);
-
-		printf("\nProcessing %d frames from %d channel(s)\n", frameCount, channelCount);
-
-		timer.start();
-
-		for (unsigned i = 0; i < frameCount; i += batchsize)
 		{
-			engine.process(buf2 + i * channelCount, buf + i * channelCount, min(batchsize, frameCount - i));
+			FilterEngine engine;
+			wstring deviceName = StringHelper::toWString(devicenameArg.getValue(), CP_ACP);
+			wstring connectionName = StringHelper::toWString(connectionnameArg.getValue(), CP_ACP);
+			wstring deviceGuid = StringHelper::toWString(guidArg.getValue(), CP_ACP);
+			engine.setDeviceInfo(false, true, deviceName, connectionName, deviceGuid, deviceName + L" " + connectionName + L" " + deviceGuid);
+			engine.initialize((float)sampleRate, channelCount, channelCount, channelCount, channelMask, batchsize);
+
+			double initTime = timer.stop();
+			if(!verbose)
+				printf("\nLoading configuration took %g ms\n", initTime * 1000.0);
+
+			printf("\nProcessing %d frames from %d channel(s)\n", frameCount, channelCount);
+
+			timer.start();
+
+			for(unsigned i = 0; i < frameCount; i += batchsize)
+			{
+				engine.process(buf2 + i * channelCount, buf + i * channelCount, min(batchsize, frameCount - i));
+			}
+
+			double time = timer.stop();
+
+			printf("%d samples processed in %f seconds\n", frameCount * channelCount, time);
+			printf("This is equivalent to %.2f%% CPU load (one core) when processing in real time\n", 100.0f * time / length);
+
+			unsigned clipCount = 0;
+			float max = 0;
+			for(unsigned i = 0; i < frameCount * channelCount; i++)
+			{
+				float f = fabs(buf2[i]);
+				if(f > max)
+					max = f;
+				if(f > 1.0f)
+					clipCount++;
+			}
+
+			printf("Max output level: %f (%f dB)", max, log10(max) * 20.0f);
+			if(clipCount > 0)
+				printf(" (%d samples clipped!)", clipCount);
+			printf("\n");
+
+			string output = outputArg.getValue();
+			if(output == "")
+			{
+				char temp[255];
+				GetTempPathA(sizeof(temp) / sizeof(wchar_t), temp);
+
+				output = temp;
+				output += "testout.wav";
+			}
+
+			printf("\nWriting output to %s\n", output.c_str());
+
+			SF_INFO info = {frameCount, (int)sampleRate, (int)channelCount, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 0};
+			SNDFILE* outFile = sf_open(output.c_str(), SFM_WRITE, &info);
+			if(outFile == NULL)
+			{
+				fprintf(stderr, "%s", sf_strerror(outFile));
+				return 1;
+			}
+
+			sf_count_t numWritten = 0;
+			while(numWritten < frameCount)
+				numWritten += sf_writef_float(outFile, buf2 + numWritten * channelCount, frameCount - numWritten);
+
+			sf_close(outFile);
+			outFile = NULL;
+
+			delete[]buf;
+			delete[]buf2;
 		}
-
-		double time = timer.stop();
-
-		printf("%d samples processed in %f seconds\n", frameCount * channelCount, time);
-		printf("This is equivalent to %.2f%% CPU load (one core) when processing in real time\n", 100.0f * time / length);
-
-		unsigned clipCount = 0;
-		float max = 0;
-		for (unsigned i = 0; i < frameCount * channelCount; i++)
-		{
-			float f = fabs(buf2[i]);
-			if (f > max)
-				max = f;
-			if (f > 1.0f)
-				clipCount++;
-		}
-
-		printf("Max output level: %f (%f dB)", max, log10(max) * 20.0f);
-		if (clipCount > 0)
-			printf(" (%d samples clipped!)", clipCount);
-		printf("\n");
-
-		string output = outputArg.getValue();
-		if (output == "")
-		{
-			char temp[255];
-			GetTempPathA(sizeof(temp) / sizeof(wchar_t), temp);
-
-			output = temp;
-			output += "testout.wav";
-		}
-
-		printf("\nWriting output to %s\n", output.c_str());
-
-		SF_INFO info = {frameCount, (int)sampleRate, (int)channelCount, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 0};
-		SNDFILE* outFile = sf_open(output.c_str(), SFM_WRITE, &info);
-		if (outFile == NULL)
-		{
-			fprintf(stderr, "%s", sf_strerror(outFile));
-			return 1;
-		}
-
-		sf_count_t numWritten = 0;
-		while (numWritten < frameCount)
-			numWritten += sf_writef_float(outFile, buf2 + numWritten * channelCount, frameCount - numWritten);
-
-		sf_close(outFile);
-		outFile = NULL;
-
-		delete[]buf;
-		delete[]buf2;
 
 		if (!noPauseArg.getValue())
 			system("pause");

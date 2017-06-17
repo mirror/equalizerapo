@@ -56,6 +56,7 @@ public:
 	};
 
 	explicit FilterTable(MainWindow* mainWindow, QWidget* parent = 0);
+	~FilterTable();
 	void initialize(QScrollArea* scrollArea, const QList<std::shared_ptr<AbstractAPOInfo> >& outputDevices, const QList<std::shared_ptr<AbstractAPOInfo> >& inputDevices);
 	void updateDeviceAndChannelMask(std::shared_ptr<AbstractAPOInfo> selectedDevice, int selectedChannelMask);
 	void updateGuis();

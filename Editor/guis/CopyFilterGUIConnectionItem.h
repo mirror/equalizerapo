@@ -55,6 +55,7 @@ protected:
 
 private slots:
 	void lineEditEditingFinished();
+	void lineEditEditingCanceled();
 
 private:
 	CopyFilterGUIChannelItem* source = NULL;

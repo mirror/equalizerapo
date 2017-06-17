@@ -109,7 +109,7 @@ double AnalysisThread::getProcessingTime() const
 	return processingTime;
 }
 
-int AnalysisThread::getProcessedFrames() const
+unsigned AnalysisThread::getProcessedFrames() const
 {
 	return processedFrames;
 }
@@ -153,6 +153,7 @@ void AnalysisThread::run()
 		unsigned sampleRate = device->getSampleRate();
 
 		qint64 startTime = timer.nsecsElapsed();
+
 		FilterEngine engine;
 		engine.setDeviceInfo(device->isInput(), true, device->getDeviceName(), device->getConnectionName(), device->getDeviceGuid(), device->getDeviceString());
 		engine.initialize(sampleRate, channelCount, channelCount, channelCount, channelMask, frameCount, configPath.toStdWString());
@@ -193,8 +194,9 @@ void AnalysisThread::run()
 		int latency = 0;
 		int startFrame = -1;
 		double processingTime = 0.0;
-		int processedFrames = 0;
-		while (true)
+		unsigned processedFrames = 0;
+		// stop searching for startFrame after 10 seconds of audio data
+		while (processedFrames < 10 * sampleRate)
 		{
 			qint64 startTime = timer.nsecsElapsed();
 			engine.process(buf2, buf, frameCount);
@@ -240,20 +242,31 @@ void AnalysisThread::run()
 			if (startFrame == -1)
 				latency += frameCount;
 		}
-		latency += startFrame;
 
-		fftwf_execute(planForward);
-
-		double peakGain = -DBL_MAX;
-
-		for (int i = 0; i < frameCount / 2; i++)
+		double peakGain;
+		if (startFrame != -1)
 		{
-			float sqrGain = freqData[i][0] * freqData[i][0] + freqData[i][1] * freqData[i][1];
-			if (sqrGain > peakGain)
-				peakGain = sqrGain;
+			latency += startFrame;
+
+			fftwf_execute(planForward);
+
+			peakGain = -DBL_MAX;
+
+			for (int i = 0; i < frameCount / 2; i++)
+			{
+				float sqrGain = freqData[i][0] * freqData[i][0] + freqData[i][1] * freqData[i][1];
+				if (sqrGain > peakGain)
+					peakGain = sqrGain;
+			}
+			peakGain = sqrt(peakGain);
+			peakGain = log10(peakGain) * 20.0;
 		}
-		peakGain = sqrt(peakGain);
-		peakGain = log10(peakGain) * 20.0;
+		else
+		{
+			latency = 0;
+			peakGain = -numeric_limits<double>::infinity();
+			memset(freqData, 0, frameCount * sizeof(fftwf_complex));
+		}
 
 		mutex.lock();
 		if (this->freqDataLength != frameCount)

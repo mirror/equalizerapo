@@ -48,6 +48,7 @@
 #include "guis/IncludeFilterGUIFactory.h"
 #include "guis/GraphicEQFilterGUIFactory.h"
 #include "guis/ConvolutionFilterGUIFactory.h"
+#include "guis/VSTPluginFilterGUIFactory.h"
 #include "Editor/helpers/DPIHelper.h"
 #include "helpers/StringHelper.h"
 #include "helpers/LogHelper.h"
@@ -79,8 +80,16 @@ FilterTable::FilterTable(MainWindow* mainWindow, QWidget* parent)
 	factories.append(new CopyFilterGUIFactory);
 	factories.append(new GraphicEQFilterGUIFactory);
 	factories.append(new ConvolutionFilterGUIFactory);
+	factories.append(new VSTPluginFilterGUIFactory);
 
 	QApplication::instance()->installEventFilter(this);
+}
+
+FilterTable::~FilterTable()
+{
+	for (IFilterGUIFactory* factory : factories)
+		delete factory;
+	factories.clear();
 }
 
 void FilterTable::initialize(QScrollArea* scrollArea, const QList<shared_ptr<AbstractAPOInfo> >& outputDevices, const QList<shared_ptr<AbstractAPOInfo> >& inputDevices)

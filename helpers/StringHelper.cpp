@@ -163,3 +163,37 @@ wstring StringHelper::getSystemErrorString(long status)
 	else
 		return L"";
 }
+
+vector<wstring> StringHelper::splitQuoted(const wstring& s, wchar_t splitChar, wchar_t quoteChar)
+{
+	vector<wstring> result;
+	bool inQuotes = false;
+	wstring current;
+	for (size_t i = 0; i < s.length(); i++)
+	{
+		wchar_t c = s[i];
+		if (c == splitChar && !inQuotes)
+		{
+			if (current != L"")
+			{
+				result.push_back(current);
+				current = L"";
+			}
+		}
+		else if (c == quoteChar)
+		{
+			inQuotes = !inQuotes;
+			if (inQuotes && i > 0 && s[i - 1] == quoteChar)
+				current += quoteChar;
+		}
+		else
+		{
+			current += c;
+		}
+	}
+
+	if (current != L"")
+		result.push_back(current);
+
+	return result;
+}

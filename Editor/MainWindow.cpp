@@ -427,6 +427,10 @@ void MainWindow::deviceSelected(int index)
 		else
 			channelConfigurationComboBox->addItem(tr("From device") + " (" + apoInfo->getChannelCount() + " channels)", 0);
 	}
+	else
+	{
+		channelConfigurationComboBox->addItem(tr("From device") + " (?)", 0);
+	}
 
 	for (const GUIChannelHelper::ChannelConfigurationInfo& info : infos)
 		channelConfigurationComboBox->addItem(info.name, info.channelMask);
@@ -469,6 +473,8 @@ void MainWindow::channelConfigurationSelected(int index)
 			ui->analysisChannelComboBox->addItem(QString::fromStdWString(channelName));
 		}
 	}
+
+	startAnalysis();
 }
 
 void MainWindow::linesChanged()
@@ -723,6 +729,9 @@ void MainWindow::on_mainToolBar_visibilityChanged(bool visible)
 void MainWindow::on_analysisDockWidget_visibilityChanged(bool visible)
 {
 	ui->actionAnalysisPanel->setChecked(visible);
+
+	if (visible)
+		startAnalysis();
 }
 
 void MainWindow::on_actionToolbar_triggered(bool checked)
@@ -836,7 +845,7 @@ void MainWindow::getDeviceAndChannelMask(shared_ptr<AbstractAPOInfo>* selectedDe
 		*selectedDevice = defaultOutputDevice;
 
 	*channelMask = channelConfigurationComboBox->currentData().toInt();
-	if (*channelMask == 0 && selectedDevice != NULL)
+	if (*channelMask == 0 && selectedDevice->get() != NULL)
 	{
 		*channelMask = (*selectedDevice)->getChannelMask();
 
@@ -894,6 +903,9 @@ bool MainWindow::askForClose(int tabIndex)
 
 void MainWindow::startAnalysis()
 {
+	if (!ui->analysisDockWidget->isVisible())
+		return;
+
 	shared_ptr<AbstractAPOInfo> selectedDevice;
 
 	int channelMask;

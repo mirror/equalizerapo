@@ -85,7 +85,11 @@ double GainIterator::gainAt(double freq)
 	else
 	{
 		double t = (log(freq) - logLeft) / logRightMinusLeft;
-		dbGain = nodeLeft->dbGain + t * (nodeRight->dbGain - nodeLeft->dbGain);
+		// to support dbGain == -INF for both nodes
+		if (nodeLeft->dbGain == nodeRight->dbGain)
+			dbGain = nodeLeft->dbGain;
+		else
+			dbGain = nodeLeft->dbGain + t * (nodeRight->dbGain - nodeLeft->dbGain);
 	}
 
 	return dbGain;

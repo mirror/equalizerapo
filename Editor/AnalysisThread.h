@@ -43,7 +43,7 @@ public:
 	int getLatency() const;
 	double getInitializationTime() const;
 	double getProcessingTime() const;
-	int getProcessedFrames() const;
+	unsigned getProcessedFrames() const;
 
 signals:
 	void analysisFinished();

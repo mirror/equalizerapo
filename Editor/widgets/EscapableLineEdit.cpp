@@ -26,9 +26,13 @@ EscapableLineEdit::EscapableLineEdit(QWidget* parent)
 {
 }
 
+EscapableLineEdit::EscapableLineEdit(const QString& text, QWidget* parent)
+	: QLineEdit(text, parent)
+{
+}
+
 void EscapableLineEdit::keyPressEvent(QKeyEvent* event)
 {
-
 	if (event->key() == Qt::Key_Escape)
 		emit editingCanceled();
 	else

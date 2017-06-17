@@ -43,6 +43,7 @@ protected:
 private slots:
 	void addOutputChannel();
 	void lineEditEditingFinished();
+	void lineEditEditingCanceled();
 
 private:
 	QGraphicsItem* lastOutputItem;
