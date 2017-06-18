@@ -77,9 +77,9 @@ void LogHelper::log(const char* file, int line, const void* caller, bool trace, 
 	{
 		HANDLE con = GetStdHandle(STD_OUTPUT_HANDLE);
 		if (trace)
-			SetConsoleTextAttribute(con, 2); // Set console color to green
+			SetConsoleTextAttribute(con, 2);// Set console color to green
 		else
-			SetConsoleTextAttribute(con, 12); // Set console color to red
+			SetConsoleTextAttribute(con, 12);// Set console color to red
 	}
 
 	if (!compact)

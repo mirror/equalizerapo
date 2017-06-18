@@ -95,7 +95,7 @@ vector<wstring> ConvolutionFilter::initialize(float sampleRate, unsigned maxFram
 
 		for (unsigned i = 0; i < fileChannelCount; i++)
 		{
-			delete[]bufs[i];
+			delete[] bufs[i];
 		}
 		delete bufs;
 		delete interleavedBuf;

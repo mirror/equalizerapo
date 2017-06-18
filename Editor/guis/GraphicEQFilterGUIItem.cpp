@@ -102,4 +102,3 @@ void GraphicEQFilterGUIItem::setIndex(int value)
 {
 	index = value;
 }
-

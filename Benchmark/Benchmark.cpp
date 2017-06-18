@@ -229,8 +229,8 @@ int main(int argc, char** argv)
 			sf_close(outFile);
 			outFile = NULL;
 
-			delete[]buf;
-			delete[]buf2;
+			delete[] buf;
+			delete[] buf2;
 		}
 
 		if (!noPauseArg.getValue())

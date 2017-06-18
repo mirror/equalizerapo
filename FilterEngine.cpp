@@ -111,7 +111,7 @@ FilterEngine::~FilterEngine()
 	cleanupConfigurations();
 
 	for (vector<IFilterFactory*>::iterator it = factories.begin(); it != factories.end(); it++)
-		delete*it;
+		delete *it;
 
 	delete parser;
 	CloseHandle(loadSemaphore);

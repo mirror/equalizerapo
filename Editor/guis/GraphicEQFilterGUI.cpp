@@ -66,11 +66,11 @@ GraphicEQFilterGUI::GraphicEQFilterGUI(GraphicEQFilter* filter, QString configPa
 	ui->toolBar->addAction(ui->actionNormalizeResponse);
 	ui->toolBar->addAction(ui->actionResetResponse);
 
-	connect(scene, SIGNAL(nodeInserted(int, double, double)), this, SLOT(insertRow(int, double, double)));
+	connect(scene, SIGNAL(nodeInserted(int,double,double)), this, SLOT(insertRow(int,double,double)));
 	connect(scene, SIGNAL(nodeRemoved(int)), this, SLOT(removeRow(int)));
-	connect(scene, SIGNAL(nodeUpdated(int, double, double)), this, SLOT(updateRow(int, double, double)));
-	connect(scene, SIGNAL(nodeMoved(int, int)), this, SLOT(moveRow(int, int)));
-	connect(scene, SIGNAL(nodeSelectionChanged(int, bool)), this, SLOT(selectRow(int, bool)));
+	connect(scene, SIGNAL(nodeUpdated(int,double,double)), this, SLOT(updateRow(int,double,double)));
+	connect(scene, SIGNAL(nodeMoved(int,int)), this, SLOT(moveRow(int,int)));
+	connect(scene, SIGNAL(nodeSelectionChanged(int,bool)), this, SLOT(selectRow(int,bool)));
 	connect(scene, SIGNAL(updateModel()), this, SIGNAL(updateModel()));
 
 	scene->setNodes(filter->getNodes());
