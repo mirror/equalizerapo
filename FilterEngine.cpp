@@ -29,6 +29,7 @@
 #include <Shlwapi.h>
 #include <Ks.h>
 #include <KsMedia.h>
+#include <mpParser.h>
 #include <mpPackageCommon.h>
 #include <mpPackageNonCmplx.h>
 #include <mpPackageStr.h>
@@ -73,7 +74,8 @@ FilterEngine::FilterEngine()
 	transitionCounter = 0;
 	InitializeCriticalSection(&loadSection);
 	loadSemaphore = CreateSemaphore(NULL, 1, 1, NULL);
-	parser.EnableAutoCreateVar(true);
+	parser = new ParserX();
+	parser->EnableAutoCreateVar(true);
 
 	factories.push_back(new DeviceFilterFactory());
 	factories.push_back(new IfFilterFactory());
@@ -111,6 +113,7 @@ FilterEngine::~FilterEngine()
 	for (vector<IFilterFactory*>::iterator it = factories.begin(); it != factories.end(); it++)
 		delete*it;
 
+	delete parser;
 	CloseHandle(loadSemaphore);
 	DeleteCriticalSection(&loadSection);
 }
@@ -169,15 +172,15 @@ void FilterEngine::initialize(float sampleRate, unsigned inputChannelCount, unsi
 		return;
 	}
 
-	parser.ClearConst();
-	parser.ClearFun();
-	parser.ClearInfixOprt();
-	parser.ClearOprt();
-	parser.ClearPostfixOprt();
-	parser.AddPackage(PackageCommon::Instance());
-	parser.AddPackage(PackageNonCmplx::Instance());
-	parser.AddPackage(PackageStr::Instance());
-	parser.AddPackage(PackageMatrix::Instance());
+	parser->ClearConst();
+	parser->ClearFun();
+	parser->ClearInfixOprt();
+	parser->ClearOprt();
+	parser->ClearPostfixOprt();
+	parser->AddPackage(PackageCommon::Instance());
+	parser->AddPackage(PackageNonCmplx::Instance());
+	parser->AddPackage(PackageStr::Instance());
+	parser->AddPackage(PackageMatrix::Instance());
 
 	for (vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
 	{
@@ -219,7 +222,7 @@ void FilterEngine::loadConfig(const wstring& customPath)
 	lastChannelNames.clear();
 	lastNewChannelNames.clear();
 	watchRegistryKeys.clear();
-	parser.ClearVar();
+	parser->ClearVar();
 
 	for (vector<IFilterFactory*>::const_iterator it = factories.cbegin(); it != factories.cend(); it++)
 	{

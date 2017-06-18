@@ -18,6 +18,7 @@
 */
 
 #include "stdafx.h"
+#include <mpParser.h>
 #include "helpers/LogHelper.h"
 #include "helpers/StringHelper.h"
 #include "FilterEngine.h"

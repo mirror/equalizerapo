@@ -20,6 +20,7 @@
 #pragma once
 
 #include <string>
+#include <stack>
 
 #include "IFilterFactory.h"
 #include "IFilter.h"

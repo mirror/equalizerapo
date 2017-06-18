@@ -218,9 +218,9 @@ void VoicemeeterClient::handle(long nCommand, void* lpData, long nnn)
 			VBVMR_LPT_AUDIOBUFFER audioBuffer = (VBVMR_LPT_AUDIOBUFFER)lpData;
 			int nbi = audioBuffer->audiobuffer_nbi;
 			int nbo = audioBuffer->audiobuffer_nbo;
-			int n = min(nbi, nbo) / 8;
+			unsigned n = min(nbi, nbo) / 8;
 
-			for (int i = 0; i < n; i++)
+			for (unsigned i = 0; i < n; i++)
 			{
 				FilterEngine* engine = NULL;
 				if (i < engines.size())

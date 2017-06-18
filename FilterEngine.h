@@ -24,12 +24,15 @@
 #include <unordered_set>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#include <mpParser.h>
 
 #include "IFilterFactory.h"
 #include "FilterConfiguration.h"
 #include "helpers/PrecisionTimer.h"
 #include "helpers/MemoryHelper.h"
+
+namespace mup {
+class ParserX;
+}
 
 #pragma AVRT_VTABLES_BEGIN
 class FilterEngine
@@ -60,7 +63,7 @@ public:
 	unsigned getChannelMask() const {return channelMask;}
 	float getSampleRate() const {return sampleRate;}
 	unsigned getMaxFrameCount() const {return maxFrameCount;}
-	mup::ParserX* getParser() {return &parser;}
+	mup::ParserX* getParser() {return parser;}
 
 private:
 	void addFilters(std::vector<IFilter*> filters);
@@ -93,7 +96,7 @@ private:
 	std::vector<std::wstring> lastNewChannelNames;
 	std::vector<std::wstring> allChannelNames;
 	bool lastInPlace;
-	mup::ParserX parser;
+	mup::ParserX* parser;
 
 	FilterConfiguration* currentConfig;
 	FilterConfiguration* nextConfig;

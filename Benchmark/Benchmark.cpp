@@ -28,7 +28,6 @@
 #include <string>
 #include <sndfile.h>
 #include <tclap/CmdLine.h>
-#include <mpParser.h>
 
 #include "version.h"
 #include "FilterEngine.h"
@@ -38,7 +37,6 @@
 #include "helpers/MemoryHelper.h"
 
 using namespace std;
-using namespace mup;
 
 int main(int argc, char** argv)
 {
