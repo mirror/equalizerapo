@@ -424,8 +424,10 @@ void MainWindow::deviceSelected(int index)
 
 		if (selectedInfo != NULL)
 			channelConfigurationComboBox->addItem(tr("From device") + " (" + selectedInfo->name + ")", 0);
-		else
+		else if (apoInfo->getChannelCount() != 0)
 			channelConfigurationComboBox->addItem(tr("From device") + " (" + apoInfo->getChannelCount() + " channels)", 0);
+		else
+			channelConfigurationComboBox->addItem(tr("From device") + " (? channels)", 0);
 	}
 	else
 	{
@@ -465,6 +467,11 @@ void MainWindow::channelConfigurationSelected(int index)
 				if (channelMask & channelPos)
 					channelCount++;
 			}
+		}
+		if (channelCount == 0)
+		{
+			channelCount = 8;
+			channelMask = KSAUDIO_SPEAKER_7POINT1_SURROUND;
 		}
 
 		vector<wstring> channelNames = ChannelHelper::getChannelNames(channelCount, channelMask);

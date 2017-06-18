@@ -149,8 +149,15 @@ void AnalysisThread::run()
 					channelCount++;
 			}
 		}
+		if (channelCount == 0)
+		{
+			channelCount = 8;
+			channelMask = KSAUDIO_SPEAKER_7POINT1_SURROUND;
+		}
 
 		unsigned sampleRate = device->getSampleRate();
+		if (sampleRate == 0)
+			sampleRate = 48000;
 
 		qint64 startTime = timer.nsecsElapsed();
 
