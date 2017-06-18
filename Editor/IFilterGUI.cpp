@@ -22,10 +22,8 @@
 IFilterGUI::IFilterGUI(QWidget* parent)
 	: QWidget(parent)
 {
-
 }
 
 IFilterGUI::~IFilterGUI()
 {
-
 }

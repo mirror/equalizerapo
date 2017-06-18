@@ -169,14 +169,14 @@ int main(int argc, char** argv)
 			engine.initialize((float)sampleRate, channelCount, channelCount, channelCount, channelMask, batchsize);
 
 			double initTime = timer.stop();
-			if(!verbose)
+			if (!verbose)
 				printf("\nLoading configuration took %g ms\n", initTime * 1000.0);
 
 			printf("\nProcessing %d frames from %d channel(s)\n", frameCount, channelCount);
 
 			timer.start();
 
-			for(unsigned i = 0; i < frameCount; i += batchsize)
+			for (unsigned i = 0; i < frameCount; i += batchsize)
 			{
 				engine.process(buf2 + i * channelCount, buf + i * channelCount, min(batchsize, frameCount - i));
 			}
@@ -188,22 +188,22 @@ int main(int argc, char** argv)
 
 			unsigned clipCount = 0;
 			float max = 0;
-			for(unsigned i = 0; i < frameCount * channelCount; i++)
+			for (unsigned i = 0; i < frameCount * channelCount; i++)
 			{
 				float f = fabs(buf2[i]);
-				if(f > max)
+				if (f > max)
 					max = f;
-				if(f > 1.0f)
+				if (f > 1.0f)
 					clipCount++;
 			}
 
 			printf("Max output level: %f (%f dB)", max, log10(max) * 20.0f);
-			if(clipCount > 0)
+			if (clipCount > 0)
 				printf(" (%d samples clipped!)", clipCount);
 			printf("\n");
 
 			string output = outputArg.getValue();
-			if(output == "")
+			if (output == "")
 			{
 				char temp[255];
 				GetTempPathA(sizeof(temp) / sizeof(wchar_t), temp);
@@ -216,14 +216,14 @@ int main(int argc, char** argv)
 
 			SF_INFO info = {frameCount, (int)sampleRate, (int)channelCount, SF_FORMAT_WAV | SF_FORMAT_PCM_16, 0};
 			SNDFILE* outFile = sf_open(output.c_str(), SFM_WRITE, &info);
-			if(outFile == NULL)
+			if (outFile == NULL)
 			{
 				fprintf(stderr, "%s", sf_strerror(outFile));
 				return 1;
 			}
 
 			sf_count_t numWritten = 0;
-			while(numWritten < frameCount)
+			while (numWritten < frameCount)
 				numWritten += sf_writef_float(outFile, buf2 + numWritten * channelCount, frameCount - numWritten);
 
 			sf_close(outFile);

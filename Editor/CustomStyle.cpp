@@ -20,7 +20,7 @@
 #include "Editor/helpers/DPIHelper.h"
 
 CustomStyle::CustomStyle(QStyle* style)
-    : QProxyStyle(style)
+	: QProxyStyle(style)
 {
 }
 

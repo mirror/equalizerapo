@@ -25,7 +25,6 @@ using namespace std;
 AnalysisPlotScene::AnalysisPlotScene(QObject* parent)
 	: FrequencyPlotScene(parent)
 {
-
 }
 
 void AnalysisPlotScene::setFreqData(fftwf_complex* freqData, int frameCount, unsigned sampleRate)

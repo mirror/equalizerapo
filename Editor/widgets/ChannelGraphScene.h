@@ -29,5 +29,4 @@ public:
 
 protected:
 	QPointF getNextChannelPoint(QGraphicsItem* lastItem, bool output);
-
 };

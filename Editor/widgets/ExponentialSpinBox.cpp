@@ -25,7 +25,6 @@ using namespace std;
 ExponentialSpinBox::ExponentialSpinBox(QWidget* parent)
 	: QSpinBox(parent)
 {
-
 }
 
 void ExponentialSpinBox::stepBy(int steps)
