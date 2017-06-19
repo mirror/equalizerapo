@@ -1198,12 +1198,13 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
     <message>
         <location filename="../MainWindow.cpp" line="426"/>
         <location filename="../MainWindow.cpp" line="428"/>
-        <location filename="../MainWindow.cpp" line="432"/>
+        <location filename="../MainWindow.cpp" line="430"/>
+        <location filename="../MainWindow.cpp" line="434"/>
         <source>From device</source>
         <translation>Von Gerät</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="710"/>
+        <location filename="../MainWindow.cpp" line="717"/>
         <source>%0 dB</source>
         <translation>%0 dB</translation>
     </message>
@@ -1212,7 +1213,7 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samp.)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="713"/>
+        <location filename="../MainWindow.cpp" line="720"/>
         <source>%0 ms (%1 s.)</source>
         <translation>%0 ms (%1 S.)</translation>
     </message>
@@ -1221,46 +1222,46 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samples)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="715"/>
+        <location filename="../MainWindow.cpp" line="722"/>
         <source>%0 ms</source>
         <translation>%0 ms</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="718"/>
+        <location filename="../MainWindow.cpp" line="725"/>
         <source>%0 % (one core)</source>
         <translation>%0 % (ein Kern)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="759"/>
-        <location filename="../MainWindow.cpp" line="786"/>
-        <location filename="../MainWindow.cpp" line="805"/>
+        <location filename="../MainWindow.cpp" line="766"/>
+        <location filename="../MainWindow.cpp" line="793"/>
+        <location filename="../MainWindow.cpp" line="812"/>
         <source>Restart required</source>
         <translation>Neustart erforderlich</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="759"/>
-        <location filename="../MainWindow.cpp" line="786"/>
-        <location filename="../MainWindow.cpp" line="805"/>
+        <location filename="../MainWindow.cpp" line="766"/>
+        <location filename="../MainWindow.cpp" line="793"/>
+        <location filename="../MainWindow.cpp" line="812"/>
         <source>Configuration Editor will be restarted to apply the changed settings. Proceed?</source>
         <translation>Konfigurationseditor wird neugestartet, um die geänderten Einstellungen zu übernehmen. Fortsetzen?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="865"/>
+        <location filename="../MainWindow.cpp" line="872"/>
         <source>Unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="866"/>
+        <location filename="../MainWindow.cpp" line="873"/>
         <source>The configuration file %0 has unsaved changes.</source>
         <translation>Die Konfigurationsdatei %0 hat ungespeicherte Änderungen.</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="867"/>
+        <location filename="../MainWindow.cpp" line="874"/>
         <source>Do you want to save the changes before closing the file?</source>
         <translation>Möchten Sie die Änderungen speichern, bevor die Datei geschlossen wird?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="535"/>
+        <location filename="../MainWindow.cpp" line="542"/>
         <source>Open file</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -1270,18 +1271,18 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>Automatisch (%0)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="537"/>
-        <location filename="../MainWindow.cpp" line="590"/>
+        <location filename="../MainWindow.cpp" line="544"/>
+        <location filename="../MainWindow.cpp" line="597"/>
         <source>E-APO configurations (*.txt)</source>
         <translation>E-APO-Konfigurationen (*.txt)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="587"/>
+        <location filename="../MainWindow.cpp" line="594"/>
         <source>Save file as</source>
         <translation>Datei speichern unter</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="609"/>
+        <location filename="../MainWindow.cpp" line="616"/>
         <source>Unsaved</source>
         <translation>Ungespeichert</translation>
     </message>
@@ -1535,14 +1536,20 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>Plugin ist beim Öffnen des Panels abgestürzt.</translation>
     </message>
     <message>
-        <location filename="../guis/VSTPluginFilterGUI.cpp" line="418"/>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="421"/>
+        <source>The library is not readable by the audio service.
+Change the file permissions or copy the file to the VSTPlugins directory.</source>
+        <translation>Die Bibliothek ist für den Audiodienst nicht lesbar.
+Ändern Sie die Dateiberechtigungen oder kopieren Sie die Datei in das VSTPlugins-Verzeichnis.</translation>
+    </message>
+    <message>
         <source>The library is not readable by the audio service.
 Change the file permissions or copy the file to the plugins directory.</source>
-        <translation>Die Bibliothek ist für den Audiodienst nicht lesbar.
+        <translation type="vanished">Die Bibliothek ist für den Audiodienst nicht lesbar.
 Ändern Sie die Dateiberechtigungen oder kopieren Sie die Datei in das plugins-Verzeichnis.</translation>
     </message>
     <message>
-        <location filename="../guis/VSTPluginFilterGUI.cpp" line="469"/>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="472"/>
         <source>The plugin seemingly accesses these files not readable by the audio service:
 %0
 Change the file permissions or copy the files to the config directory.</source>

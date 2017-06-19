@@ -418,7 +418,7 @@ void VSTPluginFilterGUI::updatePermissionWarning()
 
 	if ((mask & GENERIC_READ) != GENERIC_READ && (mask & FILE_GENERIC_READ) != FILE_GENERIC_READ)
 	{
-		QString text = tr("The library is not readable by the audio service.\nChange the file permissions or copy the file to the plugins directory.");
+		QString text = tr("The library is not readable by the audio service.\nChange the file permissions or copy the file to the VSTPlugins directory.");
 
 		ui->warningTextEdit->setPlainText(text);
 		QSize textSize = ui->warningTextEdit->fontMetrics().size(0, text);

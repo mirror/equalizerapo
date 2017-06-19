@@ -52,7 +52,7 @@ wstring VSTPluginLibrary::getDefaultPluginPath()
 	if (defaultPluginPath == L"")
 	{
 		wstring installPath = RegistryHelper::readValue(APP_REGPATH, L"InstallPath");
-		defaultPluginPath = installPath + L"\\plugins";
+		defaultPluginPath = installPath + L"\\VSTPlugins";
 	}
 
 	return defaultPluginPath;

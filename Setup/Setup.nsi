@@ -145,7 +145,7 @@ Section "Install" SecInstall
   File "Configuration reference (online).url"
   
   CreateDirectory "$INSTDIR\config"
-  CreateDirectory "$INSTDIR\plugins"
+  CreateDirectory "$INSTDIR\VSTPlugins"
   
   SetOverwrite off
   File /oname=config\config.txt "config\config.txt"
@@ -214,6 +214,8 @@ Section "-un.Uninstall"
   
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
   RMDir /r "$SMPROGRAMS\$StartMenuFolder"
+  
+  RMDir "$INSTDIR\VSTPlugins"
   
   Delete "$INSTDIR\Configuration reference (online).url"
   Delete "$INSTDIR\Configuration tutorial (online).url"
