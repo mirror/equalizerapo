@@ -52,6 +52,7 @@ public:
 	void save(FilterTable* filterTable, QString path);
 	bool isEmpty();
 	bool shouldRestart();
+	void startAnalysis();
 
 protected:
 	void closeEvent(QCloseEvent* event) override;
@@ -93,7 +94,6 @@ private:
 	FilterTable* addTab(QString title, QString tooltip, QString configPath, QList<QString> lines);
 	void getDeviceAndChannelMask(std::shared_ptr<AbstractAPOInfo>* selectedDevice, int* channelMask);
 	bool askForClose(int tabIndex);
-	void startAnalysis();
 	void loadPreferences();
 	void savePreferences();
 	void updateRecentFiles();

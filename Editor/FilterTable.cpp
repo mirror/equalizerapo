@@ -49,6 +49,7 @@
 #include "guis/GraphicEQFilterGUIFactory.h"
 #include "guis/ConvolutionFilterGUIFactory.h"
 #include "guis/VSTPluginFilterGUIFactory.h"
+#include "guis/LoudnessCorrectionFilterGUIFactory.h"
 #include "Editor/helpers/DPIHelper.h"
 #include "helpers/StringHelper.h"
 #include "helpers/LogHelper.h"
@@ -81,6 +82,7 @@ FilterTable::FilterTable(MainWindow* mainWindow, QWidget* parent)
 	factories.append(new GraphicEQFilterGUIFactory);
 	factories.append(new ConvolutionFilterGUIFactory);
 	factories.append(new VSTPluginFilterGUIFactory);
+	factories.append(new LoudnessCorrectionFilterGUIFactory);
 
 	QApplication::instance()->installEventFilter(this);
 }
@@ -592,6 +594,12 @@ void FilterTable::setScrollOffsets(int x, int y)
 {
 	presetScrollX = x;
 	presetScrollY = y;
+}
+
+void FilterTable::updateAnalysis()
+{
+	if (isVisible())
+		mainWindow->startAnalysis();
 }
 
 void FilterTable::mousePressEvent(QMouseEvent* event)

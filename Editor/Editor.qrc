@@ -23,5 +23,6 @@
         <file>icons/normalize_response.ico</file>
         <file>icons/reset_response.ico</file>
         <file>icons/resize_corner.ico</file>
+        <file>sounds/pinkNoise.flac</file>
     </qresource>
 </RCC>

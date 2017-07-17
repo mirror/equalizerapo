@@ -25,7 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="EqualizerAPO.def" />
-    <None Include="EqualizerAPO.licenseheader" />
+    <None Include="..\EqualizerAPO.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="helpers">

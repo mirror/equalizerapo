@@ -65,6 +65,14 @@ public:
 		return result;
 	}
 
+	__forceinline
+	void setCoefficients(double ain[], const double& a0in)
+	{
+		for (int i = 0; i < 4; i++)
+			a[i] = ain[i];
+		a0 = a0in;
+	}
+
 	double gainAt(double freq, double srate);
 
 private:

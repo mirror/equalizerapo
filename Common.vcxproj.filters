@@ -129,6 +129,18 @@
     <ClInclude Include="FilterEngine.h" />
     <ClInclude Include="IFilter.h" />
     <ClInclude Include="IFilterFactory.h" />
+    <ClInclude Include="filters\loudnessCorrection\ParameterArchive.h">
+      <Filter>filters\loudnessCorrection</Filter>
+    </ClInclude>
+    <ClInclude Include="filters\loudnessCorrection\VolumeController.h">
+      <Filter>filters\loudnessCorrection</Filter>
+    </ClInclude>
+    <ClInclude Include="filters\loudnessCorrection\LoudnessCorrectionFilterFactory.h">
+      <Filter>filters\loudnessCorrection</Filter>
+    </ClInclude>
+    <ClInclude Include="filters\loudnessCorrection\LoudnessCorrectionFilter.h">
+      <Filter>filters\loudnessCorrection</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -246,6 +258,15 @@
     <ClCompile Include="FilterConfiguration.cpp" />
     <ClCompile Include="FilterEngine.cpp" />
     <ClCompile Include="IFilter.cpp" />
+    <ClCompile Include="filters\loudnessCorrection\VolumeController.cpp">
+      <Filter>filters\loudnessCorrection</Filter>
+    </ClCompile>
+    <ClCompile Include="filters\loudnessCorrection\LoudnessCorrectionFilterFactory.cpp">
+      <Filter>filters\loudnessCorrection</Filter>
+    </ClCompile>
+    <ClCompile Include="filters\loudnessCorrection\LoudnessCorrectionFilter.cpp">
+      <Filter>filters\loudnessCorrection</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="filters">
@@ -260,5 +281,11 @@
     <Filter Include="parser">
       <UniqueIdentifier>{4a6738bc-7359-4b18-bdb4-1f443f41e528}</UniqueIdentifier>
     </Filter>
+    <Filter Include="filters\loudnessCorrection">
+      <UniqueIdentifier>{c473f978-6002-42aa-adf5-3b5f10868d2d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EqualizerAPO.licenseheader" />
   </ItemGroup>
 </Project>

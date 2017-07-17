@@ -20,11 +20,11 @@
     <ResourceCompile Include="VoicemeeterClient.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\EqualizerAPO.licenseheader" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="helpers">
       <UniqueIdentifier>{eb32c27d-e4c2-4cad-a72d-b798d4514714}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\EqualizerAPO.licenseheader" />
   </ItemGroup>
 </Project>

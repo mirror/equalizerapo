@@ -14,11 +14,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\EqualizerAPO.licenseheader" />
-  </ItemGroup>
-  <ItemGroup>
     <Filter Include="helpers">
       <UniqueIdentifier>{8c70f87a-7d86-4826-bfa1-7a4c4ec5efec}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\EqualizerAPO.licenseheader" />
   </ItemGroup>
 </Project>

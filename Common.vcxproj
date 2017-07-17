@@ -158,6 +158,10 @@
     <ClInclude Include="filters\IIRFilter.h" />
     <ClInclude Include="filters\IIRFilterFactory.h" />
     <ClInclude Include="filters\IncludeFilterFactory.h" />
+    <ClInclude Include="filters\loudnessCorrection\LoudnessCorrectionFilterFactory.h" />
+    <ClInclude Include="filters\loudnessCorrection\LoudnessCorrectionFilter.h" />
+    <ClInclude Include="filters\loudnessCorrection\ParameterArchive.h" />
+    <ClInclude Include="filters\loudnessCorrection\VolumeController.h" />
     <ClInclude Include="filters\PreampFilter.h" />
     <ClInclude Include="filters\PreampFilterFactory.h" />
     <ClInclude Include="filters\StageFilterFactory.h" />
@@ -208,6 +212,9 @@
     <ClCompile Include="filters\IIRFilter.cpp" />
     <ClCompile Include="filters\IIRFilterFactory.cpp" />
     <ClCompile Include="filters\IncludeFilterFactory.cpp" />
+    <ClCompile Include="filters\loudnessCorrection\LoudnessCorrectionFilterFactory.cpp" />
+    <ClCompile Include="filters\loudnessCorrection\LoudnessCorrectionFilter.cpp" />
+    <ClCompile Include="filters\loudnessCorrection\VolumeController.cpp" />
     <ClCompile Include="filters\PreampFilter.cpp" />
     <ClCompile Include="filters\PreampFilterFactory.cpp" />
     <ClCompile Include="filters\StageFilterFactory.cpp" />
@@ -233,6 +240,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EqualizerAPO.licenseheader" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

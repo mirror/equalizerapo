@@ -124,7 +124,14 @@ SOURCES += main.cpp\
 	guis/VSTPluginFilterGUIDialog.cpp \
 	../filters/VSTPluginFilter.cpp \
 	../filters/VSTPluginFilterFactory.cpp \
-	../helpers/VSTPluginInstance.cpp
+	../helpers/VSTPluginInstance.cpp \
+	guis/LoudnessCorrectionFilterGUI.cpp \
+	guis/LoudnessCorrectionFilterGUIFactory.cpp \
+	../filters/loudnessCorrection/LoudnessCorrectionFilter.cpp \
+	../filters/loudnessCorrection/LoudnessCorrectionFilterFactory.cpp \
+	../filters/loudnessCorrection/VolumeController.cpp \
+	guis/LoudnessCorrectionFilterGUIDialog.cpp \
+	helpers/QtSndfileHandle.cpp
 
 HEADERS  += \
 	../helpers/LogHelper.h \
@@ -237,7 +244,15 @@ HEADERS  += \
 	guis/VSTPluginFilterGUIDialog.h \
 	../filters/VSTPluginFilter.h \
 	../filters/VSTPluginFilterFactory.h \
-	../helpers/VSTPluginInstance.h
+	../helpers/VSTPluginInstance.h \
+	guis/LoudnessCorrectionFilterGUI.h \
+	guis/LoudnessCorrectionFilterGUIFactory.h \
+	../filters/loudnessCorrection/LoudnessCorrectionFilter.h \
+	../filters/loudnessCorrection/LoudnessCorrectionFilterFactory.h \
+	../filters/loudnessCorrection/ParameterArchive.h \
+	../filters/loudnessCorrection/VolumeController.h \
+	guis/LoudnessCorrectionFilterGUIDialog.h \
+	helpers/QtSndfileHandle.h
 
 FORMS    += \
 	guis/PreampFilterGUI.ui \
@@ -257,10 +272,12 @@ FORMS    += \
 	MainWindow.ui \
 	guis/StageFilterGUI.ui \
 	guis/VSTPluginFilterGUI.ui \
-	guis/VSTPluginFilterGUIDialog.ui
+	guis/VSTPluginFilterGUIDialog.ui \
+	guis/LoudnessCorrectionFilterGUI.ui \
+	guis/LoudnessCorrectionFilterGUIDialog.ui
 
 INCLUDEPATH += $$PWD/.. "C:/Program Files/libsndfile/include" "C:/Program Files/fftw3" "C:/Program Files/muparserx_v3_0_1/parser"
-LIBS += user32.lib advapi32.lib version.lib ole32.lib Shlwapi.lib authz.lib crypt32.lib dbghelp.lib libsndfile-1.lib libfftw3f-3.lib
+LIBS += user32.lib advapi32.lib version.lib ole32.lib Shlwapi.lib authz.lib crypt32.lib dbghelp.lib winmm.lib libsndfile-1.lib libfftw3f-3.lib
 
 build_pass:CONFIG(debug, debug|release) {
 	LIBS += muparserxd.lib

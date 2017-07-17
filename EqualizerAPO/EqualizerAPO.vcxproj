@@ -182,8 +182,8 @@
     <ClCompile Include="EqualizerAPO.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\EqualizerAPO.licenseheader" />
     <None Include="EqualizerAPO.def" />
-    <None Include="EqualizerAPO.licenseheader" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="EqualizerAPO.rc">

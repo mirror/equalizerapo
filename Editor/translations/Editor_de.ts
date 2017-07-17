@@ -661,7 +661,7 @@ Wählen Sie eine andere Datei oder ändern Sie die Konfiguration des Geräts.</t
 <context>
     <name>FilterTable</name>
     <message>
-        <location filename="../FilterTable.cpp" line="214"/>
+        <location filename="../FilterTable.cpp" line="216"/>
         <source>Add filter</source>
         <translation>Filter hinzufügen</translation>
     </message>
@@ -895,6 +895,130 @@ Change the file permissions or copy the file to the config directory.</source>
         <location filename="../guis/IncludeFilterGUIFactory.cpp" line="35"/>
         <source>Include (Include configuration file)</source>
         <translation>Include (Konfigurationsdatei einbinden)</translation>
+    </message>
+</context>
+<context>
+    <name>LoudnessCorrectionFilterGUI</name>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="158"/>
+        <source>Attenuation:</source>
+        <translation>Abschwächung:</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="251"/>
+        <source>Reference offset:</source>
+        <translation>Referenzversatz:</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="73"/>
+        <source>Reference level:</source>
+        <translation>Referenzpegel:</translation>
+    </message>
+    <message>
+        <source> dB</source>
+        <translation type="obsolete"> dB</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="93"/>
+        <source>Master volume:</source>
+        <translation>Gesamtlautstärke:</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="106"/>
+        <source>contributed by
+Alexander Walch</source>
+        <translation>beigetragen durch
+Alexander Walch</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="299"/>
+        <source>Loudness correction:</source>
+        <translation>Lautheitskorrektur:</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="309"/>
+        <source>Calibrate</source>
+        <translation>Kalibrieren</translation>
+    </message>
+</context>
+<context>
+    <name>LoudnessCorrectionFilterGUIDialog</name>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="14"/>
+        <source>Calibration</source>
+        <translation>Kalibrierung</translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For a correct calibration, a sound level meter is required.&lt;br/&gt;These are the steps for calibration of a stereo system:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Disable loudness equalization during measurement&lt;br/&gt;(done automatically while this dialog is open)&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Enable only one speaker (e.g. select left or right channel below)&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Play pink noise at full application volume:&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Für eine korrekte Kalibrierung wird ein Schallpegelmesser benötigt.&lt;br/&gt;Dies sind die Schritte für die Kalibrierung eines Stereosystems:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lautheitskorrektur während der Messung deaktivieren&lt;br/&gt;(geschieht automatisch, während dieser Dialog geöffnet ist)&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Nur einen Lautsprecher aktivieren (z.B. linken oder rechten Kanal unten wählen)&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Rosa Rauschen bei voller Anwendungslautstärke abspielen:&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="20"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;For a correct calibration, a sound level meter is required.&lt;br/&gt;These are the steps for calibration of a stereo system:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Disable loudness correction during measurement&lt;br/&gt;(done automatically while this dialog is open)&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Enable only one speaker (e.g. select left or right channel below)&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Play pink noise at full application volume:&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Für eine korrekte Kalibrierung wird ein Schallpegelmesser benötigt.&lt;br/&gt;Dies sind die Schritte für die Kalibrierung eines Stereosystems:&lt;/p&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lautheitskorrektur während der Messung deaktivieren&lt;br/&gt;(geschieht automatisch, während dieser Dialog geöffnet ist)&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Nur einen Lautsprecher aktivieren (z.B. linken oder rechten Kanal unten wählen)&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Rosa Rauschen bei voller Anwendungslautstärke abspielen:&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="44"/>
+        <source>Channel</source>
+        <translation>Kanal</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="50"/>
+        <source>Left</source>
+        <translation>Links</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="60"/>
+        <source>Right</source>
+        <translation>Rechts</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="67"/>
+        <source>Both</source>
+        <translation>Beide</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="100"/>
+        <source>Stop</source>
+        <translation>Stopp</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="126"/>
+        <source>Play</source>
+        <translation>Abspielen</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="135"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Adjust volume via Windows volume control or external volume control (amplifier, etc.) so that the sound level meter shows 75 dB at listening position. If that volume can not be reached, please adjust the following setting:&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Lautstärke über die Windows-Lautstärkeregelung oder externe Lautstärkeregelung (Verstärker, usw.) anpassen, sodass der Schallpegelmesser am Hörplatz 75 dB anzeigt. Wenn diese Lautstärke nicht erreicht werden kann, bitte die folgende Einstellung anpassen:&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="163"/>
+        <source>Level at listening position:</source>
+        <translation>Pegel am Hörplatz:</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="176"/>
+        <source> dB</source>
+        <translation> dB</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIDialog.ui" line="204"/>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The reference level will be set to the Windows volume for which the level at the listening position is 75 dB.&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;After calibration, volume should only be adjusted via Windows volume control&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;ul style=&quot;margin-top: 0px; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; -qt-list-indent: 1;&quot;&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Der Referenzpegel wird auf die Windows-Lautstärke gesetzt, bei der der Pegel am Hörplatz 75 dB beträgt.&lt;/li&gt;&lt;li style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Nach der Kalibrierung sollte die Lautstärke nur noch über die Windows-Lautstärkeregelung verändert werden&lt;/li&gt;&lt;/ul&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>LoudnessCorrectionFilterGUIFactory</name>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIFactory.cpp" line="48"/>
+        <source>Loudness correction</source>
+        <translation>Lautheitskorrektur</translation>
+    </message>
+    <message>
+        <location filename="../guis/LoudnessCorrectionFilterGUIFactory.cpp" line="48"/>
+        <source>Advanced filters</source>
+        <translation>Fortgeschrittene Filter</translation>
     </message>
 </context>
 <context>

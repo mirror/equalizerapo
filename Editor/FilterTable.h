@@ -93,6 +93,8 @@ public:
 	void savePreferences();
 	void setScrollOffsets(int x, int y);
 
+	void updateAnalysis();
+
 signals:
 	void linesChanged();
 
