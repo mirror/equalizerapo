@@ -48,6 +48,7 @@ vector<wstring> GraphicEQFilter::initialize(float sampleRate, unsigned maxFrameC
 
 	channelCount = (unsigned)channelNames.size();
 
+	fftwf_make_planner_thread_safe();
 	fftwf_complex* timeData = fftwf_alloc_complex(filterLength * 2);
 	fftwf_complex* freqData = fftwf_alloc_complex(filterLength * 2);
 	fftwf_plan planForward = fftwf_plan_dft_1d(filterLength * 2, timeData, freqData, FFTW_FORWARD, FFTW_ESTIMATE);

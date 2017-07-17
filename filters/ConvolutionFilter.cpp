@@ -87,6 +87,7 @@ vector<wstring> ConvolutionFilter::initialize(float sampleRate, unsigned maxFram
 			bufs[i] = buf;
 		}
 
+		fftwf_make_planner_thread_safe();
 		filters = (HConvSingle*)MemoryHelper::alloc(sizeof(HConvSingle) * channelCount);
 		for (unsigned i = 0; i < channelCount; i++)
 		{
