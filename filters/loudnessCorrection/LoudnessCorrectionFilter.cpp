@@ -62,10 +62,26 @@ std::vector<std::wstring> LoudnessCorrectionFilter::initialize(float sampleRate,
 	_highShelfBiquads.resize(_channelCount);
 	_sampleRate = sampleRate;
 	_attFactor = 1.0;
+	_neutral = true;
+
+	double freqLS = 75, qLS = 1, gainLS = 0;
+	double freqHS = 10000, qHS = 1, gainHS = 0;
+	VolumeController VolumeController;
+	float vol;
+	HRESULT res = VolumeController.getVolume(vol);
+	if (res == S_OK)
+	{
+		double preAmp;
+		getLShelfParamter(vol, freqLS, qLS, gainLS, preAmp);
+		_attFactor = exp(preAmp / 6 * log(2));
+		getHShelfParamter(vol + (float)preAmp, freqHS, qHS, gainHS);
+		_neutral = std::max<double>(std::abs(gainLS), std::abs(gainHS)) < 0.2 ? true : false;
+	}
+
 	for (unsigned i = 0; i < _channelCount; i++)
 	{
-		_lowShelfBiquads[i] = BiQuad(BiQuad::LOW_SHELF, 0, 75, _sampleRate, 1, false);
-		_highShelfBiquads[i] = BiQuad(BiQuad::HIGH_SHELF, 0, 10000, _sampleRate, 1, false);
+		_lowShelfBiquads[i] = BiQuad(BiQuad::LOW_SHELF, gainLS, freqLS, _sampleRate, qLS, false);
+		_highShelfBiquads[i] = BiQuad(BiQuad::HIGH_SHELF, gainHS, freqHS, _sampleRate, qHS, false);
 	}
 	_stopParameterUpdateThreadEvent = CreateEvent(NULL, true, false, NULL);
 	_parameterchangedEvent = CreateEvent(NULL, true, false, NULL);

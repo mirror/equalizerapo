@@ -59,7 +59,7 @@ VSTPluginFilterGUI::~VSTPluginFilterGUI()
 {
 	if (effect != NULL)
 	{
-		if (ui->embedAction->isChecked())
+		if (embedded)
 			on_embedAction_toggled(false);
 		delete effect;
 		effect = NULL;
@@ -295,9 +295,9 @@ void VSTPluginFilterGUI::on_embedAction_toggled(bool checked)
 	if (effect == NULL)
 		enable = false;
 
-	bool wasEnabled = ui->frame->isVisible();
-	if (enable != wasEnabled)
+	if (enable != embedded)
 	{
+		embedded = enable;
 		ui->frame->setVisible(enable);
 		ui->statusLabel->setVisible(!enable);
 
@@ -310,6 +310,7 @@ void VSTPluginFilterGUI::on_embedAction_toggled(bool checked)
 			}
 			else
 			{
+				embedded = false;
 				ui->frame->setVisible(false);
 				ui->statusLabel->setVisible(true);
 
@@ -339,7 +340,7 @@ void VSTPluginFilterGUI::on_idle()
 	{
 		effect->doIdle();
 
-		if (ui->frame->isVisible() || autoApplyDialog)
+		if (embedded || autoApplyDialog)
 		{
 			if (!lastReadTimer.isValid() || lastReadTimer.elapsed() > 1000)
 			{
@@ -361,7 +362,7 @@ void VSTPluginFilterGUI::on_idle()
 
 void VSTPluginFilterGUI::onAutomate()
 {
-	if (ui->frame->isVisible() || autoApplyDialog)
+	if (embedded || autoApplyDialog)
 	{
 		effect->readFromEffect(chunkData, paramMap);
 		updateModel();
@@ -371,7 +372,7 @@ void VSTPluginFilterGUI::onAutomate()
 
 void VSTPluginFilterGUI::onSizeWindow(int w, int h)
 {
-	if (ui->frame->isVisible())
+	if (embedded)
 		ui->frame->setFixedSize(w, h);
 }
 

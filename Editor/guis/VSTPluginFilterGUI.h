@@ -61,6 +61,7 @@ private:
 	VSTPluginInstance* effect = NULL;
 	std::wstring chunkData;
 	std::unordered_map<std::wstring, float> paramMap;
+	bool embedded = false;
 	bool autoApplyDialog = false;
 	QElapsedTimer lastReadTimer;
 };
