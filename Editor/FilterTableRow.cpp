@@ -191,6 +191,7 @@ void FilterTableRow::on_lineEdit_editingFinished()
 		{
 			editingDone = true;
 			item->text = ui->lineEdit->text();
+			table->updateModel();
 			// set focus to table so that enter key does not cause scrolling down
 			table->setFocus();
 			table->updateGuis();

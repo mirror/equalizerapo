@@ -70,6 +70,7 @@ public:
 	void copy();
 	void paste();
 	void deleteSelectedLines();
+	void selectAll();
 
 	const QList<std::shared_ptr<AbstractAPOInfo> >& getOutputDevices() const;
 	const QList<std::shared_ptr<AbstractAPOInfo> >& getInputDevices() const;
@@ -105,6 +106,7 @@ public slots:
 
 protected:
 	void mousePressEvent(QMouseEvent* event) override;
+	void mouseReleaseEvent(QMouseEvent* event) override;
 	void mouseMoveEvent(QMouseEvent* event) override;
 	void dragEnterEvent(QDragEnterEvent* event) override;
 	void dragMoveEvent(QDragMoveEvent* event) override;

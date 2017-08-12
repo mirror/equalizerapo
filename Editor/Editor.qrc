@@ -24,5 +24,6 @@
         <file>icons/reset_response.ico</file>
         <file>icons/resize_corner.ico</file>
         <file>sounds/pinkNoise.flac</file>
+        <file>icons/edit-select-all.ico</file>
     </qresource>
 </RCC>

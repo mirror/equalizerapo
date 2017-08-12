@@ -519,7 +519,21 @@ void MainWindow::linesChanged()
 bool MainWindow::on_tabWidget_tabCloseRequested(int index)
 {
 	if (askForClose(index))
+	{
+		QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->widget(index));
+		if (scrollArea != NULL)
+		{
+			FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
+			QString path = filterTable->getConfigPath();
+			recentFiles.removeAll(path);
+			recentFiles.prepend(path);
+			if (recentFiles.size() > 10)
+				recentFiles.removeLast();
+			updateRecentFiles();
+		}
+
 		ui->tabWidget->removeTab(index);
+	}
 	return true;
 }
 
@@ -663,6 +677,16 @@ void MainWindow::on_actionDelete_triggered()
 
 	FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
 	filterTable->deleteSelectedLines();
+}
+
+void MainWindow::on_actionSelectAll_triggered()
+{
+	QScrollArea* scrollArea = qobject_cast<QScrollArea*>(ui->tabWidget->currentWidget());
+	if (scrollArea == NULL)
+		return;
+
+	FilterTable* filterTable = qobject_cast<FilterTable*>(scrollArea->widget());
+	filterTable->selectAll();
 }
 
 void MainWindow::instantModeEnabled(bool enabled)

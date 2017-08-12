@@ -131,7 +131,9 @@ SOURCES += main.cpp\
 	../filters/loudnessCorrection/LoudnessCorrectionFilterFactory.cpp \
 	../filters/loudnessCorrection/VolumeController.cpp \
 	guis/LoudnessCorrectionFilterGUIDialog.cpp \
-	helpers/QtSndfileHandle.cpp
+	helpers/QtSndfileHandle.cpp \
+    widgets/MiddleClickTabWidget.cpp \
+    widgets/MiddleClickTabBar.cpp
 
 HEADERS  += \
 	../helpers/LogHelper.h \
@@ -252,7 +254,9 @@ HEADERS  += \
 	../filters/loudnessCorrection/ParameterArchive.h \
 	../filters/loudnessCorrection/VolumeController.h \
 	guis/LoudnessCorrectionFilterGUIDialog.h \
-	helpers/QtSndfileHandle.h
+	helpers/QtSndfileHandle.h \
+    widgets/MiddleClickTabWidget.h \
+    widgets/MiddleClickTabBar.h
 
 FORMS    += \
 	guis/PreampFilterGUI.ui \

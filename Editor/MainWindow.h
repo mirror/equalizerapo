@@ -70,9 +70,10 @@ private slots:
 	void recentFileSelected();
 
 	void on_actionCut_triggered();
-	void on_actionDelete_triggered();
-	void on_actionPaste_triggered();
 	void on_actionCopy_triggered();
+	void on_actionPaste_triggered();
+	void on_actionDelete_triggered();
+	void on_actionSelectAll_triggered();
 
 	void instantModeEnabled(bool enabled);
 	void on_tabWidget_currentChanged(int index);

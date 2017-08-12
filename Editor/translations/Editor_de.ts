@@ -900,12 +900,12 @@ Change the file permissions or copy the file to the config directory.</source>
 <context>
     <name>LoudnessCorrectionFilterGUI</name>
     <message>
-        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="158"/>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="160"/>
         <source>Attenuation:</source>
         <translation>Abschwächung:</translation>
     </message>
     <message>
-        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="251"/>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="253"/>
         <source>Reference offset:</source>
         <translation>Referenzversatz:</translation>
     </message>
@@ -924,19 +924,19 @@ Change the file permissions or copy the file to the config directory.</source>
         <translation>Gesamtlautstärke:</translation>
     </message>
     <message>
-        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="106"/>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="108"/>
         <source>contributed by
 Alexander Walch</source>
         <translation>beigetragen durch
 Alexander Walch</translation>
     </message>
     <message>
-        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="299"/>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="301"/>
         <source>Loudness correction:</source>
         <translation>Lautheitskorrektur:</translation>
     </message>
     <message>
-        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="309"/>
+        <location filename="../guis/LoudnessCorrectionFilterGUI.ui" line="311"/>
         <source>Calibrate</source>
         <translation>Kalibrieren</translation>
     </message>
@@ -1038,30 +1038,30 @@ Alexander Walch</translation>
         <translation>Bearbeiten</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="77"/>
+        <location filename="../MainWindow.ui" line="79"/>
         <source>View</source>
         <translation>Ansicht</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="84"/>
-        <location filename="../MainWindow.ui" line="146"/>
+        <location filename="../MainWindow.ui" line="86"/>
+        <location filename="../MainWindow.ui" line="148"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="88"/>
+        <location filename="../MainWindow.ui" line="90"/>
         <source>Language</source>
         <translation>Sprache</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="104"/>
-        <location filename="../MainWindow.ui" line="674"/>
+        <location filename="../MainWindow.ui" line="106"/>
+        <location filename="../MainWindow.ui" line="682"/>
         <source>Toolbar</source>
         <translation>Werkzeugleiste</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="118"/>
-        <location filename="../MainWindow.ui" line="682"/>
+        <location filename="../MainWindow.ui" line="120"/>
+        <location filename="../MainWindow.ui" line="690"/>
         <source>Analysis panel</source>
         <translation>Analysepanel</translation>
     </message>
@@ -1070,142 +1070,140 @@ Alexander Walch</translation>
         <translation type="vanished">FFT-Auflösung:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="161"/>
+        <location filename="../MainWindow.ui" line="163"/>
         <source>Resolution:</source>
         <translation>Auflösung:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="168"/>
+        <location filename="../MainWindow.ui" line="170"/>
         <source>Channel:</source>
         <translation>Kanal:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="197"/>
+        <location filename="../MainWindow.ui" line="199"/>
         <source>Start from:</source>
         <translation>Beginne bei:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="210"/>
+        <location filename="../MainWindow.ui" line="212"/>
         <source>Current file</source>
         <translation>Aktuelle Datei</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="221"/>
+        <location filename="../MainWindow.ui" line="223"/>
         <source>Estimated properties</source>
         <translation>Geschätzte Eigenschaften</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="237"/>
+        <location filename="../MainWindow.ui" line="239"/>
         <source>CPU usage:</source>
         <translation>CPU-Last:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="244"/>
+        <location filename="../MainWindow.ui" line="246"/>
         <source>Init. time:</source>
         <translation>Init.-Zeit:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="410"/>
+        <location filename="../MainWindow.ui" line="412"/>
         <source>Latency: </source>
         <translation>Latenz:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="417"/>
+        <location filename="../MainWindow.ui" line="419"/>
         <source>Peak gain:</source>
         <translation>Maximum:</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="568"/>
+        <location filename="../MainWindow.ui" line="570"/>
         <source>New</source>
         <translation>Neu</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="571"/>
         <source>Ctrl+N</source>
-        <translation>Ctrl+N</translation>
+        <translation type="vanished">Ctrl+N</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="580"/>
-        <location filename="../MainWindow.ui" line="583"/>
+        <location filename="../MainWindow.ui" line="582"/>
+        <location filename="../MainWindow.ui" line="585"/>
         <source>Open</source>
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="586"/>
         <source>Ctrl+O</source>
-        <translation>Ctrl+O</translation>
+        <translation type="vanished">Ctrl+O</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="595"/>
-        <location filename="../MainWindow.ui" line="598"/>
+        <location filename="../MainWindow.ui" line="597"/>
+        <location filename="../MainWindow.ui" line="600"/>
         <source>Save</source>
         <translation>Speichern</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="601"/>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation type="vanished">Ctrl+S</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="610"/>
-        <location filename="../MainWindow.ui" line="613"/>
+        <location filename="../MainWindow.ui" line="612"/>
+        <location filename="../MainWindow.ui" line="615"/>
         <source>Save as...</source>
         <translation>Speichern unter...</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="618"/>
+        <location filename="../MainWindow.ui" line="623"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="621"/>
         <source>Alt+F4</source>
-        <translation>Alt+F4</translation>
+        <translation type="vanished">Alt+F4</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="630"/>
+        <location filename="../MainWindow.ui" line="635"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="633"/>
         <source>Ctrl+X</source>
-        <translation>Ctrl+X</translation>
+        <translation type="vanished">Ctrl+X</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="642"/>
+        <location filename="../MainWindow.ui" line="647"/>
         <source>Copy</source>
         <translation>Kopieren</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="645"/>
         <source>Ctrl+C</source>
-        <translation>Ctrl+C</translation>
+        <translation type="vanished">Ctrl+C</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="654"/>
+        <location filename="../MainWindow.ui" line="659"/>
         <source>Paste</source>
         <translation>Einfügen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="657"/>
         <source>Ctrl+V</source>
-        <translation>Ctrl+V</translation>
+        <translation type="vanished">Ctrl+V</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="666"/>
+        <location filename="../MainWindow.ui" line="671"/>
         <source>Delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="687"/>
+        <location filename="../MainWindow.ui" line="695"/>
         <source>Reset all global preferences</source>
         <translation>Alle globalen Einstellungen zurücksetzen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.ui" line="692"/>
+        <location filename="../MainWindow.ui" line="700"/>
         <source>Reset all file-specific preferences</source>
         <translation>Alle dateispezifischen Einstellungen zurücksetzen</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.ui" line="709"/>
+        <source>Select all</source>
+        <translation>Alles auswählen</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="75"/>
@@ -1328,7 +1326,7 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>Von Gerät</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="717"/>
+        <location filename="../MainWindow.cpp" line="741"/>
         <source>%0 dB</source>
         <translation>%0 dB</translation>
     </message>
@@ -1337,7 +1335,7 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samp.)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="720"/>
+        <location filename="../MainWindow.cpp" line="744"/>
         <source>%0 ms (%1 s.)</source>
         <translation>%0 ms (%1 S.)</translation>
     </message>
@@ -1346,46 +1344,46 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation type="vanished">%0 ms (%1 Samples)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="722"/>
+        <location filename="../MainWindow.cpp" line="746"/>
         <source>%0 ms</source>
         <translation>%0 ms</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="725"/>
+        <location filename="../MainWindow.cpp" line="749"/>
         <source>%0 % (one core)</source>
         <translation>%0 % (ein Kern)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="766"/>
-        <location filename="../MainWindow.cpp" line="793"/>
-        <location filename="../MainWindow.cpp" line="812"/>
+        <location filename="../MainWindow.cpp" line="790"/>
+        <location filename="../MainWindow.cpp" line="817"/>
+        <location filename="../MainWindow.cpp" line="836"/>
         <source>Restart required</source>
         <translation>Neustart erforderlich</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="766"/>
-        <location filename="../MainWindow.cpp" line="793"/>
-        <location filename="../MainWindow.cpp" line="812"/>
+        <location filename="../MainWindow.cpp" line="790"/>
+        <location filename="../MainWindow.cpp" line="817"/>
+        <location filename="../MainWindow.cpp" line="836"/>
         <source>Configuration Editor will be restarted to apply the changed settings. Proceed?</source>
         <translation>Konfigurationseditor wird neugestartet, um die geänderten Einstellungen zu übernehmen. Fortsetzen?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="872"/>
+        <location filename="../MainWindow.cpp" line="896"/>
         <source>Unsaved changes</source>
         <translation>Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="873"/>
+        <location filename="../MainWindow.cpp" line="897"/>
         <source>The configuration file %0 has unsaved changes.</source>
         <translation>Die Konfigurationsdatei %0 hat ungespeicherte Änderungen.</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="874"/>
+        <location filename="../MainWindow.cpp" line="898"/>
         <source>Do you want to save the changes before closing the file?</source>
         <translation>Möchten Sie die Änderungen speichern, bevor die Datei geschlossen wird?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="542"/>
+        <location filename="../MainWindow.cpp" line="556"/>
         <source>Open file</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -1395,18 +1393,18 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>Automatisch (%0)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="544"/>
-        <location filename="../MainWindow.cpp" line="597"/>
+        <location filename="../MainWindow.cpp" line="558"/>
+        <location filename="../MainWindow.cpp" line="611"/>
         <source>E-APO configurations (*.txt)</source>
         <translation>E-APO-Konfigurationen (*.txt)</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="594"/>
+        <location filename="../MainWindow.cpp" line="608"/>
         <source>Save file as</source>
         <translation>Datei speichern unter</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="616"/>
+        <location filename="../MainWindow.cpp" line="630"/>
         <source>Unsaved</source>
         <translation>Ungespeichert</translation>
     </message>
@@ -1655,12 +1653,12 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>VST-Plugins (*.dll)</translation>
     </message>
     <message>
-        <location filename="../guis/VSTPluginFilterGUI.cpp" line="320"/>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="321"/>
         <source>Plugin crashed when opening panel.</source>
         <translation>Plugin ist beim Öffnen des Panels abgestürzt.</translation>
     </message>
     <message>
-        <location filename="../guis/VSTPluginFilterGUI.cpp" line="421"/>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="422"/>
         <source>The library is not readable by the audio service.
 Change the file permissions or copy the file to the VSTPlugins directory.</source>
         <translation>Die Bibliothek ist für den Audiodienst nicht lesbar.
@@ -1673,7 +1671,7 @@ Change the file permissions or copy the file to the plugins directory.</source>
 Ändern Sie die Dateiberechtigungen oder kopieren Sie die Datei in das plugins-Verzeichnis.</translation>
     </message>
     <message>
-        <location filename="../guis/VSTPluginFilterGUI.cpp" line="472"/>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="473"/>
         <source>The plugin seemingly accesses these files not readable by the audio service:
 %0
 Change the file permissions or copy the files to the config directory.</source>

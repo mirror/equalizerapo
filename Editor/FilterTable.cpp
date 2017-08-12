@@ -487,6 +487,14 @@ void FilterTable::deleteSelectedLines()
 	updateGuis();
 }
 
+void FilterTable::selectAll()
+{
+	selected.clear();
+	for (Item* item : items)
+		selected.insert(item);
+	update();
+}
+
 void FilterTable::updateModel()
 {
 	emit linesChanged();
@@ -647,6 +655,29 @@ void FilterTable::mousePressEvent(QMouseEvent* event)
 		else
 		{
 			selected.clear();
+			update();
+		}
+	}
+}
+
+void FilterTable::mouseReleaseEvent(QMouseEvent* event)
+{
+	if (event->button() == Qt::LeftButton)
+	{
+		int row = rowForPos(event->pos(), false);
+		if (row != -1)
+		{
+			Item* item = items[row];
+
+			if (!(event->modifiers() & Qt::ControlModifier) && !(event->modifiers() & Qt::ShiftModifier))
+			{
+				if (selected.contains(item) && selectionStart == item)
+				{
+					selected.clear();
+					selected.insert(item);
+				}
+			}
+			ensureRowVisible(row);
 			update();
 		}
 	}
