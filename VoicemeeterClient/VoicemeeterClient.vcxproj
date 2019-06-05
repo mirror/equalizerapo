@@ -149,11 +149,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Users\Jonas\Downloads\VoicemeeterRemoteAPI_Pack6\VoicemeeterRemote.h" />
     <ClInclude Include="..\helpers\MemoryHelper.h" />
     <ClInclude Include="..\stdafx.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="VoicemeeterClient.h" />
+    <ClInclude Include="VoicemeeterRemote.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\helpers\MemoryHelper.cpp" />

@@ -18,6 +18,7 @@
 */
 
 #include "stdafx.h"
+#include <regex>
 #include <mpParser.h>
 #include "helpers/LogHelper.h"
 #include "helpers/StringHelper.h"
@@ -27,6 +28,8 @@
 #include "DeviceFilterFactory.h"
 
 using namespace std;
+
+static wregex regexGuid(L"\\{[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}\\}");
 
 #ifndef NO_FILTERENGINE
 void DeviceFilterFactory::initialize(FilterEngine* engine)
@@ -102,6 +105,8 @@ bool DeviceFilterFactory::matchDevice(const std::wstring& deviceString, const st
 		}
 	}
 
+	wstring deviceStringNoGuid = regex_replace(deviceString, regexGuid, L"");
+
 	bool matches = false;
 
 	for (unsigned i = 0; i < fullList.size(); i++)
@@ -114,7 +119,8 @@ bool DeviceFilterFactory::matchDevice(const std::wstring& deviceString, const st
 		for (unsigned j = 0; j < fullList[i].size(); j++)
 		{
 			wstring word = StringHelper::toLowerCase(fullList[i][j]);
-			if (StringHelper::toLowerCase(deviceString).find(word) == -1)
+			const wstring& matchString = word.find('{') == wstring::npos ? deviceStringNoGuid : deviceString;
+			if (StringHelper::toLowerCase(matchString).find(word) == wstring::npos)
 			{
 				matches = false;
 				break;

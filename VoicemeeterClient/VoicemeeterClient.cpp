@@ -92,7 +92,11 @@ VoicemeeterClient::VoicemeeterClient(const vector<wstring>& outputs)
 	if (index != wstring::npos)
 	{
 		wstring setupFilename = voicemeeterDirectory.substr(index + 1);
-		banana = (setupFilename == L"VoicemeeterProSetup.exe");
+		voicemeeterType = 1;
+		if (setupFilename == L"VoicemeeterProSetup.exe")
+			voicemeeterType = 2;// banana
+		else if (setupFilename == L"Voicemeeter8Setup.exe")
+			voicemeeterType = 3;// potato
 
 		voicemeeterDirectory = voicemeeterDirectory.substr(0, index);
 
@@ -137,11 +141,13 @@ void VoicemeeterClient::start()
 	{
 		long type;
 		if (vmr.VBVMR_GetVoicemeeterType(&type) == 0)
-			banana = (type == 2);
+			voicemeeterType = type;
 	}
 
 	unsigned outputCount;
-	if (banana)
+	if (voicemeeterType == 3)
+		outputCount = 5;
+	else if (voicemeeterType == 2)
 		outputCount = 3;
 	else
 		outputCount = 1;

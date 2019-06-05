@@ -3,11 +3,11 @@
   <ItemGroup>
     <ClInclude Include="VoicemeeterClient.h" />
     <ClInclude Include="..\stdafx.h" />
-    <ClInclude Include="..\..\..\..\..\Users\Jonas\Downloads\VoicemeeterRemoteAPI_Pack6\VoicemeeterRemote.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\helpers\MemoryHelper.h">
       <Filter>helpers</Filter>
     </ClInclude>
+    <ClInclude Include="VoicemeeterRemote.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="VoicemeeterClient.cpp" />

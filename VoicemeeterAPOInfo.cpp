@@ -38,7 +38,7 @@ static const wchar_t* clientFilename = L"VoicemeeterClient.exe";
 static const wchar_t* voicemeeterClientKeyPath = USER_REGPATH L"\\Voicemeeter Client";
 static const wchar_t* sampleRateValueName = L"sampleRate";
 
-typedef NTSTATUS (NTAPI * pfnNtQueryInformationProcess)(
+typedef NTSTATUS (NTAPI* pfnNtQueryInformationProcess)(
 	IN HANDLE ProcessHandle,
 	IN PROCESSINFOCLASS ProcessInformationClass,
 	OUT PVOID ProcessInformation,
@@ -59,10 +59,16 @@ void VoicemeeterAPOInfo::prependInfos(vector<shared_ptr<AbstractAPOInfo> >& list
 		size_t index = voicemeeterDirectory.find_last_of(L'\\');
 
 		wstring setupFilename = voicemeeterDirectory.substr(index + 1);
-		bool banana = (setupFilename == L"VoicemeeterProSetup.exe");
+		long voicemeeterType = 1;
+		if (setupFilename == L"VoicemeeterProSetup.exe")
+			voicemeeterType = 2;// banana
+		else if (setupFilename == L"Voicemeeter8Setup.exe")
+			voicemeeterType = 3;// potato
 
 		unsigned outputCount;
-		if (banana)
+		if (voicemeeterType == 3)
+			outputCount = 5;
+		else if (voicemeeterType == 2)
 			outputCount = 3;
 		else
 			outputCount = 1;

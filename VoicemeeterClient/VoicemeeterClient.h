@@ -43,6 +43,6 @@ private:
 	std::vector<FilterEngine*> engines;
 	std::vector<int> idleSampleCounts;
 	bool loggedIn = false;
-	bool banana = false;
+	long voicemeeterType = 1;
 	std::vector<std::wstring> outputs;
 };
