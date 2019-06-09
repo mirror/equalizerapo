@@ -25,6 +25,7 @@
 #include "parser/RegexFunctions.h"
 #include "parser/RegistryFunctions.h"
 #include "parser/StringOperators.h"
+#include "parser/LogicalOperators.h"
 #include "FilterEngine.h"
 #include "ExpressionFilterFactory.h"
 
@@ -45,6 +46,7 @@ void ExpressionFilterFactory::initialize(FilterEngine* engine)
 
 	parser->RemoveOprt(L"+");
 	parser->DefineOprt(new AddOperator());
+	parser->DefineInfixOprt(new NotOperator());
 }
 
 vector<IFilter*> ExpressionFilterFactory::createFilter(const wstring& configPath, wstring& command, wstring& parameters)

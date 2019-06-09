@@ -21,6 +21,7 @@ SOURCES += main.cpp\
 	../helpers/LogHelper.cpp \
 	../helpers/StringHelper.cpp \
 	../helpers/RegistryHelper.cpp \
+	../parser/LogicalOperators.cpp \
 	IFilterGUIFactory.cpp \
 	IFilterGUI.cpp \
 	guis/PreampFilterGUI.cpp \
@@ -139,6 +140,7 @@ HEADERS  += \
 	../helpers/LogHelper.h \
 	../helpers/StringHelper.h \
 	../helpers/RegistryHelper.h \
+	../parser/LogicalOperators.h \
 	IFilterGUIFactory.h \
 	stable.h \
 	IFilterGUI.h \

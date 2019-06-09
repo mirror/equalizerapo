@@ -141,6 +141,9 @@
     <ClInclude Include="filters\loudnessCorrection\LoudnessCorrectionFilter.h">
       <Filter>filters\loudnessCorrection</Filter>
     </ClInclude>
+    <ClInclude Include="parser\LogicalOperators.h">
+      <Filter>parser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp" />
@@ -266,6 +269,9 @@
     </ClCompile>
     <ClCompile Include="filters\loudnessCorrection\LoudnessCorrectionFilter.cpp">
       <Filter>filters\loudnessCorrection</Filter>
+    </ClCompile>
+    <ClCompile Include="parser\LogicalOperators.cpp">
+      <Filter>parser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -182,6 +182,7 @@
     <ClInclude Include="IFilter.h" />
     <ClInclude Include="IFilterFactory.h" />
     <ClInclude Include="libHybridConv-0.1.1\libHybridConv_eapo.h" />
+    <ClInclude Include="parser\LogicalOperators.h" />
     <ClInclude Include="parser\RegexFunctions.h" />
     <ClInclude Include="parser\RegistryFunctions.h" />
     <ClInclude Include="parser\StringOperators.h" />
@@ -230,6 +231,7 @@
     <ClCompile Include="helpers\VSTPluginLibrary.cpp" />
     <ClCompile Include="IFilter.cpp" />
     <ClCompile Include="libHybridConv-0.1.1\libHybridConv_eapo.cpp" />
+    <ClCompile Include="parser\LogicalOperators.cpp" />
     <ClCompile Include="parser\RegexFunctions.cpp" />
     <ClCompile Include="parser\RegistryFunctions.cpp" />
     <ClCompile Include="parser\StringOperators.cpp" />
