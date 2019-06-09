@@ -80,17 +80,18 @@
         <translation>Festes S</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="220"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="222"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="260"/>
         <source>Q factor</source>
         <translation>Q-Faktor</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="222"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="224"/>
         <source>Bandwidth</source>
         <translation>Bandbreite</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="224"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="220"/>
         <location filename="../guis/BiQuadFilterGUI.cpp" line="259"/>
         <source>Slope</source>
         <translation>Steilheit</translation>
@@ -185,9 +186,13 @@
         <translation>C (Mitte)</translation>
     </message>
     <message>
-        <location filename="../guis/ChannelFilterGUIDialog.ui" line="47"/>
         <source>SUB (Subwoofer)</source>
-        <translation>SUB (Subwoofer)</translation>
+        <translation type="vanished">SUB (Subwoofer)</translation>
+    </message>
+    <message>
+        <location filename="../guis/ChannelFilterGUIDialog.ui" line="47"/>
+        <source>LFE (Subwoofer)</source>
+        <translation>LFE (Subwoofer)</translation>
     </message>
     <message>
         <location filename="../guis/ChannelFilterGUIDialog.ui" line="54"/>

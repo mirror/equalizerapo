@@ -56,7 +56,7 @@ ChannelFilterGUIDialog::ChannelFilterGUIDialog(QWidget* parent, QStringList sele
 	ui->rearLeftCheckBox->setProperty(PROPERTY_NAME, "RL");
 	ui->rearRightCheckBox->setProperty(PROPERTY_NAME, "RR");
 	ui->rearCenterCheckBox->setProperty(PROPERTY_NAME, "RC");
-	ui->subWooferCheckBox->setProperty(PROPERTY_NAME, "SUB");
+	ui->subWooferCheckBox->setProperty(PROPERTY_NAME, "LFE");
 
 	checkBoxes.append(ui->centerCheckBox);
 	checkBoxes.append(ui->leftCheckBox);
@@ -89,6 +89,9 @@ ChannelFilterGUIDialog::ChannelFilterGUIDialog(QWidget* parent, QStringList sele
 			remainingChannelNames.erase(remove(remainingChannelNames.begin(), remainingChannelNames.end(), channelName.toStdWString()), remainingChannelNames.end());
 			if (remainingSelectedChannels.removeOne(channelName))
 				checked = true;
+			else if (channelName == "LFE" && remainingSelectedChannels.removeOne("SUB"))
+				checked = true;
+
 			if (remainingSelectedChannels.removeOne(QString(channelIndex)))
 				checked = true;
 			checkBox->setChecked(checked);

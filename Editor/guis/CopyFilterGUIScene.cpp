@@ -49,6 +49,8 @@ void CopyFilterGUIScene::load(const vector<wstring>& channelNames, vector<Assign
 		addItem(inputItem);
 
 		inputChannelMap.insert(c, inputItem);
+		if (c == "LFE")
+			inputChannelMap.insert("SUB", inputItem);
 		inputChannelMap.insert(QString().setNum(i + 1), inputItem);
 		lastInputItem = inputItem;
 
@@ -57,6 +59,8 @@ void CopyFilterGUIScene::load(const vector<wstring>& channelNames, vector<Assign
 		addItem(outputItem);
 
 		outputChannelMap.insert(c, outputItem);
+		if (c == "LFE")
+			outputChannelMap.insert("SUB", outputItem);
 		outputChannelMap.insert(QString().setNum(i + 1), outputItem);
 		lastOutputItem = outputItem;
 	}

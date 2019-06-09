@@ -39,7 +39,7 @@ ChannelHelper::ChannelHelper()
 	channelNameToPosMap[L"L"] = SPEAKER_FRONT_LEFT;
 	channelNameToPosMap[L"R"] = SPEAKER_FRONT_RIGHT;
 	channelNameToPosMap[L"C"] = SPEAKER_FRONT_CENTER;
-	channelNameToPosMap[L"SUB"] = SPEAKER_LOW_FREQUENCY;
+	channelNameToPosMap[L"LFE"] = SPEAKER_LOW_FREQUENCY;
 	channelNameToPosMap[L"RL"] = SPEAKER_BACK_LEFT;
 	channelNameToPosMap[L"RR"] = SPEAKER_BACK_RIGHT;
 	channelNameToPosMap[L"RC"] = SPEAKER_BACK_CENTER;
@@ -131,6 +131,8 @@ int ChannelHelper::getChannelIndex(std::wstring word, const std::vector<std::wst
 				pos = find(channelNames.begin(), channelNames.end(), L"SL");
 			else if (word == L"RR")
 				pos = find(channelNames.begin(), channelNames.end(), L"SR");
+			else if (word == L"SUB") // old channel name
+				pos = find(channelNames.begin(), channelNames.end(), L"LFE");
 		}
 
 		if (pos != channelNames.end())

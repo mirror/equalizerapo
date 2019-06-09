@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>355</width>
-    <height>329</height>
+    <width>375</width>
+    <height>394</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -44,7 +44,7 @@
       <item row="1" column="2">
        <widget class="QCheckBox" name="subWooferCheckBox">
         <property name="text">
-         <string>SUB (Subwoofer)</string>
+         <string>LFE (Subwoofer)</string>
         </property>
        </widget>
       </item>

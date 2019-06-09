@@ -47,6 +47,8 @@ void ChannelFilterGUIScene::load(vector<wstring> channelNames, QStringList selec
 		addItem(item);
 
 		channelMap.insert(c, item);
+		if (c == "LFE")
+			channelMap.insert("SUB", item);
 		if (c != "ALL")
 			channelMap.insert(QString().setNum(i + 1), item);
 		lastItem = item;
