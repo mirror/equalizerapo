@@ -51,5 +51,5 @@ private:
 
 	Ui::BiQuadFilterGUI* ui;
 	BiQuad::Type previousType = BiQuad::PEAKING;
-	bool qIsBw = false;
+	bool qIsBwOrS = false;
 };

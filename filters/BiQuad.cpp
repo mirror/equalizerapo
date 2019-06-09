@@ -22,7 +22,7 @@
 
 using namespace std;
 
-BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandwidthOrQOrS, bool isBandwidth)
+BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandwidthOrQOrS, bool isBandwidthOrS)
 {
 	double A;
 	if (type == PEAKING || type == LOW_SHELF || type == HIGH_SHELF)
@@ -33,17 +33,15 @@ BiQuad::BiQuad(Type type, double dbGain, double freq, double srate, double bandw
 	double sn = sin(omega);
 	double cs = cos(omega);
 	double alpha;
-	double beta = -1;
 
-	if (type == LOW_SHELF || type == HIGH_SHELF) // S
-	{
-		alpha = sn / 2 * sqrt((A + 1 / A) * (1 / bandwidthOrQOrS - 1) + 2);
-		beta = 2 * sqrt(A) * alpha;
-	}
-	else if (isBandwidth) // BW
-		alpha = sn * sinh(M_LN2 / 2 * bandwidthOrQOrS * omega / sn);
-	else // Q
+	if (!isBandwidthOrS) // Q
 		alpha = sn / (2 * bandwidthOrQOrS);
+	else if (type == LOW_SHELF || type == HIGH_SHELF) // S
+		alpha = sn / 2 * sqrt((A + 1 / A) * (1 / bandwidthOrQOrS - 1) + 2);
+	else // BW
+		alpha = sn * sinh(M_LN2 / 2 * bandwidthOrQOrS * omega / sn);
+
+	double beta = 2 * sqrt(A) * alpha;
 
 	double b0, b1, b2, a0, a1, a2;
 

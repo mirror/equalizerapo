@@ -23,8 +23,8 @@
 
 using namespace std;
 
-BiQuadFilter::BiQuadFilter(BiQuad::Type type, double dbGain, double freq, double bandwidthOrQOrS, bool isBandwidth, bool isCornerFreq)
-	: type(type), dbGain(dbGain), freq(freq), bandwidthOrQOrS(bandwidthOrQOrS), isBandwidth(isBandwidth), isCornerFreq(isCornerFreq)
+BiQuadFilter::BiQuadFilter(BiQuad::Type type, double dbGain, double freq, double bandwidthOrQOrS, bool isBandwidthOrS, bool isCornerFreq)
+	: type(type), dbGain(dbGain), freq(freq), bandwidthOrQOrS(bandwidthOrQOrS), isBandwidthOrS(isBandwidthOrS), isCornerFreq(isCornerFreq)
 {
 	channelCount = 0;
 	biquads = NULL;
@@ -46,8 +46,16 @@ vector<wstring> BiQuadFilter::initialize(float sampleRate, unsigned maxFrameCoun
 	double biquadFreq = freq;
 	if (isCornerFreq && (type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF))
 	{
+		double s = bandwidthOrQOrS;
+		if (!isBandwidthOrS) // Q
+		{
+			double q = bandwidthOrQOrS;
+			double a = pow(10, dbGain / 40);
+			s = 1.0 / ((1.0 / (q * q) - 2.0) / (a + 1.0 / a) + 1.0);
+		}
+
 		// frequency adjustment for DCX2496
-		double centerFreqFactor = pow(10.0, abs(dbGain) / 80.0 / bandwidthOrQOrS);
+		double centerFreqFactor = pow(10.0, abs(dbGain) / 80.0 / s);
 		if (type == BiQuad::LOW_SHELF)
 			biquadFreq *= centerFreqFactor;
 		else
@@ -56,7 +64,7 @@ vector<wstring> BiQuadFilter::initialize(float sampleRate, unsigned maxFrameCoun
 
 	for (unsigned i = 0; i < channelCount; i++)
 	{
-		new(biquads + i)BiQuad(type, dbGain, biquadFreq, sampleRate, bandwidthOrQOrS, isBandwidth);
+		new(biquads + i)BiQuad(type, dbGain, biquadFreq, sampleRate, bandwidthOrQOrS, isBandwidthOrS);
 	}
 
 	return channelNames;
@@ -100,9 +108,9 @@ double BiQuadFilter::getBandwidthOrQOrS() const
 	return bandwidthOrQOrS;
 }
 
-bool BiQuadFilter::getIsBandwidth() const
+bool BiQuadFilter::getIsBandwidthOrS() const
 {
-	return isBandwidth;
+	return isBandwidthOrS;
 }
 
 bool BiQuadFilter::getIsCornerFreq() const

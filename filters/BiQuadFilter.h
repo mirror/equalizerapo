@@ -26,9 +26,9 @@
 class BiQuadFilter : public IFilter
 {
 public:
-	BiQuadFilter(BiQuad::Type type, double dbGain, double freq, double bandwidthOrQOrS, bool isBandwidth, bool isCornerFreq);
-	virtual ~BiQuadFilter();
-	bool getInPlace() override {return true;}
+	BiQuadFilter(BiQuad::Type type, double dbGain, double freq, double bandwidthOrQOrS, bool isBandwidthOrS, bool isCornerFreq);
+	virtual~BiQuadFilter();
+	bool getInPlace() override{return true;}
 	std::vector<std::wstring> initialize(float sampleRate, unsigned maxFrameCount, std::vector<std::wstring> channelNames) override;
 	void process(float** output, float** input, unsigned frameCount) override;
 
@@ -36,7 +36,7 @@ public:
 	double getDbGain() const;
 	double getFreq() const;
 	double getBandwidthOrQOrS() const;
-	bool getIsBandwidth() const;
+	bool getIsBandwidthOrS() const;
 	bool getIsCornerFreq() const;
 
 private:
@@ -44,7 +44,7 @@ private:
 	double dbGain;
 	double freq;
 	double bandwidthOrQOrS;
-	bool isBandwidth;
+	bool isBandwidthOrS;
 	bool isCornerFreq;
 
 	size_t channelCount;

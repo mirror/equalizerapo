@@ -93,7 +93,7 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 				double freq = 0;
 				double gain = 0;
 				double bandwidthOrQOrS = 0;
-				bool isBandwidth = false;
+				bool isBandwidthOrS = false;
 				bool isCornerFreq = false;
 				bool error = false;
 
@@ -134,14 +134,9 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 				found = regex_search(parameters, match, regexQ);
 				if (found)
 				{
-					if (type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
-						TraceF(L"Ignoring Q for filter of type %s", typeDescription.c_str());
-					else
-					{
-						wstring qString = match.str(1);
-						bandwidthOrQOrS = wcstod(qString.c_str(), NULL);
-						stream << " and Q " << bandwidthOrQOrS;
-					}
+					wstring qString = match.str(1);
+					bandwidthOrQOrS = wcstod(qString.c_str(), NULL);
+					stream << " and Q " << bandwidthOrQOrS;
 				}
 
 				found = regex_search(parameters, match, regexBW);
@@ -153,7 +148,7 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 					{
 						wstring bwString = match.str(1);
 						bandwidthOrQOrS = wcstod(bwString.c_str(), NULL);
-						isBandwidth = true;
+						isBandwidthOrS = true;
 						stream << " and bandwidth " << bandwidthOrQOrS << " octaves";
 					}
 				}
@@ -167,6 +162,7 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 					{
 						wstring slopeString = match.str(1);
 						bandwidthOrQOrS = wcstod(slopeString.c_str(), NULL);
+						isBandwidthOrS = true;
 						stream << " and slope " << bandwidthOrQOrS << " dB";
 					}
 				}
@@ -185,6 +181,7 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 					else if (type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
 					{
 						bandwidthOrQOrS = 0.9; // found out by experimentation with RoomEQWizard
+						isBandwidthOrS = true;
 					}
 					else if (type == BiQuad::NOTCH)
 					{
@@ -193,8 +190,9 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 				}
 				else if (type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF)
 				{
-					// Maximum S is 1 for 12 dB
-					bandwidthOrQOrS /= 12.0;
+					if (isBandwidthOrS)
+						// Maximum S is 1 for 12 dB
+						bandwidthOrQOrS /= 12.0;
 					if (typeString[typeString.length() - 1] != L'C')
 						isCornerFreq = true;
 				}
@@ -204,7 +202,7 @@ vector<IFilter*> BiQuadFilterFactory::createFilter(const wstring& configPath, ws
 					TraceF(L"%s", stream.str().c_str());
 
 					void* mem = MemoryHelper::alloc(sizeof(BiQuadFilter));
-					filter = new(mem) BiQuadFilter(type, gain, freq, bandwidthOrQOrS, isBandwidth, isCornerFreq);
+					filter = new(mem) BiQuadFilter(type, gain, freq, bandwidthOrQOrS, isBandwidthOrS, isCornerFreq);
 				}
 			}
 			else if (typeString != L"None")

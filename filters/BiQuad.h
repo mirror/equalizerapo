@@ -35,7 +35,7 @@ public:
 	};
 
 	BiQuad() {}
-	BiQuad(Type type, double dbGain, double freq, double srate, double bandwidthOrQOrS, bool isBandwidth);
+	BiQuad(Type type, double dbGain, double freq, double srate, double bandwidthOrQOrS, bool isBandwidthOrS);
 
 	__forceinline
 	void removeDenormals()
