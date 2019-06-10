@@ -73,8 +73,8 @@ PK<br>Modal<br>PEQ | Peaking filter<br>(Parametric EQ) | X | X | X | ON  PK     
 LP<br>LPQ | Low-pass filter | X | | O | ON  LP       Fc   8000 Hz<br>ON  LPQ      Fc  10000 Hz  Q  0.400
 HP<br>HPQ | High-pass filter | X | | O | ON  HP       Fc    30.0 Hz<br>ON  HPQ      Fc    20.0 Hz  Q  0.500
 BP | Band-pass filter<br>(not from DCX2496) | X | | O | ON BP Fc 1000 Hz Q 0.100
-LS<br>LSC x dB | Low-shelf filter<br>(with center freq.,<br>x dB per oct. (LSC)) | X | X | | ON  LS       Fc     300 Hz  Gain   5.0 dB<br>ON  LSC 10.8 dB Fc     300 Hz  Gain   5.0 dB
-HS<br>HSC x dB | High-shelf filter<br>(with center freq.,<br>x dB per oct. (HSC)) | X | X | | ON  HS       Fc   1000 Hz  Gain  -3.0 dB<br>ON  HSC 6 dB Fc     100 Hz  Gain   -6.0 dB
+LS<br>LSC x dB | Low-shelf filter<br>(with center freq.,<br>x dB per oct. (LSC)) | X | X | O<br>(1.2.1) | ON  LS       Fc     300 Hz  Gain   5.0 dB<br>ON  LSC 10.8 dB Fc     300 Hz  Gain   5.0 dB<br>ON  LSC Fc     300 Hz  Gain   5.0 dB Q 0.6473
+HS<br>HSC x dB | High-shelf filter<br>(with center freq.,<br>x dB per oct. (HSC)) | X | X | O<br>(1.2.1) | ON  HS       Fc   1000 Hz  Gain  -3.0 dB<br>ON  HSC 6 dB Fc     100 Hz  Gain   -6.0 dB<br>ON HSC Fc 100 Hz Gain -6.0 dB Q 0.4272
 LS 6dB<br>LS 12dB | Low-shelf filter<br>(6 / 12 dB per octave<br>with corner freq.) | X | X | | ON  LS 6dB   Fc    50.0 Hz  Gain   7.2 dB<br>ON  LS 12dB  Fc   2000 Hz  Gain  -5.0 dB
 HS 6dB<br>HS 12dB | High-shelf filter<br>(6 / 12 dB per octave<br>with corner freq.) | X | X | | ON  HS 6dB   Fc  12000 Hz  Gain  10.0 dB<br>ON  HS 12dB  Fc     500 Hz  Gain   5.0 dB
 NO | Notch filter | X | | O | ON  NO       Fc     800 Hz
@@ -142,10 +142,10 @@ Replaces the audio on the target channel by the sum of the given source channels
 	# Attention: Sets the audio on channel L to the audio on the second channel
 	# (not to constant value 2, because no decimal point is present)
 	Copy: L=2
-	# Real world example: Replaces the audio on the subwoofer channel with
+	# Real world example: Replaces the audio on the LFE channel with
 	# the audio on the left channel while muting all other channels of a 5.1 speaker system
 	# (useful for measuring the subwoofer response in REW)
-	Copy: SUB=L L=0.0 R=0.0 C=0.0 RL=0.0 RR=0.0
+	Copy: LFE=L L=0.0 R=0.0 C=0.0 RL=0.0 RR=0.0
 
 <br>
 ## GraphicEQ (since version 1.0)
@@ -219,7 +219,7 @@ Selects the channels to which the following Filter and Preamp commands will be a
 **Channel configurations:**
 The following table lists the channel configurations that are supported by Equalizer APO. The channel identifiers in the column titles resemble the channels in Start -> Control Panel -> Sound -> Configure. If a channel position is supported for a configuration, the cell in the corresponding row contains the channel number.
 
-Configuration | Left<br>L | Right<br>R | Center<br>C | Subwoofer<br>SUB | Rear left<br>RL | Rear right<br>RR | Rear center<br>RC | Side left<br>SL | Side right<br>SR
+Configuration | Left<br>L | Right<br>R | Center<br>C | Subwoofer<br>LFE | Rear left<br>RL | Rear right<br>RR | Rear center<br>RC | Side left<br>SL | Side right<br>SR
 - | - | - | - | - | - | - | - | - | -
 Mono | | | 1 | | | | | | 
 Stereo | 1 | 2 | | | | | | | 
@@ -233,7 +233,7 @@ Surround | 1 | 2 | 3 | | | | 4 | |
 
 <b>Attention:</b><br>
 
-Although it might be tempting to assign low frequency filters only to the subwoofer channel, this might not lead to the expected results. Many audio systems apply bass redirection after Equalizer APO has processed the signal, so filters applied to the subwoofer channel won't be effective for redirected sound. Furthermore, as crossover filters only gradually fade in, the low frequency audio might be played over multiple speakers, not just the subwoofer, reducing the effectivity of subwoofer-only filters. Therefore, to avoid these problems, it's recommended to <b>apply low frequency filters to all channels</b>.
+Although it might be tempting to assign low frequency filters only to the LFE channel, this might not lead to the expected results. Many audio systems apply bass redirection after Equalizer APO has processed the signal, so filters applied to the LFE channel won't be effective for redirected sound. Furthermore, as crossover filters only gradually fade in, the low frequency audio might be played over multiple speakers, not just the subwoofer, reducing the effectivity of LFE-only filters. Therefore, to avoid these problems, it's recommended to <b>apply low frequency filters to all channels</b>.
 </div>
 <br>
 **Example:**

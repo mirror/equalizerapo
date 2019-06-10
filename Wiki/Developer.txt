@@ -19,16 +19,18 @@ It is neither complete nor guaranteed to be free of errors.
 ## Compilation prerequisites
 The following software has been successfully used to compile Equalizer APO.
 
-1. [Visual Studio Community 2013](https://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx). Visual Studio 2015 is not used to compile Equalizer APO because it introduces changes to the C runtime library that make simple redistribution by bundling the DLLs much harder. The newer versions of Visual Studio already include the Windows Kit 8.1 or 10, so the installation of the WDK is no longer necessary.
+1. [Visual Studio Community 2013](https://www.visualstudio.com/en-us/news/vs2013-community-vs.aspx). Visual Studio 2015 or newer is not used to compile Equalizer APO because it introduces changes to the C runtime library that make simple redistribution by bundling the DLLs much harder. The newer versions of Visual Studio already include the Windows Kit 8.1 or 10, so the installation of the WDK is no longer necessary.
 
 2. [libsndfile](http://www.mega-nerd.com/libsndfile/). There are installers for the 64 and 32 bit version, so no need to compile from source. Has to be installed to C:\Program Files\libsndfile and C:\Program Files (x86)\libsndfile, respectively.
 
 3. [FFTW](http://www.fftw.org/install/windows.html). The prebuilt 64/32 bit archives have to be extracted to C:\Program Files\fftw3 and C:\Program Files (x86)\fftw3, respectively. As mentioned on the linked page, the import libraries have to be created using the lib program of Visual Studio.
-4. [muParserX 3.0.1](https://code.google.com/p/muparserx/). Unfortunately, there are no prebuilt files, so compilation from source is needed. The source code has to be compiled to a static library muparserx.lib (muparserxd.lib for debug build) and the include and library path has to be added via a [user property page](http://social.msdn.microsoft.com/Forums/vstudio/en-US/a494abb8-3561-4ebe-9eb0-6f644a679862/visual-studio-2010-professional-how-to-add-include-directory-for-all-projects?forum=vcgeneral#7b5ab5f2-f793-4b0e-a18a-679948d12bdd). Please note that the version has to be 3.0.1 as an important feature was removed in 3.0.2 (semicolon). As version 3.0.1 is no longer available, it is now [attached](Developer%20documentation/attachment/muparserx_v3_0_1.zip) to this page including prebuilt static library files for MSVC2013. The zip file has to be extracted to C:\\Program Files.
+
+4. [muParserX 3.0.1](https://code.google.com/p/muparserx/). Unfortunately, there are no prebuilt files, so compilation from source is needed. Please note that the version has to be 3.0.1 as an important feature was removed in 3.0.2 (semicolon). As version 3.0.1 is no longer available, it is now [attached](Developer%20documentation/attachment/muparserx_v3_0_1.zip) to this page including prebuilt static library files for MSVC2013. The zip file has to be extracted to C:\\Program Files.
 
 5. [TCLAP](http://tclap.sourceforge.net/). As this is a template library, only the source is needed, which will be compiled into the application. The downloaded tar.gz file has to be extracted to C:\\Program Files. This library only used in the Benchmark application.
 
 6. [Qt](http://www.qt.io/download-open-source/). The current 32 and 64 bit versions for MSVC2013 should be installed to C:\\Qt. Qt Creator is used instead of Visual Studio as IDE. The prebuilt versions can be used for development although Equalizer APO ships with custom-built variants with reduced dependencies. Currently only needed to build the Configuration Editor.
+
 7. [NSIS](http://nsis.sourceforge.net/). Needed to create the installer. Additionaly, the plugins [NSISpcre](http://nsis.sourceforge.net/NSISpcre_plug-in) and [AccessControl](http://nsis.sourceforge.net/AccessControl_plug-in) are needed.
 
 ## Source code organization

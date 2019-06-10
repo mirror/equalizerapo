@@ -43,6 +43,18 @@ This information has been moved to the [configuration reference](https://sourcef
 
 This section describes approaches to solve possible problems impeding the successful operation of Equalizer APO.
 
+## Configurator
+By default, Equalizer APO will try to keep the functionality of other APOs that have been shipped with the sound card driver ("original APOs"). In some cases, this causes instabilities in the audio processing. The Configurator offers troubleshooting options to adjust how the original APOs are used.
+
+If you experience instabilities during playback or recording when using Equalizer APO, you can try to disable the usage of the original APOs in the Configurator:
+1. Select your audio device by clicking on its connection name.
+2. Enable the troubleshooting options.
+3. Uncheck both "Use original APO" checkboxes.
+<a href="/p/equalizerapo/wiki/Images/attachment/UseOriginalAPO.png"><img src="/p/equalizerapo/wiki/Images/attachment/UseOriginalAPO.png/thumb" style="vertical-align:middle"> (click to enlarge)</a>
+Note that you will lose all features that the sound card driver realizes through its APOs. You can also try to uncheck only one of the check boxes to preserve some functionality.
+
+Some sound card drivers disable options when they detect that another APO has been registered. You can uncheck one of the "Install APO" checkboxes to only install Equalizer APO in the pre-mix or post-mix stage. For the other stage, the original APO will be registered then, which may help to recover some options of the sound card driver.
+
 ## Control Panel
 If you installed Equalizer APO and no changes to the configuration file lead to any changes in the signal, APOs might have been disabled for the device in the Control Panel.
 To check this, open Start Menu -> Control Panel -> Sound and double click on your audio device to open the properties dialog.
