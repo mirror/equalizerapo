@@ -27,7 +27,7 @@
 class VoicemeeterAPOInfo : public AbstractAPOInfo
 {
 public:
-	static void prependInfos(std::vector<std::shared_ptr<AbstractAPOInfo> >& list);
+	static void prependInfos(std::vector<std::shared_ptr<AbstractAPOInfo>>& list);
 
 	VoicemeeterAPOInfo(const std::wstring& connectionName, bool voicemeeterInstalled);
 

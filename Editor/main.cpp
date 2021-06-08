@@ -47,17 +47,17 @@ int main(int argc, char* argv[])
 		QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
 		QVariant languageValue = settings.value("language");
 		if (languageValue.isValid())
-			QLocale::setDefault(languageValue.toString());
+			QLocale::setDefault(QLocale(languageValue.toString()));
 		else
 			QLocale::setDefault(QLocale::system());
 
 		QTranslator qtTranslator;
-		qtTranslator.load(QLocale(), ":/translations/qtbase", "_");
-		application.installTranslator(&qtTranslator);
+		if (qtTranslator.load(QLocale(), ":/translations/qtbase", "_"))
+			application.installTranslator(&qtTranslator);
 
 		QTranslator editorTranslator;
-		editorTranslator.load(QLocale(), ":/translations/Editor", "_");
-		application.installTranslator(&editorTranslator);
+		if (editorTranslator.load(QLocale(), ":/translations/Editor", "_"))
+			application.installTranslator(&editorTranslator);
 
 		QString configPath = QDir::currentPath();
 		if (RegistryHelper::keyExists(APP_REGPATH) && RegistryHelper::valueExists(APP_REGPATH, L"ConfigPath"))
@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 		if (args.isEmpty() && w.isEmpty())
 			args = QStringList("config.txt");
 
-		for (QString arg : args)
+		for (const QString& arg : args)
 			w.load(configDir.absoluteFilePath(arg));
 
 		w.doChecks();

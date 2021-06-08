@@ -757,7 +757,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 	{
 		for (int index = 0; index <= 1; index++)
 		{
-			vector<shared_ptr<AbstractAPOInfo> > apoInfos = DeviceAPOInfo::loadAllInfos(index == 1);
+			vector<shared_ptr<AbstractAPOInfo>> apoInfos = DeviceAPOInfo::loadAllInfos(index == 1);
 
 			for (shared_ptr<AbstractAPOInfo>& apoInfo : apoInfos)
 			{

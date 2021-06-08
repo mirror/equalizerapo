@@ -62,7 +62,7 @@ void GraphicEQFilterGUIItem::paint(QPainter* painter, const QStyleOptionGraphics
 		QFontMetrics metrics(font);
 		painter->setFont(font);
 		QString text = QString::number(index + 1);
-		painter->drawText(-metrics.width(text) / 2, metrics.boundingRect('0').height() / 2, text);
+		painter->drawText(-metrics.size(0, text).width() / 2, metrics.boundingRect('0').height() / 2, text);
 	}
 }
 

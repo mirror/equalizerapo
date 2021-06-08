@@ -20,6 +20,7 @@
 #pragma once
 
 #include <QThread>
+#include <QMutex>
 #include <QWaitCondition>
 #include <fftw3.h>
 

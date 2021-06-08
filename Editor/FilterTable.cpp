@@ -94,7 +94,7 @@ FilterTable::~FilterTable()
 	factories.clear();
 }
 
-void FilterTable::initialize(QScrollArea* scrollArea, const QList<shared_ptr<AbstractAPOInfo> >& outputDevices, const QList<shared_ptr<AbstractAPOInfo> >& inputDevices)
+void FilterTable::initialize(QScrollArea* scrollArea, const QList<shared_ptr<AbstractAPOInfo>>& outputDevices, const QList<shared_ptr<AbstractAPOInfo>>& inputDevices)
 {
 	this->scrollArea = scrollArea;
 	this->outputDevices = outputDevices;
@@ -144,7 +144,7 @@ void FilterTable::updateGuis()
 	timer.start();
 
 	gridLayout = new QGridLayout(this);
-	gridLayout->setMargin(0);
+	gridLayout->setContentsMargins(0, 0, 0, 0);
 	gridLayout->setSpacing(0);
 	gridLayout->setColumnStretch(0, 0);
 	gridLayout->setColumnStretch(1, 1);
@@ -926,7 +926,7 @@ void FilterTable::keyPressEvent(QKeyEvent* event)
 void FilterTable::wheelEvent(QWheelEvent* event)
 {
 	scrollingNow = true;
-	scrollStartPoint = event->globalPos();
+	scrollStartPoint = event->globalPosition();
 
 	QWidget::wheelEvent(event);
 }
@@ -939,7 +939,7 @@ bool FilterTable::eventFilter(QObject* obj, QEvent* event)
 		if (type == QEvent::Wheel)
 		{
 			QWheelEvent* wheelEvent = (QWheelEvent*)event;
-			scrollStartPoint = wheelEvent->globalPos();
+			scrollStartPoint = wheelEvent->globalPosition();
 
 			QWidget* widget = qobject_cast<QWidget*>(obj);
 			if (widget != NULL)
@@ -1059,12 +1059,12 @@ const QSet<FilterTable::Item*>& FilterTable::getSelectedItems() const
 	return selected;
 }
 
-const QList<shared_ptr<AbstractAPOInfo> >& FilterTable::getOutputDevices() const
+const QList<shared_ptr<AbstractAPOInfo>>& FilterTable::getOutputDevices() const
 {
 	return outputDevices;
 }
 
-const QList<shared_ptr<AbstractAPOInfo> >& FilterTable::getInputDevices() const
+const QList<shared_ptr<AbstractAPOInfo>>& FilterTable::getInputDevices() const
 {
 	return inputDevices;
 }

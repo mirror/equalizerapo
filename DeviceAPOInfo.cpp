@@ -70,9 +70,9 @@ static const wchar_t* disableEnhancementsValueName = L"{1da5d803-d492-4edd-8c23-
 static const wchar_t* installVersion = L"2";
 static PROPERTYKEY guidPropertyKey = {{0x1da5d803, 0xd492, 0x4edd, 0x8c, 0x23, 0xe0, 0xc0, 0xff, 0xee, 0x7f, 0x0e}, 4};
 
-vector<shared_ptr<AbstractAPOInfo> > DeviceAPOInfo::loadAllInfos(bool input)
+vector<shared_ptr<AbstractAPOInfo>> DeviceAPOInfo::loadAllInfos(bool input)
 {
-	vector<shared_ptr<AbstractAPOInfo> > result;
+	vector<shared_ptr<AbstractAPOInfo>> result;
 
 	vector<wstring> deviceGuidStrings = RegistryHelper::enumSubKeys(input ? captureKeyPath : renderKeyPath);
 	wstring defaultDeviceGuid = getDefaultDevice(input);

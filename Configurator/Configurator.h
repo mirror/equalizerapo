@@ -64,6 +64,6 @@ private:
 	void updateList(int listIndex, int itemIndex);
 	void updateButtons(int listIndex);
 
-	std::vector<std::shared_ptr<AbstractAPOInfo> > apoInfos[2];
+	std::vector<std::shared_ptr<AbstractAPOInfo>> apoInfos[2];
 	bool askForReboot = false;
 };

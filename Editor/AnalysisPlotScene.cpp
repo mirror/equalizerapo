@@ -44,7 +44,7 @@ void AnalysisPlotScene::setFreqData(fftwf_complex* freqData, int frameCount, uns
 	update();
 }
 
-vector<FilterNode> AnalysisPlotScene::getNodes() const
+const vector<FilterNode>& AnalysisPlotScene::getNodes() const
 {
 	return nodes;
 }

@@ -63,7 +63,7 @@ public:
 		}
 	};
 
-	static std::vector<std::shared_ptr<AbstractAPOInfo> > loadAllInfos(bool input);
+	static std::vector<std::shared_ptr<AbstractAPOInfo>> loadAllInfos(bool input);
 	static std::wstring getDefaultDevice(bool input, int role = 1);
 	static bool checkProtectedAudioDG(bool fix);
 	static bool checkAPORegistration(bool fix);

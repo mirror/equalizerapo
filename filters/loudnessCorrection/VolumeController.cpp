@@ -49,7 +49,7 @@ HRESULT VolumeController::getVolume(float& currentVolume)
 
 HRESULT VolumeController::setVolume(float volume)
 {
-	volume = min(volume, _maxVol);
-	volume = max(volume, _minVol);
+	volume = fmin(volume, _maxVol);
+	volume = fmax(volume, _minVol);
 	return _endpointVolume->SetMasterVolumeLevel(volume, NULL);
 }

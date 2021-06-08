@@ -51,8 +51,8 @@ using namespace std;
 MainWindow::MainWindow(QDir configDir, QWidget* parent)
 	: QMainWindow(parent), ui(new Ui::MainWindow), configDir(configDir)
 {
-	outputDevices = QList<shared_ptr<AbstractAPOInfo> >::fromVector(QVector<shared_ptr<AbstractAPOInfo> >::fromStdVector(DeviceAPOInfo::loadAllInfos(false)));
-	inputDevices = QList<shared_ptr<AbstractAPOInfo> >::fromVector(QVector<shared_ptr<AbstractAPOInfo> >::fromStdVector(DeviceAPOInfo::loadAllInfos(true)));
+	outputDevices = toQList(DeviceAPOInfo::loadAllInfos(false));
+	inputDevices = toQList(DeviceAPOInfo::loadAllInfos(true));
 
 	defaultOutputDevice = NULL;
 	for (shared_ptr<AbstractAPOInfo>& apoInfo : outputDevices)
@@ -141,7 +141,7 @@ MainWindow::MainWindow(QDir configDir, QWidget* parent)
 	if (autoLocale.language() != QLocale::German)
 		autoLocale = QLocale("en");
 	QLocale::Language languages[] = {QLocale::AnyLanguage, QLocale::English, QLocale::German};
-	for (int i = 0; i < sizeof(languages) / sizeof(QLocale::Language); i++)
+	for (size_t i = 0; i < sizeof(languages) / sizeof(QLocale::Language); i++)
 	{
 		QLocale::Language language = languages[i];
 		QString languageName;
@@ -228,7 +228,7 @@ void MainWindow::runConfigurator()
 {
 	// cannot use QProcess::startDetached because of UAC
 	wstring file = (QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/Configurator.exe")).toStdWString();
-	int result = (int)ShellExecuteW(NULL, L"open", file.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	unsigned long long result = (unsigned long long)ShellExecuteW(NULL, L"open", file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 	if (result == SE_ERR_ACCESSDENIED)
 		ShellExecuteW(NULL, L"runas", file.c_str(), NULL, NULL, SW_SHOWNORMAL);
 }
@@ -292,7 +292,7 @@ void MainWindow::load(QString path)
 			encodedLine.resize(encodedLine.size() - 1);
 
 		wstring line = StringHelper::toWString(encodedLine, CP_UTF8);
-		if (line.find(L'\uFFFD') != -1)
+		if (line.find(L'\uFFFD') != wstring::npos)
 			line = StringHelper::toWString(encodedLine, CP_ACP);
 
 		lines.append(QString::fromStdWString(line));
@@ -402,7 +402,7 @@ void MainWindow::closeEvent(QCloseEvent* event)
 
 void MainWindow::deviceSelected(int index)
 {
-	shared_ptr<AbstractAPOInfo> apoInfo = deviceComboBox->itemData(index).value<shared_ptr<AbstractAPOInfo> >();
+	shared_ptr<AbstractAPOInfo> apoInfo = deviceComboBox->itemData(index).value<shared_ptr<AbstractAPOInfo>>();
 	if (apoInfo == NULL)
 		apoInfo = defaultOutputDevice;
 
@@ -415,7 +415,7 @@ void MainWindow::deviceSelected(int index)
 		const GUIChannelHelper::ChannelConfigurationInfo* selectedInfo = NULL;
 		for (const GUIChannelHelper::ChannelConfigurationInfo& info : infos)
 		{
-			if (info.channelMask == apoInfo->getChannelMask())
+			if (info.channelMask == (int)apoInfo->getChannelMask())
 			{
 				selectedInfo = &info;
 				break;
@@ -425,7 +425,7 @@ void MainWindow::deviceSelected(int index)
 		if (selectedInfo != NULL)
 			channelConfigurationComboBox->addItem(tr("From device") + " (" + selectedInfo->name + ")", 0);
 		else if (apoInfo->getChannelCount() != 0)
-			channelConfigurationComboBox->addItem(tr("From device") + " (" + apoInfo->getChannelCount() + " channels)", 0);
+			channelConfigurationComboBox->addItem((tr("From device") + " (%1 channels)").arg(apoInfo->getChannelCount()), 0);
 		else
 			channelConfigurationComboBox->addItem(tr("From device") + " (? channels)", 0);
 	}
@@ -458,7 +458,7 @@ void MainWindow::channelConfigurationSelected(int index)
 	if (selectedDevice != NULL)
 	{
 		unsigned channelCount = selectedDevice->getChannelCount();
-		if (channelMask != 0 && channelMask != selectedDevice->getChannelMask())
+		if (channelMask != 0 && channelMask != (int)selectedDevice->getChannelMask())
 		{
 			channelCount = 0;
 			for (int i = 0; i < 31; i++)
@@ -475,7 +475,7 @@ void MainWindow::channelConfigurationSelected(int index)
 		}
 
 		vector<wstring> channelNames = ChannelHelper::getChannelNames(channelCount, channelMask);
-		for (wstring channelName : channelNames)
+		for (const wstring& channelName : channelNames)
 		{
 			ui->analysisChannelComboBox->addItem(QString::fromStdWString(channelName));
 		}
@@ -615,7 +615,7 @@ void MainWindow::on_actionSaveAs_triggered()
 
 	if (dialog.exec() == QDialog::Accepted)
 	{
-		QString savePath = dialog.selectedFiles().first();
+		QString savePath = dialog.selectedFiles().at(0);
 		save(filterTable, savePath);
 		filterTable->setConfigPath(QDir::toNativeSeparators(savePath));
 
@@ -817,12 +817,12 @@ void MainWindow::on_actionResetAllGlobalPreferences_triggered()
 	if (QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
 	{
 		QSettings settings(QString::fromWCharArray(EDITOR_REGPATH), QSettings::NativeFormat);
-		for (QString key : settings.childGroups())
+		for (const QString& key : settings.childGroups())
 		{
 			if (key != "file-specific")
 				settings.remove(key);
 		}
-		for (QString key : settings.childKeys())
+		for (const QString& key : settings.childKeys())
 			settings.remove(key);
 
 		restart = true;
@@ -836,9 +836,9 @@ void MainWindow::on_actionResetAllFileSpecificPreferences_triggered()
 	if (QMessageBox::question(this, tr("Restart required"), tr("Configuration Editor will be restarted to apply the changed settings. Proceed?")) == QMessageBox::Yes)
 	{
 		QSettings settings(QString::fromWCharArray(EDITOR_PER_FILE_REGPATH), QSettings::NativeFormat);
-		for (QString key : settings.childGroups())
+		for (const QString& key : settings.childGroups())
 			settings.remove(key);
-		for (QString key : settings.childKeys())
+		for (const QString& key : settings.childKeys())
 			settings.remove(key);
 
 		restart = true;
@@ -871,7 +871,7 @@ FilterTable* MainWindow::addTab(QString title, QString tooltip, QString configPa
 
 void MainWindow::getDeviceAndChannelMask(shared_ptr<AbstractAPOInfo>* selectedDevice, int* channelMask)
 {
-	*selectedDevice = deviceComboBox->currentData().value<shared_ptr<AbstractAPOInfo> >();
+	*selectedDevice = deviceComboBox->currentData().value<shared_ptr<AbstractAPOInfo>>();
 	if (*selectedDevice == NULL)
 		*selectedDevice = defaultOutputDevice;
 
@@ -981,7 +981,7 @@ void MainWindow::loadPreferences()
 	{
 		for (int i = 0; i < deviceComboBox->count(); i++)
 		{
-			shared_ptr<AbstractAPOInfo> apoInfo = deviceComboBox->itemData(i).value<shared_ptr<AbstractAPOInfo> >();
+			shared_ptr<AbstractAPOInfo> apoInfo = deviceComboBox->itemData(i).value<shared_ptr<AbstractAPOInfo>>();
 			if (apoInfo != NULL)
 			{
 				if (QString::fromStdWString(apoInfo->getDeviceString()).compare(selectedDevice, Qt::CaseInsensitive) == 0)
@@ -1055,7 +1055,7 @@ void MainWindow::savePreferences()
 	settings.setValue("geometry", saveGeometry());
 	settings.setValue("windowState", saveState());
 	settings.setValue("instantMode", instantModeCheckBox->isChecked());
-	shared_ptr<AbstractAPOInfo> selectedDevice = deviceComboBox->currentData().value<shared_ptr<AbstractAPOInfo> >();
+	shared_ptr<AbstractAPOInfo> selectedDevice = deviceComboBox->currentData().value<shared_ptr<AbstractAPOInfo>>();
 	settings.setValue("selectedDevice", selectedDevice != NULL ? QString::fromStdWString(selectedDevice->getDeviceString()) : "");
 	int channelMask = channelConfigurationComboBox->currentData().toInt();
 	settings.setValue("selectedChannelMask", channelMask);
@@ -1105,7 +1105,7 @@ void MainWindow::updateRecentFiles()
 			if (separatorsFound == 1)
 			{
 				QList<QAction*> newActions;
-				for (QString recentFile : recentFiles)
+				for (const QString& recentFile : recentFiles)
 				{
 					QAction* newAction = new QAction(recentFile, ui->menuFile);
 					connect(newAction, SIGNAL(triggered(bool)), this, SLOT(recentFileSelected()));
@@ -1123,4 +1123,14 @@ void MainWindow::updateRecentFiles()
 			ui->menuFile->removeAction(action);
 		}
 	}
+}
+
+template<class T> QList<T> MainWindow::toQList(const std::vector<T>& vector)
+{
+	QList<T> list;
+	list.reserve((int)vector.size());
+	for (T t : vector)
+		list.append(t);
+
+	return list;
 }

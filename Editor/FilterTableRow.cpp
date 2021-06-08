@@ -170,7 +170,7 @@ void FilterTableRow::on_actionEditText_triggered(bool checked)
 {
 	if (checked)
 	{
-		if (!lastEditTime.isValid() || lastEditTime.elapsed() > 100)
+		if (!lastEditTime.isValid() || lastEditTime.msecsTo(QDateTime::currentDateTimeUtc()) > 100)
 		{
 			ui->lineEdit->setText(item->text);
 			ui->stackedWidget->setCurrentIndex(0);
@@ -199,7 +199,7 @@ void FilterTableRow::on_lineEdit_editingFinished()
 		else
 		{
 			ui->stackedWidget->setCurrentIndex(1);
-			lastEditTime.start();
+			lastEditTime = QDateTime::currentDateTimeUtc();
 			ui->actionEditText->setChecked(false);
 		}
 	}

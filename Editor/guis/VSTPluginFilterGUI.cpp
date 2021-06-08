@@ -433,31 +433,27 @@ void VSTPluginFilterGUI::updatePermissionWarning()
 	{
 		QByteArray bytes = QByteArray::fromBase64(QString::fromStdWString(chunkData).toUtf8());
 		QString string = QString::fromUtf8(bytes.data(), bytes.length());
-		QRegExp regexp("[A-Za-z]:(?:\\\\[\\w \\(\\)-]+)+\\.[A-Za-z]{3}");
-		int offset = 0;
-		while (offset >= 0)
+		QRegularExpression regexp("[A-Za-z]:(?:\\\\[\\w \\(\\)-]+)+\\.[A-Za-z]{3}");
+		QRegularExpressionMatchIterator it = regexp.globalMatch(string);
+		while (it.hasNext())
 		{
-			offset = regexp.indexIn(string, offset);
-			if (offset >= 0)
+			QRegularExpressionMatch m = it.next();
+			QString path = m.captured();
+			QFile file(path);
+			if (file.exists())
 			{
-				QString path = regexp.cap();
-				QFile file(path);
-				if (file.exists())
+				ACCESS_MASK mask = GENERIC_READ;
+				try
 				{
-					ACCESS_MASK mask = GENERIC_READ;
-					try
-					{
-						mask = RegistryHelper::getFileAccessForUser(path.toStdWString(), SECURITY_LOCAL_SERVICE_RID);
-					}
-					catch (RegistryException e)
-					{
-						// ignore
-					}
-
-					if ((mask & GENERIC_READ) != GENERIC_READ && (mask & FILE_GENERIC_READ) != FILE_GENERIC_READ)
-						files.append(path);
+					mask = RegistryHelper::getFileAccessForUser(path.toStdWString(), SECURITY_LOCAL_SERVICE_RID);
 				}
-				offset += regexp.matchedLength();
+				catch (RegistryException e)
+				{
+					// ignore
+				}
+
+				if ((mask & GENERIC_READ) != GENERIC_READ && (mask & FILE_GENERIC_READ) != FILE_GENERIC_READ)
+					files.append(path);
 			}
 		}
 	}

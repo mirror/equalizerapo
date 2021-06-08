@@ -1,22 +1,23 @@
-call "%VS120COMNTOOLS%\vsvars32.bat"
-msbuild EqualizerAPO.sln /p:Configuration=release /p:platform=win32 /t:rebuild
+FOR /F "tokens=*" %%g IN ('"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere" -products * -property installationPath') do (SET vspath=%%g)
+call "%vspath%\Common7\Tools\VsDevCmd.bat"
+msbuild EqualizerAPO.sln /p:Configuration=release /p:platform=win32 /t:rebuild /m
 if %ERRORLEVEL% GEQ 1 goto done
-msbuild EqualizerAPO.sln /p:Configuration=release /p:platform=x64 /t:rebuild
+msbuild EqualizerAPO.sln /p:Configuration=release /p:platform=x64 /t:rebuild /m
 if %ERRORLEVEL% GEQ 1 goto done
 
-if not exist build-Editor-Desktop_Qt_5_7_MSVC2013_32bit-Release mkdir build-Editor-Desktop_Qt_5_7_MSVC2013_32bit-Release
-cd build-Editor-Desktop_Qt_5_7_MSVC2013_32bit-Release
-call "%VCINSTALLDIR%vcvarsall.bat" x86
-"C:\Qt\5.7\msvc2013\bin\qmake.exe" ..\Editor\Editor.pro -r -spec win32-msvc2013 "CONFIG+=release"
+if not exist build-Editor-Desktop_Qt_5_15_2_MSVC2019_32bit mkdir build-Editor-Desktop_Qt_5_15_2_MSVC2019_32bit
+cd build-Editor-Desktop_Qt_5_15_2_MSVC2019_32bit
+call "%vspath%\VC\Auxiliary\Build\vcvarsall.bat" x86
+"C:\Qt\5.15.2\msvc2019\bin\qmake.exe" ..\Editor\Editor.pro -r "CONFIG+=release"
 "C:\Qt\Tools\QtCreator\bin\jom.exe" clean
 "C:\Qt\Tools\QtCreator\bin\jom.exe"
 if %ERRORLEVEL% GEQ 1 goto done
 cd..
 
-if not exist build-Editor-Desktop_Qt_5_7_MSVC2013_64bit-Release mkdir build-Editor-Desktop_Qt_5_7_MSVC2013_64bit-Release
-cd build-Editor-Desktop_Qt_5_7_MSVC2013_64bit-Release
-call "%VCINSTALLDIR%vcvarsall.bat" amd64
-"C:\Qt\5.7\msvc2013_64\bin\qmake.exe" ..\Editor\Editor.pro -r -spec win32-msvc2013 "CONFIG+=release"
+if not exist build-Editor-Desktop_Qt_5_15_2_MSVC2019_64bit mkdir build-Editor-Desktop_Qt_5_15_2_MSVC2019_64bit
+cd build-Editor-Desktop_Qt_5_15_2_MSVC2019_64bit
+call "%vspath%\VC\Auxiliary\Build\vcvarsall.bat" amd64
+"C:\Qt\5.15.2\msvc2019_64\bin\qmake.exe" ..\Editor\Editor.pro -r "CONFIG+=release"
 "C:\Qt\Tools\QtCreator\bin\jom.exe" clean
 "C:\Qt\Tools\QtCreator\bin\jom.exe"
 if %ERRORLEVEL% GEQ 1 goto done

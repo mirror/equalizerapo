@@ -67,7 +67,7 @@ QPainterPath CopyFilterGUIConnectionItem::shape() const
 	double length = line().length();
 	if (length > 0)
 	{
-		double offset = min(length, DPIHelper::scale(maxArrowSize));
+		double offset = fmin(length, DPIHelper::scale(maxArrowSize));
 		QLineF unit = l.unitVector();
 		QLineF normal = l.normalVector().unitVector();
 		QPointF v(unit.dx(), unit.dy());
@@ -131,7 +131,7 @@ void CopyFilterGUIConnectionItem::paint(QPainter* painter, const QStyleOptionGra
 		painter->drawLine(line());
 
 		double length = line().length();
-		double offset = min(length, DPIHelper::scale(maxArrowSize));
+		double offset = fmin(length, DPIHelper::scale(maxArrowSize));
 		QLineF unit = l.unitVector();
 		QLineF normal = l.normalVector().unitVector();
 		QPointF v(unit.dx(), unit.dy());

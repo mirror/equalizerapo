@@ -35,7 +35,7 @@ QRectF ChannelGraphItem::boundingRect() const
 	if (cachedRect.isNull())
 	{
 		QFontMetrics metrics(scene()->font());
-		int width = metrics.width(name);
+		int width = metrics.size(0, name).width();
 		// we only use upper case characters and digits, so everything is above the baseline
 		int height = metrics.ascent();
 		// make it at least quadratic

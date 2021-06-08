@@ -79,7 +79,7 @@ bool DeviceFilterFactory::matchDevice(const std::wstring& deviceString, const st
 {
 	wstring value = StringHelper::trim(pattern) + L";";
 
-	vector<vector<wstring> > fullList;
+	vector<vector<wstring>> fullList;
 	vector<wstring> currentList;
 	wstring currentWord;
 

@@ -38,7 +38,7 @@ static const wchar_t* clientFilename = L"VoicemeeterClient.exe";
 static const wchar_t* voicemeeterClientKeyPath = USER_REGPATH L"\\Voicemeeter Client";
 static const wchar_t* sampleRateValueName = L"sampleRate";
 
-typedef NTSTATUS (NTAPI* pfnNtQueryInformationProcess)(
+typedef NTSTATUS (NTAPI * pfnNtQueryInformationProcess)(
 	IN HANDLE ProcessHandle,
 	IN PROCESSINFOCLASS ProcessInformationClass,
 	OUT PVOID ProcessInformation,
@@ -46,7 +46,7 @@ typedef NTSTATUS (NTAPI* pfnNtQueryInformationProcess)(
 	OUT PULONG ReturnLength OPTIONAL
 	);
 
-void VoicemeeterAPOInfo::prependInfos(vector<shared_ptr<AbstractAPOInfo> >& list)
+void VoicemeeterAPOInfo::prependInfos(vector<shared_ptr<AbstractAPOInfo>>& list)
 {
 	wstring voicemeeterDirectory;
 	if (RegistryHelper::keyExists(voicemeeterKeyPath))

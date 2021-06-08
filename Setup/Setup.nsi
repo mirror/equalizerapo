@@ -1,6 +1,11 @@
+!include "LogicLib.nsh"
 !include "MUI2.nsh"
 !include "NSISpcre.nsh"
+!include "WinVer.nsh"
 
+;Use ANSI because NSISpcre's Unicode version is less optimized
+Unicode false
+ManifestDPIAware true
 ;Use more efficient compression
 SetCompressor /SOLID lzma
 
@@ -32,12 +37,14 @@ SetCompressor /SOLID lzma
 
   Var StartMenuFolder
   Var OldStartMenuFolder
+  Var OLDINSTDIR
   
 ;--------------------------------
 ;Interface Settings
 
   !define MUI_ABORTWARNING
   !define MUI_COMPONENTSPAGE_NODESC
+  !define MUI_WELCOMEPAGE_TITLE_3LINES
 
 ;--------------------------------
 ;Pages
@@ -71,29 +78,47 @@ SetCompressor /SOLID lzma
 ;Macros
 
 !macro RenameAndDelete path
-  IfFileExists "${path}" 0 +3
+  ${If} ${FileExists} "${path}"
     Rename "${path}" "${path}.old"
     Delete /REBOOTOK "${path}.old"
+  ${EndIf}
 !macroend
+  
+LangString UCRTError ${LANG_ENGLISH} "Your Windows installation is missing required updates to use this program. Please install remaining Windows updates or the Visual C++ Redistributable for Visual Studio 2015 - 2019.$\n$\nDo you want to download the Visual C++ Redistributable now?"
+LangString UCRTError ${LANG_GERMAN} "Ihrer Windows-Installation fehlen benötigte Updates, um dieses Programm zu verwenden. Bitte installieren Sie ausstehende Windows-Updates oder das Visual C++ Redistributable für Visual Studio 2015 - 2019.$\n$\nMöchten Sie jetzt das Visual C++ Redistributable herunterladen?"
 
 ;--------------------------------
 ;Functions
 Function .onInit
-  SetRegView 64
+  !if ${LIBPATH} == "lib64"
+    SetRegView 64
+  !endif
   ;Get installation folder from registry if available
   ReadRegStr $INSTDIR HKLM ${REGPATH} "InstallPath"
 
   ;Use default installation folder otherwise
-  StrCmp $INSTDIR "" 0 +2
+  ${If} $INSTDIR == ""
     StrCpy $INSTDIR "$PROGRAMFILES64\EqualizerAPO"
+  ${EndIf}
     
   !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuFolder
   ;Try to replace version number in start menu folder
   ${REReplace} $0 "Equalizer APO [0-9]+\.[0-9]+(?:\.[0-9]+)?" "$StartMenuFolder" "Equalizer APO ${VERSION}" 1
-  StrCmp $0 "" +2 0
+  ${If} $0 != ""
     StrCpy $StartMenuFolder "$0"
+  ${EndIf}
   
   Call initCheck
+  
+  ${IfNot} ${AtLeastWin10}
+    System::Call 'KERNEL32::LoadLibrary(t "ucrtbase.dll")p.r0'
+    ${If} $0 P= 0
+      MessageBox MB_YESNO|MB_ICONSTOP $(UCRTError) IDNO skipDownload
+	  ExecShell "open" "${VCREDIST_URL}"
+	  skipDownload:
+	  Abort
+    ${EndIf}
+  ${EndIf}
 FunctionEnd
 
 ;--------------------------------
@@ -109,13 +134,17 @@ Section "Install" SecInstall
 
   ;Rename before delete as these files may be in use
   !insertmacro RenameAndDelete "$INSTDIR\EqualizerAPO.dll"
-  !insertmacro RenameAndDelete "$INSTDIR\libsndfile-1.dll"
   !insertmacro RenameAndDelete "$INSTDIR\libfftw3f-3.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\libsndfile-1.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcp100.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcr100.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcp120.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcr120.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\msvcp140.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\msvcp140_1.dll"
   !insertmacro RenameAndDelete "$INSTDIR\VoicemeeterClient.exe"
+  !insertmacro RenameAndDelete "$INSTDIR\vcruntime140.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\vcruntime140_1.dll"
     
   File "${BINPATH}\EqualizerAPO.dll"
   File "${BINPATH}\Configurator.exe"
@@ -124,22 +153,28 @@ Section "Install" SecInstall
   
   File "${BINPATH_EDITOR}\Editor.exe"
   
-  File "${LIBPATH}\libsndfile-1.dll"
   File "${LIBPATH}\libfftw3f-3.dll"
-  File "${LIBPATH}\msvcp120.dll"
-  File "${LIBPATH}\msvcr120.dll"
+  File "${LIBPATH}\libsndfile-1.dll"
+  File "${LIBPATH}\msvcp140.dll"
+  File "${LIBPATH}\msvcp140_1.dll"
   File "${LIBPATH}\Qt5Core.dll"
   File "${LIBPATH}\Qt5Gui.dll"
   File "${LIBPATH}\Qt5Widgets.dll"
+  File "${LIBPATH}\vcruntime140.dll"
+  !if ${LIBPATH} == "lib64"
+	File "${LIBPATH}\vcruntime140_1.dll"
+  !endif
   
   CreateDirectory "$INSTDIR\qt"
-  CreateDirectory "$INSTDIR\qt\platforms"
   CreateDirectory "$INSTDIR\qt\imageformats"
+  CreateDirectory "$INSTDIR\qt\platforms"
+  CreateDirectory "$INSTDIR\qt\styles"
   
-  File /oname=qt\platforms\qwindows.dll "${LIBPATH}\qt\platforms\qwindows.dll"
   File /oname=qt\imageformats\qgif.dll "${LIBPATH}\qt\imageformats\qgif.dll"
   File /oname=qt\imageformats\qico.dll "${LIBPATH}\qt\imageformats\qico.dll"
   File /oname=qt\imageformats\qjpeg.dll "${LIBPATH}\qt\imageformats\qjpeg.dll"
+  File /oname=qt\platforms\qwindows.dll "${LIBPATH}\qt\platforms\qwindows.dll"
+  File /oname=qt\styles\qwindowsvistastyle.dll "${LIBPATH}\qt\styles\qwindowsvistastyle.dll"
   
   File "Configuration tutorial (online).url"
   File "Configuration reference (online).url"
@@ -159,10 +194,21 @@ Section "Install" SecInstall
   ;Grant write access to the config directory for all users
   AccessControl::GrantOnFile "$INSTDIR\config" "(S-1-5-32-545)" "FullAccess"
 
+  ReadRegStr $OLDINSTDIR HKLM ${REGPATH} "InstallPath"
   WriteRegStr HKLM ${REGPATH} "InstallPath" "$INSTDIR"
-  WriteRegStr HKLM ${REGPATH} "ConfigPath" "$INSTDIR\config"
-  WriteRegStr HKLM ${REGPATH} "EnableTrace" "false"
   
+  ;Write ConfigPath if non-existing or if InstallPath has changed
+  ReadRegStr $0 HKLM ${REGPATH} "ConfigPath"
+  ${If} $0 == ""
+  ${OrIf} $INSTDIR != $OLDINSTDIR
+	WriteRegStr HKLM ${REGPATH} "ConfigPath" "$INSTDIR\config"
+  ${EndIf}
+	
+  ReadRegStr $0 HKLM ${REGPATH} "EnableTrace"
+  ${If} $0 == ""
+	WriteRegStr HKLM ${REGPATH} "EnableTrace" "false"
+  ${EndIf}
+
   WriteUninstaller "$INSTDIR\Uninstall.exe"
   
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
@@ -205,7 +251,9 @@ Section /o un.$(SecRemoveName)
 SectionEnd
 
 Section "-un.Uninstall"
-  SetRegView 64
+  !if ${LIBPATH} == "lib64"
+	SetRegView 64
+  !endif
 
   ExecWait '"$INSTDIR\Configurator.exe" /u'
   
@@ -222,14 +270,17 @@ Section "-un.Uninstall"
   
   RMDir /r "$INSTDIR\qt"
   
+  !if ${LIBPATH} == "lib64"
+    Delete /REBOOTOK "$INSTDIR\vcruntime140_1.dll"
+  !endif
+  Delete /REBOOTOK "$INSTDIR\vcruntime140.dll"
   Delete "$INSTDIR\Qt5Widgets.dll"
   Delete "$INSTDIR\Qt5Gui.dll"
   Delete "$INSTDIR\Qt5Core.dll"
-  Delete /REBOOTOK "$INSTDIR\msvcr120.dll"
-  Delete /REBOOTOK "$INSTDIR\msvcp120.dll"
-  Delete /REBOOTOK "$INSTDIR\libfftw3f-3.dll"
+  Delete /REBOOTOK "$INSTDIR\msvcp140_1.dll"
+  Delete /REBOOTOK "$INSTDIR\msvcp140.dll"
   Delete /REBOOTOK "$INSTDIR\libsndfile-1.dll"
-  
+  Delete /REBOOTOK "$INSTDIR\libfftw3f-3.dll"
   Delete "$INSTDIR\Editor.exe"
   
   Delete "$INSTDIR\VoicemeeterClient.exe"

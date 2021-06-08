@@ -92,7 +92,7 @@ ChannelFilterGUIDialog::ChannelFilterGUIDialog(QWidget* parent, QStringList sele
 			else if (channelName == "LFE" && remainingSelectedChannels.removeOne("SUB"))
 				checked = true;
 
-			if (remainingSelectedChannels.removeOne(QString(channelIndex)))
+			if (remainingSelectedChannels.removeOne(QString("%1").arg(channelIndex)))
 				checked = true;
 			checkBox->setChecked(checked);
 		}

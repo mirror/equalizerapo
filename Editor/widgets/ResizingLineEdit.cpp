@@ -40,8 +40,8 @@ QSize ResizingLineEdit::sizeHint() const
 	QSize originalSize = QLineEdit::sizeHint();
 
 	QFontMetrics metrics = fontMetrics();
-	QSize contentSize(metrics.width(text()), metrics.height());
-	QStyleOptionFrameV2 opt;
+	QSize contentSize(metrics.size(0, text()));
+	QStyleOptionFrame opt;
 	initStyleOption(&opt);
 
 	QSize size = style()->sizeFromContents(QStyle::CT_LineEdit, &opt, contentSize, this);
