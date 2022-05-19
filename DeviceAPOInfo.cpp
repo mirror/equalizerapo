@@ -44,6 +44,7 @@ static const wchar_t* allowSilentBufferValueName = L"AllowSilentBufferModificati
 static const wchar_t* versionValueName = L"Version";
 static const wchar_t* connectionValueName = L"{a45c254e-df1c-4efd-8020-67d146a850e0},2";
 static const wchar_t* deviceValueName = L"{b3f8fa53-0004-438e-9003-51a46e139bfc},6";
+static const wchar_t* combinedDeviceValueName = L"{b3f8fa53-0004-438e-9003-51a46e139bfc},41";
 static const wchar_t* formatValueName = L"{f19f064d-082c-4e27-bc73-6882a1bb8e4c},0";
 static const wchar_t* channelMaskValueName = L"{1da5d803-d492-4edd-8c23-e0c0ffee7f0e},3";
 static const wchar_t* lfxGuidValueName = L"{d04e05a6-594b-4fb6-a80d-01af5eed7d1d},1";
@@ -369,6 +370,9 @@ bool DeviceAPOInfo::load(const wstring& deviceGuid, wstring defaultDeviceGuid)
 					&& !RegistryHelper::valueExists(keyPath + L"\\FxProperties", multiMfxGuidValueName)
 					&& !RegistryHelper::valueExists(keyPath + L"\\FxProperties", multiEfxGuidValueName))
 					currentInstallState.installMode = INSTALL_LFX_GFX;
+				// bluetooth devices may be combined in Windows 11, EFX will not work then
+				else if (RegistryHelper::valueExists(keyPath + L"\\Properties", combinedDeviceValueName))
+					currentInstallState.installMode = INSTALL_SFX_MFX;
 				else
 					currentInstallState.installMode = INSTALL_SFX_EFX;
 			}
