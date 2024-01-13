@@ -66,6 +66,8 @@ BiQuadFilterGUI::BiQuadFilterGUI(BiQuadFilter* filter)
 		ui->qComboBox->setCurrentIndex(filter->getBandwidthOrQOrS() == M_SQRT1_2 ? 0 : 1);
 	else if ((type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF))
 		ui->qComboBox->setCurrentIndex(filter->getIsBandwidthOrS() ? (filter->getBandwidthOrQOrS() == 0.9 || filter->getIsCornerFreq() ? 0 : 1) : (filter->getIsCornerFreq() ? 1 : 2));
+	else if (type == BiQuad::NOTCH)
+		ui->qComboBox->setCurrentIndex(filter->getBandwidthOrQOrS() == 30.0 ? 0 : 1);
 
 	if ((type == BiQuad::LOW_SHELF || type == BiQuad::HIGH_SHELF) && filter->getIsBandwidthOrS() && filter->getBandwidthOrQOrS() != 0.9)
 		ui->qSpinBox->setValue(filter->getBandwidthOrQOrS() * 12.0);
