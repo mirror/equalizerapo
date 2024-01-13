@@ -972,9 +972,6 @@ void MainWindow::loadPreferences()
 	QVariant geometryValue = settings.value("geometry");
 	if (geometryValue.isValid())
 		restoreGeometry(geometryValue.toByteArray());
-	QVariant stateValue = settings.value("windowState");
-	if (stateValue.isValid())
-		restoreState(stateValue.toByteArray());
 	instantModeCheckBox->setChecked(settings.value("instantMode", true).toBool());
 	QString selectedDevice = settings.value("selectedDevice").toString();
 	if (!selectedDevice.isEmpty())
@@ -1044,6 +1041,11 @@ void MainWindow::loadPreferences()
 
 	for (QAction* action : ui->menuLanguage->actions())
 		action->setChecked(action->data().toInt() == language);
+
+	// load window state after initializing channels as it may trigger on_analysisDockWidget_visibilityChanged when analysis panel is detached
+	QVariant stateValue = settings.value("windowState");
+	if (stateValue.isValid())
+		restoreState(stateValue.toByteArray());
 }
 
 void MainWindow::savePreferences()
