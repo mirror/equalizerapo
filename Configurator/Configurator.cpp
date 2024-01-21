@@ -25,6 +25,7 @@
 #include <ObjBase.h>
 #include "helpers/StringHelper.h"
 #include "helpers/RegistryHelper.h"
+#include "helpers/ServiceHelper.h"
 #include "VoicemeeterAPOInfo.h"
 #include "Configurator.h"
 
@@ -443,32 +444,54 @@ bool Configurator::onButtonClicked(unsigned sourceId)
 			wchar_t stringBuf[255];
 			LoadStringW(hInstance, IDS_AFTERINSTALL, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
 			MessageBoxW(hDlg, stringBuf, L"Info", MB_ICONINFORMATION | MB_OK);
+			try
+			{
+				ServiceHelper::restartService(L"AudioSrv");
+			}
+			catch (ServiceException e)
+			{
+				wchar_t captionBuf[255];
+				LoadStringW(hInstance, IDS_ERROR, captionBuf, sizeof(captionBuf) / sizeof(wchar_t));
+				MessageBoxW(hDlg, e.getMessage().c_str(), captionBuf, MB_ICONERROR);
+
+				returnCode = 1;
+			}
 		}
 		else if (sourceId == IDOK && deviceUpdated && RegistryHelper::isWindowsVersionAtLeast(6, 3) // Windows 8.1
 			|| askForReboot)
 		{
-			wchar_t captionBuf[255];
-			LoadStringW(hInstance, IDS_SHOULD_REBOOT_CAPTION, captionBuf, sizeof(captionBuf) / sizeof(wchar_t));
-			wchar_t stringBuf[255];
-			LoadStringW(hInstance, IDS_SHOULD_REBOOT, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
-			if (MessageBoxW(hDlg, stringBuf, captionBuf, MB_ICONQUESTION | MB_YESNO) == IDYES)
+			try
 			{
-				HANDLE tokenHandle;
-				if (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &tokenHandle))
+				ServiceHelper::restartService(L"AudioSrv");
+			}
+			catch (ServiceException e)
+			{
+				wchar_t captionBuf[255];
+				LoadStringW(hInstance, IDS_ERROR, captionBuf, sizeof(captionBuf) / sizeof(wchar_t));
+				MessageBoxW(hDlg, e.getMessage().c_str(), captionBuf, MB_ICONERROR);
+
+				LoadStringW(hInstance, IDS_SHOULD_REBOOT_CAPTION, captionBuf, sizeof(captionBuf) / sizeof(wchar_t));
+				wchar_t stringBuf[255];
+				LoadStringW(hInstance, IDS_SHOULD_REBOOT, stringBuf, sizeof(stringBuf) / sizeof(wchar_t));
+				if (MessageBoxW(hDlg, stringBuf, captionBuf, MB_ICONQUESTION | MB_YESNO) == IDYES)
 				{
-					LUID luid;
-					if (LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &luid))
+					HANDLE tokenHandle;
+					if (OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &tokenHandle))
 					{
-						TOKEN_PRIVILEGES tp;
-						tp.PrivilegeCount = 1;
-						tp.Privileges[0].Luid = luid;
-						tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+						LUID luid;
+						if (LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &luid))
+						{
+							TOKEN_PRIVILEGES tp;
+							tp.PrivilegeCount = 1;
+							tp.Privileges[0].Luid = luid;
+							tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
 
-						if (AdjustTokenPrivileges(tokenHandle, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
-							InitiateShutdownW(NULL, NULL, 0, SHUTDOWN_RESTART | SHUTDOWN_GRACE_OVERRIDE, SHTDN_REASON_MAJOR_APPLICATION | SHTDN_REASON_MINOR_MAINTENANCE);
+							if (AdjustTokenPrivileges(tokenHandle, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL))
+								InitiateShutdownW(NULL, NULL, 0, SHUTDOWN_RESTART | SHUTDOWN_GRACE_OVERRIDE, SHTDN_REASON_MAJOR_APPLICATION | SHTDN_REASON_MINOR_MAINTENANCE);
+						}
+
+						CloseHandle(tokenHandle);
 					}
-
-					CloseHandle(tokenHandle);
 				}
 			}
 		}
@@ -570,6 +593,11 @@ bool Configurator::hasUpgrades()
 	}
 
 	return hasUpgrades;
+}
+
+int Configurator::getReturnCode()
+{
+	return returnCode;
 }
 
 void Configurator::expandTroubleShooting(bool expand)
@@ -780,6 +808,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance,
 	{
 		configurator = new Configurator(hInstance, lpCmdLine);
 		DialogBox(hInstance, MAKEINTRESOURCE(IDD_MAINWINDOW), GetDesktopWindow(), dlgProc);
+		result = configurator->getReturnCode();
 	}
 
 	CoUninitialize();

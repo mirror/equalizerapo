@@ -158,6 +158,11 @@ wstring StringHelper::getSystemErrorString(long status)
 		wstring result(buf);
 		LocalFree(buf);
 
+		// remove trailing newline
+		if (result.back() == L'\n')
+			result.erase(prev(result.end()));
+		if (result.back() == L'\r')
+			result.erase(prev(result.end()));
 		return result;
 	}
 	else

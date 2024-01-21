@@ -6,6 +6,9 @@
     <ClCompile Include="..\helpers\MemoryHelper.cpp">
       <Filter>helpers</Filter>
     </ClCompile>
+    <ClCompile Include="..\helpers\ServiceHelper.cpp">
+      <Filter>helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configurator.h" />
@@ -14,6 +17,9 @@
       <Filter>helpers</Filter>
     </ClInclude>
     <ClInclude Include="..\stdafx.h" />
+    <ClInclude Include="..\helpers\ServiceHelper.h">
+      <Filter>helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Configurator.rc" />

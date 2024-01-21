@@ -1,5 +1,6 @@
 !include "LogicLib.nsh"
 !include "MUI2.nsh"
+!include "nsArray.nsh"
 !include "NSISpcre.nsh"
 !include "WinVer.nsh"
 
@@ -76,11 +77,18 @@ SetCompressor /SOLID lzma
 
 ;--------------------------------
 ;Macros
-
+Var renamePath
+Var renameIndex
 !macro RenameAndDelete path
   ${If} ${FileExists} "${path}"
-    Rename "${path}" "${path}.old"
-    Delete /REBOOTOK "${path}.old"
+    StrCpy $renamePath "${path}.old"
+    StrCpy $renameIndex "0"
+    ${While} ${FileExists} "$renamePath"
+      StrCpy $renamePath "${path}.old.$renameIndex"
+      IntOp $renameIndex $renameIndex + 1
+    ${EndWhile}
+    Rename "${path}" "$renamePath"
+    nsArray::Set deleteAfterRenameArray "$renamePath"
   ${EndIf}
 !macroend
   
@@ -126,7 +134,6 @@ FunctionEnd
 
 Section "Install" SecInstall
   SetOutPath "$INSTDIR"
-  SetRebootFlag true
 
   ;Possibly remove files from previous installation
   !insertmacro MUI_STARTMENU_GETFOLDER Application $OldStartMenuFolder
@@ -232,7 +239,18 @@ Section "Install" SecInstall
   ;RegDLL doesn't work for 64 bit dlls
   ExecWait '"$SYSDIR\regsvr32.exe" /s "$INSTDIR\EqualizerAPO.dll"'
 
-  ExecWait '"$INSTDIR\Configurator.exe" /i'
+  ExecWait '"$INSTDIR\Configurator.exe" /i' $0
+
+  ;Hopefully, the renamed files can be deleted without reboot after the Configurator has restarted the audio service
+  ${ForEachIn} deleteAfterRenameArray $R0 $R1
+    Delete /REBOOTOK "$R1"
+  ${Next}
+  
+  ${If} $0 == "0"
+    SetRebootFlag false
+  ${Else}
+    SetRebootFlag true
+  ${EndIf}
   
 SectionEnd
 

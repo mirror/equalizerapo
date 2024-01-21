@@ -36,6 +36,7 @@ public:
 	bool isAnySelected();
 	bool isChanged();
 	bool hasUpgrades();
+	int getReturnCode();
 
 private:
 	HINSTANCE hInstance;
@@ -66,4 +67,5 @@ private:
 
 	std::vector<std::shared_ptr<AbstractAPOInfo>> apoInfos[2];
 	bool askForReboot = false;
+	int returnCode = 0;
 };
