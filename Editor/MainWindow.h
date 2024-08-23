@@ -47,7 +47,7 @@ public:
 	explicit MainWindow(QDir configDir, QWidget* parent = 0);
 	~MainWindow();
 	void doChecks();
-	void runConfigurator();
+	void runDeviceSelector();
 	void load(QString path);
 	void save(FilterTable* filterTable, QString path);
 	bool isEmpty();

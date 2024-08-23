@@ -59,40 +59,40 @@
         <translation>Allpassfilter</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="197"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="199"/>
         <source>Center frequency</source>
         <translation>Mittenfrequenz</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="199"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="201"/>
         <source>Corner frequency</source>
         <translation>Eckfrequenz</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="216"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="218"/>
         <source>Fixed Q</source>
         <translation>Festes Q</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="218"/>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="258"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="220"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="260"/>
         <source>Fixed S</source>
         <translation>Festes S</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="222"/>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="260"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="224"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="262"/>
         <source>Q factor</source>
         <translation>Q-Faktor</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="224"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="226"/>
         <source>Bandwidth</source>
         <translation>Bandbreite</translation>
     </message>
     <message>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="220"/>
-        <location filename="../guis/BiQuadFilterGUI.cpp" line="259"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="222"/>
+        <location filename="../guis/BiQuadFilterGUI.cpp" line="261"/>
         <source>Slope</source>
         <translation>Steilheit</translation>
     </message>
@@ -1268,10 +1268,9 @@ Alexander Walch</translation>
         <translation type="vanished">Ein Registrywert, der für den Betrieb von Equalizer APO erforderlich ist, ist nicht korrekt gesetzt. Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="179"/>
         <source>A registry value that is required for the operation of Equalizer APO is not set correctly.
 Do you want to run the Configurator application to fix the problem?</source>
-        <translation>Ein Registrywert, der für den Betrieb von Equalizer APO erforderlich ist, ist nicht korrekt gesetzt.
+        <translation type="vanished">Ein Registrywert, der für den Betrieb von Equalizer APO erforderlich ist, ist nicht korrekt gesetzt.
 Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
@@ -1280,10 +1279,9 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>APO nicht für das Gerät installiert</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="188"/>
         <source>Equalizer APO has not been installed to the selected device.
 Do you want to run the Configurator application to fix the problem?</source>
-        <translation>Equalizer APO wurde nicht für das gewählte Gerät installiert.
+        <translation type="vanished">Equalizer APO wurde nicht für das gewählte Gerät installiert.
 Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
@@ -1292,11 +1290,10 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <translation>Signalverbesserungen deaktiviert</translation>
     </message>
     <message>
-        <location filename="../MainWindow.cpp" line="219"/>
         <source>Audio enhancements are not enabled for the device
 %0 %1.
 Do you want to run the Configurator application to fix the problem?</source>
-        <translation>Signalverbesserungen sind nicht aktiviert für das Gerät
+        <translation type="vanished">Signalverbesserungen sind nicht aktiviert für das Gerät
 %0 %1.
 Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
@@ -1396,6 +1393,28 @@ Möchten Sie die Configurator-Anwendung starten, um das Problem zu beheben?</tra
         <location filename="../MainWindow.cpp" line="156"/>
         <source>Automatic (%0)</source>
         <translation>Automatisch (%0)</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="179"/>
+        <source>A registry value that is required for the operation of Equalizer APO is not set correctly.
+Do you want to run the Device Selector application to fix the problem?</source>
+        <translation>Ein Registrywert, der für den Betrieb von Equalizer APO erforderlich ist, ist nicht korrekt gesetzt. Möchten Sie die Device Selector-Anwendung starten, um das Problem zu beheben?</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="188"/>
+        <source>Equalizer APO has not been installed to the selected device.
+Do you want to run the Device Selector application to fix the problem?</source>
+        <translation>Equalizer APO wurde nicht für das gewählte Gerät installiert.
+Möchten Sie die Device Selector-Anwendung starten, um das Problem zu beheben?</translation>
+    </message>
+    <message>
+        <location filename="../MainWindow.cpp" line="219"/>
+        <source>Audio enhancements are not enabled for the device
+%0 %1.
+Do you want to run the Device Selector application to fix the problem?</source>
+        <translation>Signalverbesserungen sind nicht aktiviert für das Gerät
+%0 %1.
+Möchten Sie die Device Selector-Anwendung starten, um das Problem zu beheben?</translation>
     </message>
     <message>
         <location filename="../MainWindow.cpp" line="558"/>
@@ -1676,7 +1695,7 @@ Change the file permissions or copy the file to the plugins directory.</source>
 Ändern Sie die Dateiberechtigungen oder kopieren Sie die Datei in das plugins-Verzeichnis.</translation>
     </message>
     <message>
-        <location filename="../guis/VSTPluginFilterGUI.cpp" line="473"/>
+        <location filename="../guis/VSTPluginFilterGUI.cpp" line="469"/>
         <source>The plugin seemingly accesses these files not readable by the audio service:
 %0
 Change the file permissions or copy the files to the config directory.</source>

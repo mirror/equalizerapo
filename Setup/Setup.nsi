@@ -152,9 +152,10 @@ Section "Install" SecInstall
   !insertmacro RenameAndDelete "$INSTDIR\VoicemeeterClient.exe"
   !insertmacro RenameAndDelete "$INSTDIR\vcruntime140.dll"
   !insertmacro RenameAndDelete "$INSTDIR\vcruntime140_1.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\Configurator.exe"
     
   File "${BINPATH}\EqualizerAPO.dll"
-  File "${BINPATH}\Configurator.exe"
+  File "${BINPATH}\DeviceSelector.exe"
   File "${BINPATH}\Benchmark.exe"
   File "${BINPATH}\VoicemeeterClient.exe"
   
@@ -166,6 +167,7 @@ Section "Install" SecInstall
   File "${LIBPATH}\msvcp140_1.dll"
   File "${LIBPATH}\Qt5Core.dll"
   File "${LIBPATH}\Qt5Gui.dll"
+  File "${LIBPATH}\Qt5Svg.dll"
   File "${LIBPATH}\Qt5Widgets.dll"
   File "${LIBPATH}\vcruntime140.dll"
   !if ${LIBPATH} == "lib64"
@@ -173,13 +175,16 @@ Section "Install" SecInstall
   !endif
   
   CreateDirectory "$INSTDIR\qt"
+  CreateDirectory "$INSTDIR\qt\iconengines"
   CreateDirectory "$INSTDIR\qt\imageformats"
   CreateDirectory "$INSTDIR\qt\platforms"
   CreateDirectory "$INSTDIR\qt\styles"
   
+  File /oname=qt\iconengines\qsvgicon.dll "${LIBPATH}\qt\iconengines\qsvgicon.dll"
   File /oname=qt\imageformats\qgif.dll "${LIBPATH}\qt\imageformats\qgif.dll"
   File /oname=qt\imageformats\qico.dll "${LIBPATH}\qt\imageformats\qico.dll"
   File /oname=qt\imageformats\qjpeg.dll "${LIBPATH}\qt\imageformats\qjpeg.dll"
+  File /oname=qt\imageformats\qsvg.dll "${LIBPATH}\qt\imageformats\qsvg.dll"
   File /oname=qt\platforms\qwindows.dll "${LIBPATH}\qt\platforms\qwindows.dll"
   File /oname=qt\styles\qwindowsvistastyle.dll "${LIBPATH}\qt\styles\qwindowsvistastyle.dll"
   
@@ -221,10 +226,10 @@ Section "Install" SecInstall
   !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
   ;Create shortcuts
   CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration Editor.lnk" "$INSTDIR\Editor.exe"
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Equalizer APO Configuration Editor.lnk" "$INSTDIR\Editor.exe"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration tutorial (online).lnk" "$INSTDIR\Configuration tutorial (online).url"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configuration reference (online).lnk" "$INSTDIR\Configuration reference (online).url"
-  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Configurator.lnk" "$INSTDIR\Configurator.exe"
+  CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Equalizer APO Device Selector.lnk" "$INSTDIR\DeviceSelector.exe"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Benchmark.lnk" "$INSTDIR\Benchmark.exe"
   CreateShortCut "$SMPROGRAMS\$StartMenuFolder\Uninstall.lnk" "$INSTDIR\Uninstall.exe"
   !insertmacro MUI_STARTMENU_WRITE_END
@@ -239,9 +244,9 @@ Section "Install" SecInstall
   ;RegDLL doesn't work for 64 bit dlls
   ExecWait '"$SYSDIR\regsvr32.exe" /s "$INSTDIR\EqualizerAPO.dll"'
 
-  ExecWait '"$INSTDIR\Configurator.exe" /i' $0
+  ExecWait '"$INSTDIR\DeviceSelector.exe" /i' $0
 
-  ;Hopefully, the renamed files can be deleted without reboot after the Configurator has restarted the audio service
+  ;Hopefully, the renamed files can be deleted without reboot after the Device Selector has restarted the audio service
   ${ForEachIn} deleteAfterRenameArray $R0 $R1
     Delete /REBOOTOK "$R1"
   ${Next}
@@ -273,7 +278,12 @@ Section "-un.Uninstall"
 	SetRegView 64
   !endif
 
-  ExecWait '"$INSTDIR\Configurator.exe" /u'
+  ;Device selector only works if working directory is set to application directory
+  Push $OUTDIR
+  SetOutPath $INSTDIR
+  ExecWait '"$INSTDIR\DeviceSelector.exe" /u'
+  Pop $OUTDIR
+  SetOutPath $OUTDIR
   
   ExecWait '"$SYSDIR\regsvr32.exe" /u /s "$INSTDIR\EqualizerAPO.dll"'
   DeleteRegValue HKLM "Software\Microsoft\Windows\CurrentVersion\Audio" "DisableProtectedAudioDG"
@@ -293,6 +303,7 @@ Section "-un.Uninstall"
   !endif
   Delete /REBOOTOK "$INSTDIR\vcruntime140.dll"
   Delete "$INSTDIR\Qt5Widgets.dll"
+  Delete "$INSTDIR\Qt5Svg.dll"
   Delete "$INSTDIR\Qt5Gui.dll"
   Delete "$INSTDIR\Qt5Core.dll"
   Delete /REBOOTOK "$INSTDIR\msvcp140_1.dll"
@@ -303,7 +314,7 @@ Section "-un.Uninstall"
   
   Delete "$INSTDIR\VoicemeeterClient.exe"
   Delete "$INSTDIR\Benchmark.exe"
-  Delete "$INSTDIR\Configurator.exe"
+  Delete "$INSTDIR\DeviceSelector.exe"
   Delete /REBOOTOK "$INSTDIR\EqualizerAPO.dll"
 
   Delete "$INSTDIR\Uninstall.exe"

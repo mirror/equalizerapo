@@ -1,20 +1,20 @@
 /*
-    This file is part of EqualizerAPO, a system-wide equalizer.
-    Copyright (C) 2024  Jonas Thedering
+	This file is part of EqualizerAPO, a system-wide equalizer.
+	Copyright (C) 2024  Jonas Thedering
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+	This program is free software; you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation; either version 2 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+	You should have received a copy of the GNU General Public License along
+	with this program; if not, write to the Free Software Foundation, Inc.,
+	51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
 #include "stdafx.h"
@@ -32,7 +32,7 @@ void ServiceHelper::restartService(const wstring& serviceName)
 	SC_HANDLE scManager = OpenSCManagerW(NULL, NULL, SC_MANAGER_ALL_ACCESS);
 	if (scManager == NULL)
 		throw ServiceException(L"OpenSCManager failed (" + StringHelper::getSystemErrorString(GetLastError()) + L")");
-	SCOPE_EXIT {CloseServiceHandle(scManager);};
+	SCOPE_EXIT{CloseServiceHandle(scManager); };
 
 	vector<shared_ptr<Service>> services;
 	shared_ptr<Service> mainService(new Service(scManager, serviceName, true));
@@ -76,10 +76,18 @@ void ServiceHelper::restartService(const wstring& serviceName)
 		service->start();
 
 		DWORD state = service->getState();
+		double retryDelay = 5;
 		while (state != SERVICE_RUNNING)
 		{
-			if (timer.stop() > 30)
+			double time = timer.stop();
+			if (time > 30)
 				throw ServiceException(L"Service start timed out on service \"" + service->getServiceName() + L"\"");
+			if (time > retryDelay)
+			{
+				// sometimes, the service won't start on the first try
+				service->start();
+				retryDelay = time + 5;
+			}
 
 			Sleep(100);
 
@@ -139,7 +147,7 @@ vector<wstring> Service::getActiveDependentServices()
 	DWORD bytesNeeded, count;
 	if (EnumDependentServicesW(serviceHandle, SERVICE_ACTIVE, NULL, 0, &bytesNeeded, &count))
 		// if the call succeeds, there are no dependent services
-		return vector<wstring> ();
+		return vector<wstring>();
 
 	DWORD error = GetLastError();
 	if (error != ERROR_MORE_DATA)
@@ -149,7 +157,7 @@ vector<wstring> Service::getActiveDependentServices()
 	if (!dependencies)
 		throw ServiceException(L"HeapAlloc for EnumDependentServices failed");
 
-	SCOPE_EXIT {HeapFree(GetProcessHeap(), 0, dependencies);};
+	SCOPE_EXIT{HeapFree(GetProcessHeap(), 0, dependencies); };
 
 	if (!EnumDependentServicesW(serviceHandle, SERVICE_ACTIVE, dependencies, bytesNeeded, &bytesNeeded, &count))
 		fail(L"EnumDependentServices", GetLastError());

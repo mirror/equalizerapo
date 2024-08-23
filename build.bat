@@ -1,4 +1,4 @@
-FOR /F "tokens=*" %%g IN ('"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere" -products * -property installationPath') do (SET vspath=%%g)
+FOR /F "tokens=*" %%g IN ('"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere" -latest -products * -property installationPath') do (SET vspath=%%g)
 call "%vspath%\Common7\Tools\VsDevCmd.bat"
 msbuild EqualizerAPO.sln /p:Configuration=release /p:platform=win32 /t:rebuild /m
 if %ERRORLEVEL% GEQ 1 goto done
