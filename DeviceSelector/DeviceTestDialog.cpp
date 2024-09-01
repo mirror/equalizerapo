@@ -23,7 +23,7 @@ DeviceTestDialog::DeviceTestDialog(QWidget* parent)
 			QTreeWidgetItem* outputNode = new QTreeWidgetItem(ui.deviceTreeWidget, QStringList(tr("Playback devices")));
 			outputNode->setExpanded(true);
 			addDevices(outputDevices, outputNode);
-			devices.append(QVector(outputDevices.begin(), outputDevices.end()));
+			devices.append(QVector<std::shared_ptr<DeviceAPOInfo>>(outputDevices.begin(), outputDevices.end()));
 		}
 
 		std::vector<std::shared_ptr<DeviceAPOInfo>> inputDevices = filterDevices(DeviceAPOInfo::loadAllInfos(true));
@@ -32,7 +32,7 @@ DeviceTestDialog::DeviceTestDialog(QWidget* parent)
 			QTreeWidgetItem* inputNode = new QTreeWidgetItem(ui.deviceTreeWidget, QStringList(tr("Capture devices")));
 			inputNode->setExpanded(true);
 			addDevices(inputDevices, inputNode);
-			devices.append(QVector(inputDevices.begin(), inputDevices.end()));
+			devices.append(QVector<std::shared_ptr<DeviceAPOInfo>>(inputDevices.begin(), inputDevices.end()));
 		}
 	}
 	catch (RegistryException e)
@@ -46,6 +46,10 @@ DeviceTestDialog::DeviceTestDialog(QWidget* parent)
 	connect(ui.buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
 
 	adjustSize();
+
+	// workaround for Qt 6 to not initially have scrollbars despite correct dialog size
+	ui.deviceTreeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	QTimer::singleShot(0, [&] {ui.deviceTreeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded); });
 
 	QVariantAnimation* animation = new QVariantAnimation(this);
 	connect(animation, &QVariantAnimation::valueChanged, this, &DeviceTestDialog::animateIcon);

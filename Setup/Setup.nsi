@@ -92,8 +92,8 @@ Var renameIndex
   ${EndIf}
 !macroend
   
-LangString UCRTError ${LANG_ENGLISH} "Your Windows installation is missing required updates to use this program. Please install remaining Windows updates or the Visual C++ Redistributable for Visual Studio 2015 - 2019.$\n$\nDo you want to download the Visual C++ Redistributable now?"
-LangString UCRTError ${LANG_GERMAN} "Ihrer Windows-Installation fehlen benötigte Updates, um dieses Programm zu verwenden. Bitte installieren Sie ausstehende Windows-Updates oder das Visual C++ Redistributable für Visual Studio 2015 - 2019.$\n$\nMöchten Sie jetzt das Visual C++ Redistributable herunterladen?"
+LangString UCRTError ${LANG_ENGLISH} "Your Windows installation is missing required updates to use this program. Please install remaining Windows updates or the Visual C++ Redistributable for Visual Studio 2015 - 2022.$\n$\nDo you want to download the Visual C++ Redistributable now?"
+LangString UCRTError ${LANG_GERMAN} "Ihrer Windows-Installation fehlen benötigte Updates, um dieses Programm zu verwenden. Bitte installieren Sie ausstehende Windows-Updates oder das Visual C++ Redistributable für Visual Studio 2015 - 2022.$\n$\nMöchten Sie jetzt das Visual C++ Redistributable herunterladen?"
 
 ;--------------------------------
 ;Functions
@@ -138,7 +138,15 @@ Section "Install" SecInstall
   ;Possibly remove files from previous installation
   !insertmacro MUI_STARTMENU_GETFOLDER Application $OldStartMenuFolder
   RMDir /r "$SMPROGRAMS\$OldStartMenuFolder"
-
+  
+  Delete "$INSTDIR\Configurator.exe"
+  Delete "$INSTDIR\Qt5Core.dll"
+  Delete "$INSTDIR\Qt5Gui.dll"
+  Delete "$INSTDIR\Qt5Widgets.dll"
+  Delete "$INSTDIR\qt\imageformats\qgif.dll"
+  Delete "$INSTDIR\qt\imageformats\qjpeg.dll"
+  Delete "$INSTDIR\qt\styles\qwindowsvistastyle.dll"
+  
   ;Rename before delete as these files may be in use
   !insertmacro RenameAndDelete "$INSTDIR\EqualizerAPO.dll"
   !insertmacro RenameAndDelete "$INSTDIR\libfftw3f-3.dll"
@@ -152,8 +160,7 @@ Section "Install" SecInstall
   !insertmacro RenameAndDelete "$INSTDIR\VoicemeeterClient.exe"
   !insertmacro RenameAndDelete "$INSTDIR\vcruntime140.dll"
   !insertmacro RenameAndDelete "$INSTDIR\vcruntime140_1.dll"
-  !insertmacro RenameAndDelete "$INSTDIR\Configurator.exe"
-    
+  
   File "${BINPATH}\EqualizerAPO.dll"
   File "${BINPATH}\DeviceSelector.exe"
   File "${BINPATH}\Benchmark.exe"
@@ -165,10 +172,10 @@ Section "Install" SecInstall
   File "${LIBPATH}\libsndfile-1.dll"
   File "${LIBPATH}\msvcp140.dll"
   File "${LIBPATH}\msvcp140_1.dll"
-  File "${LIBPATH}\Qt5Core.dll"
-  File "${LIBPATH}\Qt5Gui.dll"
-  File "${LIBPATH}\Qt5Svg.dll"
-  File "${LIBPATH}\Qt5Widgets.dll"
+  File "${LIBPATH}\Qt6Core.dll"
+  File "${LIBPATH}\Qt6Gui.dll"
+  File "${LIBPATH}\Qt6Svg.dll"
+  File "${LIBPATH}\Qt6Widgets.dll"
   File "${LIBPATH}\vcruntime140.dll"
   !if ${LIBPATH} == "lib64"
 	File "${LIBPATH}\vcruntime140_1.dll"
@@ -181,12 +188,10 @@ Section "Install" SecInstall
   CreateDirectory "$INSTDIR\qt\styles"
   
   File /oname=qt\iconengines\qsvgicon.dll "${LIBPATH}\qt\iconengines\qsvgicon.dll"
-  File /oname=qt\imageformats\qgif.dll "${LIBPATH}\qt\imageformats\qgif.dll"
   File /oname=qt\imageformats\qico.dll "${LIBPATH}\qt\imageformats\qico.dll"
-  File /oname=qt\imageformats\qjpeg.dll "${LIBPATH}\qt\imageformats\qjpeg.dll"
   File /oname=qt\imageformats\qsvg.dll "${LIBPATH}\qt\imageformats\qsvg.dll"
   File /oname=qt\platforms\qwindows.dll "${LIBPATH}\qt\platforms\qwindows.dll"
-  File /oname=qt\styles\qwindowsvistastyle.dll "${LIBPATH}\qt\styles\qwindowsvistastyle.dll"
+  File /oname=qt\styles\qmodernwindowsstyle.dll "${LIBPATH}\qt\styles\qmodernwindowsstyle.dll"
   
   File "Configuration tutorial (online).url"
   File "Configuration reference (online).url"
@@ -302,10 +307,10 @@ Section "-un.Uninstall"
     Delete /REBOOTOK "$INSTDIR\vcruntime140_1.dll"
   !endif
   Delete /REBOOTOK "$INSTDIR\vcruntime140.dll"
-  Delete "$INSTDIR\Qt5Widgets.dll"
-  Delete "$INSTDIR\Qt5Svg.dll"
-  Delete "$INSTDIR\Qt5Gui.dll"
-  Delete "$INSTDIR\Qt5Core.dll"
+  Delete "$INSTDIR\Qt6Widgets.dll"
+  Delete "$INSTDIR\Qt6Svg.dll"
+  Delete "$INSTDIR\Qt6Gui.dll"
+  Delete "$INSTDIR\Qt6Core.dll"
   Delete /REBOOTOK "$INSTDIR\msvcp140_1.dll"
   Delete /REBOOTOK "$INSTDIR\msvcp140.dll"
   Delete /REBOOTOK "$INSTDIR\libsndfile-1.dll"

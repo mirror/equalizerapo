@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "Editor/helpers/DPIHelper.h"
+#include "Editor/helpers/GUIHelper.h"
 #include "LoudnessCorrectionFilterGUIDialog.h"
 #include "LoudnessCorrectionFilterGUI.h"
 #include "ui_LoudnessCorrectionFilterGUI.h"
@@ -28,9 +28,9 @@ LoudnessCorrectionFilterGUI::LoudnessCorrectionFilterGUI(float refLevel, float r
 {
 	ui->setupUi(this);
 
-	ui->refLevelDial->setFixedSize(DPIHelper::scale(QSize(100, 66)));
-	ui->refOffsetDial->setFixedSize(DPIHelper::scale(QSize(100, 66)));
-	ui->attDial->setFixedSize(DPIHelper::scale(QSize(100, 66)));
+	ui->refLevelDial->setFixedSize(GUIHelper::scale(QSize(100, 66)));
+	ui->refOffsetDial->setFixedSize(GUIHelper::scale(QSize(100, 66)));
+	ui->attDial->setFixedSize(GUIHelper::scale(QSize(100, 66)));
 
 	ui->refLevelSpinBox->setValue((int)refLevel);
 	ui->refOffsetSpinBox->setValue((int)refOffset);

@@ -1,8 +1,8 @@
 
 !define BINPATH "..\x64\Release"
-!define BINPATH_EDITOR "..\build-Editor-Desktop_Qt_5_15_2_MSVC2019_64bit\release"
+!define BINPATH_EDITOR "..\build-Editor-Desktop_Qt_6_7_2_MSVC2022_64bit\release"
 !define LIBPATH "lib64"
-!define VCREDIST_URL "https://aka.ms/vs/16/release/vc_redist.x64.exe"
+!define VCREDIST_URL "https://aka.ms/vs/17/release/vc_redist.x64.exe"
 
 !include "Setup.nsi"
 

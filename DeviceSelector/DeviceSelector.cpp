@@ -88,6 +88,10 @@ DeviceSelector::DeviceSelector(QWidget* parent)
 	ui.troubleshootingGroupBox->setChecked(false);
 	adjustSize();
 
+	// workaround for Qt 6 to not initially have scrollbars despite correct dialog size
+	ui.deviceTreeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+	QTimer::singleShot(0, [&] {ui.deviceTreeWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded); });
+
 	bool fixedAudioDG = !DeviceAPOInfo::checkProtectedAudioDG(true);
 	bool fixedRegistration = !DeviceAPOInfo::checkAPORegistration(true);
 	if (fixedAudioDG || fixedRegistration)

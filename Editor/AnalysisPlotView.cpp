@@ -20,6 +20,7 @@
 #include <algorithm>
 
 #include "helpers/GainIterator.h"
+#include "Editor/helpers/GUIHelper.h"
 #include "AnalysisPlotScene.h"
 #include "AnalysisPlotView.h"
 
@@ -54,7 +55,7 @@ void AnalysisPlotView::drawBackground(QPainter* painter, const QRectF& rect)
 				y = sceneRect().top() - 1;
 		}
 
-		if (db == lastDb)
+        if (abs(db-lastDb) < 0.001f)
 			y = floor(y) + 0.5;
 		lastDb = db;
 		if (first)
@@ -83,6 +84,7 @@ void AnalysisPlotView::drawBackground(QPainter* painter, const QRectF& rect)
 		painter->setBrush(Qt::NoBrush);
 	}
 
-	painter->setPen(Qt::black);
+    bool dark = GUIHelper::isDarkMode();
+    painter->setPen(dark ? Qt::white : Qt::black);
 	painter->drawPath(path);
 }

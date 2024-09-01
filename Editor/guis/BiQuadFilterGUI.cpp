@@ -21,7 +21,7 @@
 #include <cmath>
 #include <QStandardItemModel>
 
-#include "Editor/helpers/DPIHelper.h"
+#include "Editor/helpers/GUIHelper.h"
 #include "BiQuadFilterGUI.h"
 #include "ui_BiQuadFilterGUI.h"
 
@@ -37,9 +37,9 @@ BiQuadFilterGUI::BiQuadFilterGUI(BiQuadFilter* filter)
 {
 	ui->setupUi(this);
 
-	ui->freqDial->setFixedSize(DPIHelper::scale(QSize(100, 66)));
-	ui->gainDial->setFixedSize(DPIHelper::scale(QSize(100, 66)));
-	ui->qDial->setFixedSize(DPIHelper::scale(QSize(100, 66)));
+	ui->freqDial->setFixedSize(GUIHelper::scale(QSize(100, 66)));
+	ui->gainDial->setFixedSize(GUIHelper::scale(QSize(100, 66)));
+	ui->qDial->setFixedSize(GUIHelper::scale(QSize(100, 66)));
 
 	ui->typeComboBox->addItem(tr("Peaking filter"), BiQuad::PEAKING);
 	ui->typeComboBox->addItem(tr("Low-pass filter"), BiQuad::LOW_PASS);

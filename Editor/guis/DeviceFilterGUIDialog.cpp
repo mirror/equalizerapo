@@ -17,7 +17,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
-#include "Editor/helpers/DPIHelper.h"
+#include "Editor/helpers/GUIHelper.h"
 #include "DeviceFilterGUIDialog.h"
 #include "ui_DeviceFilterGUIDialog.h"
 
@@ -31,7 +31,7 @@ DeviceFilterGUIDialog::DeviceFilterGUIDialog(DeviceFilterGUI* gui, DeviceFilterG
 	ui(new Ui::DeviceFilterGUIDialog)
 {
 	ui->setupUi(this);
-	resize(DPIHelper::scale(QSize(500, 350)));
+	resize(GUIHelper::scale(QSize(500, 350)));
 
 	bool all = pattern.trimmed() == "all";
 	ui->allDevicesCheckBox->setChecked(all);

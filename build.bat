@@ -5,21 +5,21 @@ if %ERRORLEVEL% GEQ 1 goto done
 msbuild EqualizerAPO.sln /p:Configuration=release /p:platform=x64 /t:rebuild /m
 if %ERRORLEVEL% GEQ 1 goto done
 
-if not exist build-Editor-Desktop_Qt_5_15_2_MSVC2019_32bit mkdir build-Editor-Desktop_Qt_5_15_2_MSVC2019_32bit
-cd build-Editor-Desktop_Qt_5_15_2_MSVC2019_32bit
+if not exist build-Editor-Desktop_Qt_6_7_2_MSVC2022_32bit mkdir build-Editor-Desktop_Qt_6_7_2_MSVC2022_32bit
+cd build-Editor-Desktop_Qt_6_7_2_MSVC2022_32bit
 call "%vspath%\VC\Auxiliary\Build\vcvarsall.bat" x86
-"C:\Qt\5.15.2\msvc2019\bin\qmake.exe" ..\Editor\Editor.pro -r "CONFIG+=release"
-"C:\Qt\Tools\QtCreator\bin\jom.exe" clean
-"C:\Qt\Tools\QtCreator\bin\jom.exe"
+"C:\Qt\6.7.2\msvc2022\bin\qmake.exe" ..\Editor\Editor.pro -r "CONFIG+=release"
+"C:\Qt\Tools\QtCreator\bin\jom\jom.exe" clean
+"C:\Qt\Tools\QtCreator\bin\jom\jom.exe"
 if %ERRORLEVEL% GEQ 1 goto done
 cd..
 
-if not exist build-Editor-Desktop_Qt_5_15_2_MSVC2019_64bit mkdir build-Editor-Desktop_Qt_5_15_2_MSVC2019_64bit
-cd build-Editor-Desktop_Qt_5_15_2_MSVC2019_64bit
+if not exist build-Editor-Desktop_Qt_6_7_2_MSVC2022_64bit mkdir build-Editor-Desktop_Qt_6_7_2_MSVC2022_64bit
+cd build-Editor-Desktop_Qt_6_7_2_MSVC2022_64bit
 call "%vspath%\VC\Auxiliary\Build\vcvarsall.bat" amd64
-"C:\Qt\5.15.2\msvc2019_64\bin\qmake.exe" ..\Editor\Editor.pro -r "CONFIG+=release"
-"C:\Qt\Tools\QtCreator\bin\jom.exe" clean
-"C:\Qt\Tools\QtCreator\bin\jom.exe"
+"C:\Qt\6.7.2\msvc2022_64\bin\qmake.exe" ..\Editor\Editor.pro -r "CONFIG+=release"
+"C:\Qt\Tools\QtCreator\bin\jom\jom.exe" clean
+"C:\Qt\Tools\QtCreator\bin\jom\jom.exe"
 if %ERRORLEVEL% GEQ 1 goto done
 cd..
 

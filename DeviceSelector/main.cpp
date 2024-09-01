@@ -34,6 +34,8 @@ int main(int argc, char* argv[])
 	QCoreApplication::addLibraryPath("qt");
 
 	QApplication app(argc, argv);
+	if (QGuiApplication::styleHints()->colorScheme() == Qt::ColorScheme::Dark)
+		app.setStyle("fusion");
 
 	QLocale::setDefault(QLocale::system());
 

@@ -50,7 +50,7 @@
 #include "guis/ConvolutionFilterGUIFactory.h"
 #include "guis/VSTPluginFilterGUIFactory.h"
 #include "guis/LoudnessCorrectionFilterGUIFactory.h"
-#include "Editor/helpers/DPIHelper.h"
+#include "Editor/helpers/GUIHelper.h"
 #include "helpers/StringHelper.h"
 #include "helpers/LogHelper.h"
 #include "helpers/ChannelHelper.h"
@@ -66,7 +66,7 @@ FilterTable::FilterTable(MainWindow* mainWindow, QWidget* parent)
 
 	QIcon icon(QStringLiteral(":/icons/arrow_right.ico"));
 	insertArrow = new QLabel(this);
-	insertArrow->setPixmap(icon.pixmap(DPIHelper::scale(QSize(24, 15))));
+	insertArrow->setPixmap(icon.pixmap(GUIHelper::scale(QSize(24, 15))));
 	insertArrow->setVisible(false);
 
 	factories.append(new ExpressionFilterGUIFactory);
@@ -207,10 +207,10 @@ void FilterTable::updateGuis()
 	propagateChannels();
 
 	QToolBar* toolBar = new QToolBar;
-	toolBar->setIconSize(DPIHelper::scale(QSize(16, 16)));
+	toolBar->setIconSize(GUIHelper::scale(QSize(16, 16)));
 
 	QWidget* spacer = new QWidget;
-	spacer->setFixedWidth(DPIHelper::scale(25));
+	spacer->setFixedWidth(GUIHelper::scale(25));
 	toolBar->addWidget(spacer);
 
 	QAction* addAction = new QAction(QIcon(":/icons/list-add-green.ico"), tr("Add filter"), toolBar);
@@ -955,7 +955,7 @@ bool FilterTable::eventFilter(QObject* obj, QEvent* event)
 		{
 			QMouseEvent* mouseEvent = (QMouseEvent*)event;
 
-			if ((mouseEvent->globalPos() - scrollStartPoint).manhattanLength() > DPIHelper::scale(30))
+			if ((mouseEvent->globalPos() - scrollStartPoint).manhattanLength() > GUIHelper::scale(30))
 				scrollingNow = false;
 		}
 	}

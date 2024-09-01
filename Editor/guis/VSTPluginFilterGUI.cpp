@@ -27,7 +27,7 @@
 #include <windows.h>
 #include "helpers/aeffectx.h"
 #include "helpers/StringHelper.h"
-#include "Editor/helpers/DPIHelper.h"
+#include "Editor/helpers/GUIHelper.h"
 #include "Editor/MainWindow.h"
 #include "VSTPluginFilterGUIDialog.h"
 #include "VSTPluginFilterGUI.h"
@@ -423,7 +423,7 @@ void VSTPluginFilterGUI::updatePermissionWarning()
 
 		ui->warningTextEdit->setPlainText(text);
 		QSize textSize = ui->warningTextEdit->fontMetrics().size(0, text);
-		ui->warningTextEdit->setFixedSize(textSize + DPIHelper::scale(QSize(40, 15)));
+		ui->warningTextEdit->setFixedSize(textSize + GUIHelper::scale(QSize(40, 15)));
 		ui->warningTextEdit->setVisible(true);
 		return;
 	}
@@ -471,7 +471,7 @@ void VSTPluginFilterGUI::updatePermissionWarning()
 				"Change the file permissions or copy the files to the config directory.").arg(files.join("\n"));
 		ui->warningTextEdit->setPlainText(text);
 		QSize textSize = ui->warningTextEdit->fontMetrics().size(0, text);
-		ui->warningTextEdit->setFixedSize(textSize + DPIHelper::scale(QSize(40, 15)));
+		ui->warningTextEdit->setFixedSize(textSize + GUIHelper::scale(QSize(40, 15)));
 		ui->warningTextEdit->setVisible(true);
 	}
 }

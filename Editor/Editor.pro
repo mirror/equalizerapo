@@ -65,6 +65,7 @@ SOURCES += main.cpp\
 	../filters/DelayFilterFactory.cpp \
 	guis/IncludeFilterGUI.cpp \
 	guis/IncludeFilterGUIFactory.cpp \
+	helpers/GUIHelper.cpp \
 	widgets/ResizingLineEdit.cpp \
 	widgets/ChannelGraphScene.cpp \
 	widgets/ChannelGraphItem.cpp \
@@ -114,7 +115,6 @@ SOURCES += main.cpp\
 	AnalysisThread.cpp \
 	widgets/ExponentialSpinBox.cpp \
 	FilterTableMimeData.cpp \
-	helpers/DPIHelper.cpp \
 	CustomStyle.cpp \
 	../AbstractAPOInfo.cpp \
 	../VoicemeeterAPOInfo.cpp \
@@ -142,6 +142,7 @@ HEADERS  += \
 	../helpers/RegistryHelper.h \
 	../parser/LogicalOperators.h \
 	IFilterGUIFactory.h \
+	helpers/GUIHelper.h \
 	stable.h \
 	IFilterGUI.h \
 	guis/PreampFilterGUI.h \
@@ -237,7 +238,6 @@ HEADERS  += \
 	AnalysisThread.h \
 	widgets/ExponentialSpinBox.h \
 	FilterTableMimeData.h \
-	helpers/DPIHelper.h \
 	CustomStyle.h \
 	../AbstractAPOInfo.h \
 	../VoicemeeterAPOInfo.h \
