@@ -133,8 +133,8 @@ SOURCES += main.cpp\
 	../filters/loudnessCorrection/VolumeController.cpp \
 	guis/LoudnessCorrectionFilterGUIDialog.cpp \
 	helpers/QtSndfileHandle.cpp \
-    widgets/MiddleClickTabWidget.cpp \
-    widgets/MiddleClickTabBar.cpp
+	widgets/MiddleClickTabWidget.cpp \
+	widgets/MiddleClickTabBar.cpp
 
 HEADERS  += \
 	../helpers/LogHelper.h \
@@ -257,8 +257,8 @@ HEADERS  += \
 	../filters/loudnessCorrection/VolumeController.h \
 	guis/LoudnessCorrectionFilterGUIDialog.h \
 	helpers/QtSndfileHandle.h \
-    widgets/MiddleClickTabWidget.h \
-    widgets/MiddleClickTabBar.h
+	widgets/MiddleClickTabWidget.h \
+	widgets/MiddleClickTabBar.h
 
 FORMS    += \
 	guis/PreampFilterGUI.ui \
@@ -282,8 +282,8 @@ FORMS    += \
 	guis/LoudnessCorrectionFilterGUI.ui \
 	guis/LoudnessCorrectionFilterGUIDialog.ui
 
-INCLUDEPATH += $$PWD/.. "C:/Program Files/libsndfile/include" "C:/Program Files/fftw3" "C:/Program Files/muparserx_v3_0_1/parser"
-LIBS += user32.lib advapi32.lib version.lib ole32.lib Shlwapi.lib authz.lib crypt32.lib dbghelp.lib winmm.lib libsndfile-1.lib libfftw3f-3.lib
+INCLUDEPATH += $$PWD/.. "C:/Program Files/libsndfile/include" "C:/Program Files/fftw/include" "C:/Program Files/muparserx_v3_0_1/parser"
+LIBS += user32.lib advapi32.lib version.lib ole32.lib Shlwapi.lib authz.lib crypt32.lib dbghelp.lib winmm.lib sndfile.lib fftw3f.lib
 
 build_pass:CONFIG(debug, debug|release) {
 	LIBS += muparserxd.lib
@@ -291,10 +291,12 @@ build_pass:CONFIG(debug, debug|release) {
 	LIBS += muparserx.lib
 }
 
-contains(QT_ARCH, x86_64) {
-	QMAKE_LIBDIR += "C:/Program Files/libsndfile/lib" "C:/Program Files/fftw3" "C:/Program Files/muparserx_v3_0_1/lib64"
+contains(QT_ARCH, arm64) {
+	QMAKE_LIBDIR += "C:/Program Files/libsndfile/lib/ARM64" "C:/Program Files/fftw/lib/ARM64" "C:/Program Files/muparserx_v3_0_1/lib64/ARM64"
+} else:contains(QT_ARCH, x86_64) {
+	QMAKE_LIBDIR += "C:/Program Files/libsndfile/lib" "C:/Program Files/fftw/lib" "C:/Program Files/muparserx_v3_0_1/lib64"
 } else {
-	QMAKE_LIBDIR += "C:/Program Files (x86)/libsndfile/lib" "C:/Program Files (x86)/fftw3" "C:/Program Files/muparserx_v3_0_1/lib"
+	QMAKE_LIBDIR += "C:/Program Files (x86)/libsndfile/lib" "C:/Program Files (x86)/fftw/lib" "C:/Program Files/muparserx_v3_0_1/lib"
 }
 
 RESOURCES += \

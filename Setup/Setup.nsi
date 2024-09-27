@@ -3,6 +3,7 @@
 !include "nsArray.nsh"
 !include "NSISpcre.nsh"
 !include "WinVer.nsh"
+!include "x64.nsh"
 
 ;Use ANSI because NSISpcre's Unicode version is less optimized
 Unicode false
@@ -91,14 +92,17 @@ Var renameIndex
     nsArray::Set deleteAfterRenameArray "$renamePath"
   ${EndIf}
 !macroend
-  
+    
+LangString VersionError ${LANG_ENGLISH} "This installer is only supposed to be run on {0} Windows. Please use the {1} installer."
+LangString VersionError ${LANG_GERMAN} "Dieses Installationsprogramm kann nur auf einem {0}-Windows verwendet werden. Bitte nutzen Sie die {1}-Version."
+
 LangString UCRTError ${LANG_ENGLISH} "Your Windows installation is missing required updates to use this program. Please install remaining Windows updates or the Visual C++ Redistributable for Visual Studio 2015 - 2022.$\n$\nDo you want to download the Visual C++ Redistributable now?"
 LangString UCRTError ${LANG_GERMAN} "Ihrer Windows-Installation fehlen benötigte Updates, um dieses Programm zu verwenden. Bitte installieren Sie ausstehende Windows-Updates oder das Visual C++ Redistributable für Visual Studio 2015 - 2022.$\n$\nMöchten Sie jetzt das Visual C++ Redistributable herunterladen?"
 
 ;--------------------------------
 ;Functions
 Function .onInit
-  !if ${LIBPATH} == "lib64"
+  !if ${LIBPATH} != "lib32"
     SetRegView 64
   !endif
   ;Get installation folder from registry if available
@@ -116,15 +120,28 @@ Function .onInit
     StrCpy $StartMenuFolder "$0"
   ${EndIf}
   
-  Call initCheck
+  ${If} ${IsNativeIA32}
+    StrCpy $0 "x86"
+  ${ElseIf} ${IsNativeAMD64}
+    StrCpy $0 "x64"
+  ${ElseIf} ${IsNativeARM64}
+    StrCpy $0 "ARM64"
+  ${EndIf}
+  
+  ${If} $0 != ${TARGET_ARCH}
+    ${REReplace} $1 "\{0\}" $(VersionError) ${TARGET_ARCH} 1
+    ${REReplace} $1 "\{1\}" $1 $0 1
+    MessageBox MB_OK|MB_ICONSTOP $1
+    Abort
+  ${EndIf}
   
   ${IfNot} ${AtLeastWin10}
     System::Call 'KERNEL32::LoadLibrary(t "ucrtbase.dll")p.r0'
     ${If} $0 P= 0
       MessageBox MB_YESNO|MB_ICONSTOP $(UCRTError) IDNO skipDownload
-	  ExecShell "open" "${VCREDIST_URL}"
-	  skipDownload:
-	  Abort
+      ExecShell "open" "${VCREDIST_URL}"
+      skipDownload:
+      Abort
     ${EndIf}
   ${EndIf}
 FunctionEnd
@@ -150,13 +167,16 @@ Section "Install" SecInstall
   ;Rename before delete as these files may be in use
   !insertmacro RenameAndDelete "$INSTDIR\EqualizerAPO.dll"
   !insertmacro RenameAndDelete "$INSTDIR\libfftw3f-3.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\fftw3f.dll"
   !insertmacro RenameAndDelete "$INSTDIR\libsndfile-1.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\sndfile.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcp100.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcr100.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcp120.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcr120.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcp140.dll"
   !insertmacro RenameAndDelete "$INSTDIR\msvcp140_1.dll"
+  !insertmacro RenameAndDelete "$INSTDIR\msvcp140_2.dll"
   !insertmacro RenameAndDelete "$INSTDIR\VoicemeeterClient.exe"
   !insertmacro RenameAndDelete "$INSTDIR\vcruntime140.dll"
   !insertmacro RenameAndDelete "$INSTDIR\vcruntime140_1.dll"
@@ -168,16 +188,17 @@ Section "Install" SecInstall
   
   File "${BINPATH_EDITOR}\Editor.exe"
   
-  File "${LIBPATH}\libfftw3f-3.dll"
-  File "${LIBPATH}\libsndfile-1.dll"
+  File "${LIBPATH}\fftw3f.dll"
+  File "${LIBPATH}\sndfile.dll"
   File "${LIBPATH}\msvcp140.dll"
   File "${LIBPATH}\msvcp140_1.dll"
+  File "${LIBPATH}\msvcp140_2.dll"
   File "${LIBPATH}\Qt6Core.dll"
   File "${LIBPATH}\Qt6Gui.dll"
   File "${LIBPATH}\Qt6Svg.dll"
   File "${LIBPATH}\Qt6Widgets.dll"
   File "${LIBPATH}\vcruntime140.dll"
-  !if ${LIBPATH} == "lib64"
+  !if ${LIBPATH} != "lib32"
 	File "${LIBPATH}\vcruntime140_1.dll"
   !endif
   
@@ -279,7 +300,7 @@ Section /o un.$(SecRemoveName)
 SectionEnd
 
 Section "-un.Uninstall"
-  !if ${LIBPATH} == "lib64"
+  !if ${LIBPATH} != "lib32"
 	SetRegView 64
   !endif
 
@@ -303,7 +324,7 @@ Section "-un.Uninstall"
   
   RMDir /r "$INSTDIR\qt"
   
-  !if ${LIBPATH} == "lib64"
+  !if ${LIBPATH} != "lib32"
     Delete /REBOOTOK "$INSTDIR\vcruntime140_1.dll"
   !endif
   Delete /REBOOTOK "$INSTDIR\vcruntime140.dll"
@@ -311,10 +332,11 @@ Section "-un.Uninstall"
   Delete "$INSTDIR\Qt6Svg.dll"
   Delete "$INSTDIR\Qt6Gui.dll"
   Delete "$INSTDIR\Qt6Core.dll"
+  Delete /REBOOTOK "$INSTDIR\msvcp140_2.dll"
   Delete /REBOOTOK "$INSTDIR\msvcp140_1.dll"
   Delete /REBOOTOK "$INSTDIR\msvcp140.dll"
-  Delete /REBOOTOK "$INSTDIR\libsndfile-1.dll"
-  Delete /REBOOTOK "$INSTDIR\libfftw3f-3.dll"
+  Delete /REBOOTOK "$INSTDIR\sndfile.dll"
+  Delete /REBOOTOK "$INSTDIR\fftw3f.dll"
   Delete "$INSTDIR\Editor.exe"
   
   Delete "$INSTDIR\VoicemeeterClient.exe"
